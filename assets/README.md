@@ -1,3 +1,9 @@
+## Character refinement 0.4.1
+
+Restores the expressive 0.2 character proportions and identities, replacing the overly minimal 0.4 cast with a light cleanup of the original sheet. `assets/cast-refined.png` is edited from `cast-source.png` using the built-in imagegen tool, with true alpha transparency. `assets/cast-refined.js` contains newly measured frame bounds. Original art is preserved. No claim is made that the edited sheet is human-drawn. Buildings, signs, slower controls and score from 0.4 remain.
+
+Edit brief: preserve all 24 poses, six columns/four rows, faces, hair, body/head proportions, clothing and accessories; reduce detail by only 15–20%, removing speckled texture, glossy highlights and surplus color changes; use deliberate pixel clusters, about three shades per material and consistent outlines; avoid geometric/block characters, blur, gradients and painted filters; transparent 1536 × 1024 atlas. Built-in image tool mode, not CLI.
+
 # Current artwork: revision 0.4
 
 `pixel-art.js` is the live artwork source. It contains original coordinate-drawn 20 × 28 character sprites, Greek/Latin 5 × 7 bitmap lettering, and building drawings. No generated raster artwork or image filters are loaded by the game. Flat color clusters and integer coordinates keep contours readable. Each building position selects a stable palette, balcony/shutter layout, laundry, planting, awnings and roof equipment. Station, stockroom, shop, cafe, kiosk and basement venue have separate details. These are fictional buildings representing local architectural forms, not reproductions of individual addresses. Aris keeps the mustard jacket and shoulder bag; Mina terracotta, Eleni lilac and Dimos teal. The supervisor has an independent grey-clad sprite.

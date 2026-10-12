@@ -1,3 +1,9 @@
+## Character refinement 0.4.1
+
+Restores the expressive 0.2 character proportions and identities, replacing the overly minimal 0.4 cast with a light cleanup of the original sheet. `assets/cast-refined.png` is edited from `cast-source.png` using the built-in imagegen tool, with true alpha transparency. `assets/cast-refined.js` contains newly measured frame bounds. Original art is preserved. No claim is made that the edited sheet is human-drawn. Buildings, signs, slower controls and score from 0.4 remain.
+
+Edit brief: preserve all 24 poses, six columns/four rows, faces, hair, body/head proportions, clothing and accessories; reduce detail by only 15–20%, removing speckled texture, glossy highlights and surplus color changes; use deliberate pixel clusters, about three shades per material and consistent outlines; avoid geometric/block characters, blur, gradients and painted filters; transparent 1536 × 1024 atlas. Built-in image tool mode, not CLI.
+
 ## Revision 0.4 — clearer art, walking and chapter score
 
 Validation: 24 rule/map/movement tests pass; changed scripts pass syntax checks. Local Android 0.4.0 compiles, v2/v3 signing and zip alignment pass, versionCode 1004. Package verification confirms the exact bundled HTML, coordinate art, offline SVG and no generated PNG artwork. Browser portraits 390 × 844 and 320 × 640 fit without document overflow; music toggle and a route to Eleni complete. Landscape controls were raised by 6 px to keep the joystick inside the viewport. Physical device listening and thumb-control review remain with the user.

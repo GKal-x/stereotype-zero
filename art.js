@@ -2,12 +2,25 @@
 (function(){
   'use strict';
   const E=window.SZ,D=window.CityWorld,T=24,W=E.WIDTH*T,H=E.HEIGHT*T,P=window.CityPixels;
-  const ready=Promise.resolve();
+  const cast=new Image(),A=window.CityAtlas;
+  const ready=new Promise((resolve,reject)=>{cast.onload=resolve;cast.onerror=()=>reject(new Error('Character art could not load'));cast.src='assets/cast-refined.png';});
   const map=document.createElement('canvas');map.width=W;map.height=H;const g=map.getContext('2d');
   const camera={x:0,y:0,ready:false};
   function box(c,x,y,w,h,color){c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
   function label(c,s,x,y,size=7,color='#334b5b',align='left'){P.text(c,s,x,y,color,align);}
-  const sprite=P.sprite,face=P.face;
+  const directionRow={down:0,left:1,right:2,up:3};
+  function sprite(c,who,x,y,facing='down',frame=0,height=34){
+    if(who==='boss')return P.sprite(c,who,x,y,facing,frame,height);
+    const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5}[who]??0),r=A.cast[directionRow[facing]??0][column];
+    const width=Math.round(r[2]/r[3]*height);c.imageSmoothingEnabled=false;
+    c.drawImage(cast,...r,Math.round(x-width/2),Math.round(y-height),width,height);
+  }
+  function face(c,who='aris',size=64){
+    if(who==='boss')return P.face(c,who,size);
+    const col={aris:0,mina:3,eleni:4,dimos:5}[who]??0,r=A.cast[0][col];
+    box(c,0,0,size,size,'#c1cbb8');c.imageSmoothingEnabled=false;
+    c.drawImage(cast,r[0],r[1],r[2],Math.round(r[3]*.48),3,1,size-6,size-2);
+  }
   function avatar(who){const c=document.createElement('canvas');c.width=64;c.height=64;c.setAttribute('aria-label',who+' portrait');face(c.getContext('2d'),who);return c;}
   function tree(c,x,y){
     box(c,x-3,y-12,7,19,'#5c4e41');box(c,x,y-9,2,15,'#9d7852');
