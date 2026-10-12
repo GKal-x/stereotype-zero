@@ -1,0 +1,7 @@
+.android-tools/
+android/build/
+android/.gradle/
+android/local.properties
+android/app/build/
+android/signing/
+dist/

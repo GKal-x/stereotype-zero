@@ -1,0 +1,72 @@
+name: Stereotype Zero Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stereotype-zero-android-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Check game rules and scripts
+        shell: pwsh
+        run: |
+          node --test engine.test.js
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --check game.js
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --check audio.js
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prepare Android SDK
+        shell: pwsh
+        run: |
+          if ($env:JAVA_HOME_21_X64) { $env:JAVA_HOME = $env:JAVA_HOME_21_X64 }
+          $manager = Get-ChildItem "$env:ANDROID_HOME/cmdline-tools" -Filter sdkmanager.bat -Recurse | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $manager) { throw 'Android SDK manager not found on runner.' }
+          & $manager 'platforms;android-35' 'build-tools;35.0.0'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build with the persistent prototype signing key
+        env:
+          STEREOTYPE_ZERO_KEYSTORE_B64: ${{ secrets.STEREOTYPE_ZERO_KEYSTORE_B64 }}
+        shell: pwsh
+        run: |
+          if (-not $env:STEREOTYPE_ZERO_KEYSTORE_B64) { throw 'Set STEREOTYPE_ZERO_KEYSTORE_B64 before building. A stable key is needed for updates.' }
+          $keyPath = Join-Path $env:RUNNER_TEMP 'stereotype-zero.keystore'
+          [IO.File]::WriteAllBytes($keyPath, [Convert]::FromBase64String($env:STEREOTYPE_ZERO_KEYSTORE_B64))
+          ./build-android.ps1 -JdkHome $env:JAVA_HOME -SdkRoot $env:ANDROID_HOME -SigningKeystore $keyPath
+      - name: Keep APK as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stereotype-zero-android-${{ github.run_number }}
+          path: |
+            dist/stereotype-zero-0.1.0.apk
+            dist/stereotype-zero-0.1.0.apk.sha256
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish a directly downloadable APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $tag = "android-preview-$env:GITHUB_RUN_NUMBER"
+          gh release create $tag 'dist/stereotype-zero-0.1.0.apk' 'dist/stereotype-zero-0.1.0.apk.sha256' --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Stereotype Zero Android preview $env:GITHUB_RUN_NUMBER" --prerelease --notes "Offline first chapter for Android 8.0+. Install the APK below. Saves remain on this device. Prototype; Android device testing is ongoing. Built from $env:GITHUB_SHA."
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "### Install on your phone" >> $env:GITHUB_STEP_SUMMARY
+          "Download the APK from https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag" >> $env:GITHUB_STEP_SUMMARY
