@@ -52,12 +52,13 @@ def git(folder, *args):
     return result.stdout.strip()
 
 
-def export_source():
-    folder = Path(tempfile.mkdtemp(prefix='stereotype-zero-github-'))
+def export_source(folder=None):
+    fresh = folder is None
+    folder = folder or Path(tempfile.mkdtemp(prefix='stereotype-zero-github-'))
     files = ['.gitignore', 'README.md', 'DESIGN.md', 'QA.md', 'index.html', 'style.css',
-        'engine.js', 'engine.test.js', 'game.js', 'audio.js', 'build.js', 'serve.js',
+        'engine.js', 'engine.test.js', 'motion.js', 'motion.test.js', 'art.js', 'game.js', 'audio.js', 'build.js', 'serve.js',
         'setup-android.ps1', 'build-android.ps1', 'android/README.md']
-    for directory in ['android/app/src', '.github', 'research', 'tools']:
+    for directory in ['android/app/src', '.github', 'research', 'tools', 'assets']:
         base = ROOT / directory
         if base.exists():
             files.extend(str(path.relative_to(ROOT)) for path in base.rglob('*')
@@ -66,14 +67,32 @@ def export_source():
         destination = folder / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / name, destination)
-    git(folder, 'init', '-b', 'main')
+    if fresh:
+        git(folder, 'init', '-b', 'main')
     git(folder, 'add', '--all')
     staged = git(folder, 'diff', '--cached', '--name-only').splitlines()
     if any(any(part in path for part in ['.android-tools/', '/signing/', '.keystore', 'dist/', '/build/', '.env']) for path in staged):
         raise RuntimeError('Export contains a generated file or secret; refusing to publish.')
-    git(folder, '-c', 'user.name=GKal-x', '-c', 'user.email=231666646+GKal-x@users.noreply.github.com',
-        'commit', '-m', 'Add Stereotype Zero first chapter and Android APK workflow')
+    if staged:
+        git(folder, '-c', 'user.name=GKal-x', '-c', 'user.email=231666646+GKal-x@users.noreply.github.com',
+            'commit', '-m', 'Rework character art, camera, touch movement and RPG dialogue' if not fresh else 'Add Stereotype Zero first chapter and Android APK workflow')
     return folder, len(staged)
+
+
+def update(token):
+    profile = request(token, '/user')
+    if profile['login'].lower() != 'gkal-x':
+        raise RuntimeError('Existing GitHub login does not match the intended account.')
+    repo = request(token, '/repos/' + REPO)
+    if repo['full_name'].lower() != REPO.lower() or not repo['private']:
+        raise RuntimeError('Expected the existing private game repository.')
+    folder = Path(tempfile.mkdtemp(prefix='stereotype-zero-update-'))
+    git(folder, 'clone', '--branch', 'main', '--single-branch', repo['clone_url'], '.')
+    folder, count = export_source(folder)
+    if count:
+        git(folder, 'push', 'origin', 'main')
+    print(json.dumps({'repository': repo['html_url'], 'commit': git(folder, 'rev-parse', 'HEAD'),
+        'files': count, 'checkout': str(folder)}, indent=2), flush=True)
 
 
 def publish(token):
@@ -121,7 +140,7 @@ def status(token):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=['inspect', 'publish', 'status', 'jobs'])
+    parser.add_argument('operation', choices=['inspect', 'publish', 'update', 'status', 'jobs'])
     parser.add_argument('--run-id', type=int)
     args = parser.parse_args()
     token = credential()
@@ -130,6 +149,8 @@ def main():
         print(json.dumps({'account': profile['login']}))
     elif args.operation == 'publish':
         publish(token)
+    elif args.operation == 'update':
+        update(token)
     elif args.operation == 'status':
         status(token)
     elif args.operation == 'jobs':

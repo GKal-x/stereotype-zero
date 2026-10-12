@@ -2,6 +2,16 @@
 
 Date: 12 October 2026.
 
+## Art and controls revision 0.2.0
+
+- 18 Node tests pass: 12 engine/routing tests and 6 motion tests. New coverage includes exact pavement destinations, short taps, held input without OS repeat, release/cancellation, blocked movement, arrival timing, save position synchronization and continuous frame time across tile boundaries. Game, art and audio syntax checks pass.
+- The portable edition builds with both original PNG atlases embedded. Android compilation, zip alignment, manifest inspection and v2/v3 signature verification pass for `stereotype-zero-0.2.0.apk` (4.39 MB). Same application ID and persistent signing key as the earlier release; versionCode 1002 locally, CI uses 1000 + run number.
+- At 390 × 844: no page overflow; HUD, world and thumbstick/A/B deck fit. Inspected directional Aris, Eleni/Mina portraits, kiosk/apartment/stockroom art and the following camera. The eight-command battle fits in a two-column window with the encounter sprites visible above it.
+- Browser interaction pass: journal routes to Mina and stockroom; listened for evidence/support; evidence → boundary → negotiate battle paid €24; market purchase left €28.20; walked home and delivered groceries. Journal showed wages and dinner complete. Saved at 17:45 and reloaded to the Continue option. Longer route observations in the browser automation sometimes lagged and required another observation; the final arrivals and interactions were verified.
+- Physical Android touch feel has not been tested on a phone or emulator. Desktop automation cannot establish thumb comfort, real device frame rate, audio interruptions or process-death behavior. The supervisor currently reuses a desaturated Dimos sprite; additional resident art and interiors are future work.
+
+The sections below record the earlier 0.1 prototype and are retained as history; its dashboard/D-pad presentation has been replaced.
+
 ## Automated
 
 11 Node engine tests pass. Syntax checks pass for game.js and audio.js. The portable HTML and two WAV sketches build successfully with Node, with no dependency installation.

@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-An original, local browser prototype for the Android-oriented game discussed in the research dossier. This is a small playable chapter and its design specification, not the complete game or a native Android release. All cast, dialogue and block layouts are fictional. Prices are balance placeholders. The broader research remains unfinished.
+An original offline browser game packaged in a native Android WebView shell, with signed APK releases built on GitHub. This is a small playable chapter and its design specification. All cast, dialogue and block layouts are fictional. Prices are balance placeholders. The broader research remains unfinished.
 
 The first chapter tests one proposition: a trip around the block can combine a material goal, a relationship and a pleasurable destination. Estimated first-play target: 8–15 minutes, to be validated with playtests. The game clock advances through actions rather than real elapsed time.
 
@@ -10,7 +10,7 @@ The first chapter tests one proposition: a trip around the block can combine a m
 
 24; lives with his sister Eleni in a borrowed family room in Kato Patisia; studies while taking stockroom shifts. Makes music on an old laptop. His immediate want is payment for four hours of work. His longer ambition is to finish studying and release a demo. The exact institution and course remain fictional and unspecified until their schedules and geography are researched.
 
-Visual: ochre T-shirt, dark trousers, worn green shoulder bag, short dark hair. The warm shirt separates him from the sage streets and makes his small sprite readable. Canvas sprite: approximately 16 × 26 pixels including marker/shadow; portrait: 64 × 64 pixels. All directions use a shared base with face/hair differences. Movement uses a modest two-pose step animation. These are implemented starter sprites, not final animation sheets.
+Visual: mustard hoodie, dark trousers, olive shoulder bag, short dark hair. The warm shirt separates him from the limestone streets. The original generated sprite atlas supplies four directions and neutral/left/right stepping poses. Cropped frames render approximately 34 logical pixels tall, anchored at the feet, with separate 64 × 64 portraits. Mina, Eleni and Dimos have distinct directional sprites. The supervisor currently reuses a desaturated Dimos sprite and needs bespoke art.
 
 Voice: observant, dry, occasionally impatient. He can listen or rush, make promises or admit uncertainty. The game does not define one correct personality. Income, stress and relationships change through decisions; poverty is not a character defect.
 
@@ -26,7 +26,7 @@ Romance and sexual relationships are part of the wider design, not implemented i
 
 ## Art and feel
 
-Top-down pixel city, 512 × 352 logical pixels, 16-pixel tiles, nearest-neighbor scaling. Muted sage, limestone, faded peach and ochre; terracotta accents; warm window light. A cream handheld surround separates playable space from the darker journal/HUD area.
+Top-down pixel city, 768 × 528 logical world pixels, 24-pixel tiles, nearest-neighbor scaling. A responsive viewport follows Aris with camera easing. Limestone, faded peach, blue-grey roads, terracotta and ochre; warm windows and planted pavements. The game fills the screen between a compact status bar and a navy thumbstick/A/B control deck. Dialogue uses cream RPG windows over the street, with character portraits. Landscape places controls over the lower corners.
 
 Recognizable details: stacked balconies, apartment entrances, AC units, laundry, potted plants, kiosk stock, awnings, café furniture, traffic markings, trolley wires, bins, posters and station signage. Original Greek signs give texture; dialogue is English in this version. The map represents a composite block inspired by the neighborhood, not a surveyed location.
 
@@ -53,7 +53,7 @@ NORTH
 SOUTH
 ```
 
-All nine interaction points are reachable. The whole map stays visible, reducing navigation friction. Tap a marked location to find a collision-aware path, or walk manually. Every 12 successful tile steps advances one minute; dialogues and errands have explicit time costs. No timer advances while a player reads or pauses.
+All nine interaction points are reachable. Tap a person or doorway to find a collision-aware path, tap pavement for an exact destination, or walk manually. The journal also offers named destinations. Only the nearby interaction prompt appears over the map. Every 12 successful tile steps advances one minute; dialogues and errands have explicit time costs. No timer advances while a player reads or pauses.
 
 ## Level flow and teaching
 
@@ -71,15 +71,15 @@ The train marker is a boundary preview with the real Line 1 station sequence. It
 
 | Context | Keyboard | Touch / handheld |
 | --- | --- | --- |
-| Walk | WASD or arrows | Hold D-pad |
-| Interact / confirm | Z or Enter | A or Interact |
+| Walk | Hold WASD or arrows | Hold/drag thumbstick; release stops after the current tile |
+| Interact / confirm | Z or Enter | A; first press finishes typewriter text |
 | Back | X or Escape | B |
-| Journal / bag / instructions | J | Start |
-| Phone | P | Select |
+| Journal / bag / directions / saves | J | Top-left menu |
+| Phone | P | Top-right phone |
 | Choose menu option | Arrows, Tab; Z confirms | Tap option |
-| Walk to marked location | Click marker | Tap marker |
-| Audio | Sound button | Sound button |
-| Save/load | Save/load buttons | Save/load buttons |
+| Walk to person / doorway / pavement | Click target | Tap target |
+| Audio | Music button | Music button |
+| Save/load | Journal menu | Journal menu; automatic save every 15 seconds and on pause |
 
 The first-level battle command set is complete for its one encounter. Physical combat, recruitment, skill trees and equipment progression are separate future designs.
 
@@ -132,7 +132,11 @@ Future palette: separate authored themes for home, station, street, live venue a
 
 `engine.js`: deterministic world state, collision, routing, resource updates, relationship effects, battle rules, ending state, validation and save serialization. Independent of the DOM and tested with Node.
 
-`game.js`: input, authored scenes, HUD and canvas renderer. UI mode prevents movement during conversations/battles. Click paths use breadth-first search across the 32 × 22 grid.
+`game.js`: thumbstick, keyboard and tap input, authored scenes, typewriter dialogue, HUD and lifecycle handling. UI mode prevents movement during conversations/battles. Click paths use breadth-first search across the 32 × 22 grid.
+
+`motion.js`: continuous sprite interpolation over discrete rule-state tiles, 155 ms per step. Held input does not rely on keyboard repeat; short taps queue one step; cancellation clears routes; animation carries residual frame time across tile boundaries. Arrival interactions wait for the final step animation.
+
+`art.js` / `assets/`: original generated character/building atlases, measured frame bounds, cached static street canvas, y-sorted people/trees, camera and encounter rendering. See the asset brief for prompts and production limitations.
 
 `audio.js`: Web Audio synthesis. Music schedules a short lookahead rather than one oscillator per render frame.
 
@@ -142,8 +146,8 @@ City complexity is bounded: nine places, three relationship values, a small inve
 
 ## Validation and open issues
 
-Eleven automated tests cover reachable locations, collision/mode locks, shopping, one-time delivery, battle counters, social prerequisites, victory/settlement/exit, recovery, a complete chapter, early/on-time/late arrival and save validation. Arriving early at the venue advances the ending clock to the 19:00 set; arriving exactly at 19:00 counts as on time. JavaScript syntax checks are required alongside them.
+Eighteen automated tests cover reachable locations, exact ground routing, collision/mode locks, shopping, one-time delivery, battle counters, social prerequisites, victory/settlement/exit, recovery, a complete chapter, early/on-time/late arrival, saves and movement timing/input cancellation. Arriving early at the venue advances the ending clock to the 19:00 set; arriving exactly at 19:00 counts as on time. JavaScript syntax checks are required alongside them.
 
-Browser visual/input and physical Android checks must be recorded separately; automated engine tests do not establish their success. Small-screen panels are scrollable. This first pass does not have full screen-reader map navigation, controller API input, localized Greek dialogue, native Android packaging, in-app interiors or the wider district network. No APK is supplied.
+Browser visual/input and physical Android checks are recorded separately; automated engine tests do not establish their success. Small-screen panels are scrollable. Full screen-reader map navigation, controller API input, localized Greek dialogue, in-app interiors and the wider district network remain future work. Signed APKs are available from the standalone game repository's releases.
 
 Review questions: Does Aris feel specific? Does the battle feel expressive rather than bureaucratic? Can players find Mina without hints? Are the time costs worth their narrative consequences? Does the gig feel like a reward? Which parts of the art feel convincingly Athens, and which need local correction?

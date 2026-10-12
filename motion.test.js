@@ -1,0 +1,10 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),E=require('./engine.js'),{Motion}=require('./motion.js');
+function setup(){const s=E.fresh();E.start(s);return {s,m:new Motion(E,()=>s)};}
+test('a quick press moves one tile with intermediate positions, then stops',()=>{const {s,m}=setup(),x=s.x;m.hold('right');m.release();m.update(16);assert.equal(s.x,x+1);assert.equal(m.x,x);m.update(80);assert.ok(m.x>x&&m.x<x+1);m.update(80);assert.equal(m.x,x+1);assert.equal(m.moving,false);m.update(100);assert.equal(s.x,x+1);});
+test('held direction continues without OS key repeat and release completes only the current step',()=>{const {s,m}=setup();m.hold('right');m.update(0);m.update(80);m.update(80);assert.equal(s.x,7);m.release();m.update(80);m.update(80);assert.equal(m.x,7);assert.equal(m.moving,false);});
+test('buildings prevent movement and dialogue clears held input',()=>{const {s,m}=setup();s.x=5;s.y=6;m.sync();m.hold('up');m.update(16);assert.equal(s.y,6);assert.equal(m.moving,false);s.mode='dialogue';m.update(16);assert.equal(m.held,null);s.mode='explore';m.update(16);assert.equal(s.y,6);});
+test('manual input cancels a queued route and interaction arrives after animation',()=>{const {s,m}=setup(),target={id:'test'};m.go([[6,8]],target);assert.equal(m.update(0),null);m.update(80);assert.equal(m.update(80),target);m.go([[7,8],[8,8]],target);m.hold('down');assert.equal(m.route.length,0);assert.equal(m.target,null);});
+test('large frame gaps are bounded and syncing a restored save resets interpolation',()=>{const {s,m}=setup();m.hold('right');m.update(0);m.update(10000);assert.equal(s.x,6);assert.ok(m.x<6);s.x=18;s.y=10;m.sync();assert.equal(m.x,18);assert.equal(m.y,10);assert.equal(m.moving,false);assert.equal(m.held,null);});
+
+test('held movement preserves frame time across tile boundaries',()=>{const {m}=setup();m.hold('right');m.update(0);m.update(100);m.update(100);assert.ok(Math.abs(m.x-(5+200/155))<1e-9);m.update(100);assert.ok(Math.abs(m.x-(5+300/155))<1e-9);});

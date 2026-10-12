@@ -1,18 +1,18 @@
 # Stereotype Zero for Android
 
-Version 0.1.0 is a signed prototype APK for **Android 8.0 or newer**. It bundles the first chapter, graphics and procedural music. It needs no account, server or internet permission. A reasonably current Android System WebView is required for the JavaScript game.
+Version 0.2.0 is a signed prototype APK for **Android 8.0 or newer**. It bundles the first chapter, graphics and procedural music. It needs no account, server or internet permission. A reasonably current Android System WebView is required for the JavaScript game.
 
 ## Install on your phone
 
-1. On your phone, sign into GitHub and open [Stereotype Zero releases](https://github.com/GKal-x/stereotype-zero/releases). Open the newest Android preview, expand **Assets** and download `stereotype-zero-0.1.0.apk`. You can also transfer a locally built APK using USB or your own Drive.
+1. On your phone, sign into GitHub and open [Stereotype Zero releases](https://github.com/GKal-x/stereotype-zero/releases). Open the newest Android preview, expand **Assets** and download `stereotype-zero-0.2.0.apk`. You can also transfer a locally built APK using USB or your own Drive.
 2. Open the APK in your phone's Files app.
 3. If Android asks, open Settings and allow that file manager to **Install unknown apps / Allow from this source**, then return to the installer.
 4. Tap **Install**, then **Open**. The launcher icon is called **Stereotype Zero**.
-5. Tap **Step outside** to begin. Tap **Sound off** to enable music. Use the D-pad and A/B, or tap a location marker to walk there. Start opens the journal; Select opens the phone.
+5. Tap **Step outside** to begin. The music-note button enables music. Hold the left thumbstick to walk and release to stop. Press **A** beside a person or doorway, or tap them to walk there. **B** closes dialogue. The top-left menu opens the journal, directions and saves; the top-right phone opens messages.
 
 Reference: [Android's alternative distribution instructions](https://developer.android.com/distribute/marketing-tools/alternative-distribution).
 
-The app periodically saves progress and saves when backgrounded or when leaving through Android Back. On the next launch, choose **Continue a saved evening**. The **Save evening** button remains available below the game. Saves are stored privately on this device; uninstalling or clearing app storage deletes them. The browser prototype's save does not transfer to Android. Dialogue saves resume on the street; battle and ending saves retain their state. A force-stop or sudden power loss can lose changes since the most recent save.
+The app saves every 15 seconds and when backgrounded or when leaving through Android Back. On the next launch, choose **Continue a saved evening**. **Save evening** is also available in the journal menu. Saves are stored privately on this device; uninstalling or clearing app storage deletes them. The browser prototype's save does not transfer to Android. Dialogue saves resume on the street; battle and ending saves retain their state. A force-stop or sudden power loss can lose changes since the most recent save. Install this update over the old version to retain its save.
 
 Android Back opens a Save and leave confirmation. The game's **B** button closes conversations. The prototype supports portrait and landscape, with scrolling when necessary.
 
@@ -46,4 +46,4 @@ The persistent development signing key is encrypted in the repository Actions se
 - Status/navigation bars and display cutouts are respected. Background events save progress, stop held movement and suspend WebAudio.
 - Official reference: [loading bundled HTML in WebView](https://developer.android.com/develop/ui/views/layout/webapps/load-local-content).
 
-The APK has passed compilation, v2/v3 signature verification, zip alignment and manifest/content inspection. The game rules have 11 passing Node tests. The exact bundled HTML has been checked in a phone-size desktop browser. **No Android phone or emulator run has been performed**, so touch behaviour, sound, lifecycle saves and system navigation still need a device check. This is an APK for testing the first chapter, not a Play Store release.
+The APK has passed compilation, v2/v3 signature verification, zip alignment and manifest/content inspection. Rules and movement have 18 passing Node tests. The bundled HTML has been checked in a phone-size desktop browser. **No Android phone or emulator run has been performed**, so touch behaviour, sound, lifecycle saves and system navigation still need a device check. This is an APK for testing the first chapter, not a Play Store release.
