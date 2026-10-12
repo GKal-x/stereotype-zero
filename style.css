@@ -25,3 +25,4 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch
 .nearby-prompt{font:600 13px/1.3 system-ui,sans-serif;max-width:calc(100% - 20px);white-space:normal}
 .action-buttons small{font:600 9px/1 system-ui,sans-serif;letter-spacing:0}
 @media(max-width:360px){.district small,.pocket small{font-size:10px}.control-message>span{font-size:10px}.control-message p{font-size:11px}}
+@media(orientation:landscape) and (max-height:550px){.control-deck{bottom:12px}}

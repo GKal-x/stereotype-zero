@@ -1,6 +1,6 @@
 ## Revision 0.4 — clearer art, walking and chapter score
 
-Validation: 24 rule/map/movement tests pass; changed scripts pass syntax checks. Local Android 0.4.0 compiles, v2/v3 signing and zip alignment pass, versionCode 1004. Package verification confirms the exact bundled HTML, coordinate art, offline SVG and no generated PNG artwork. Browser portrait 390 × 844 fits without document overflow; music toggle and destination map operate. Physical device listening and thumb-control review remain with the user.
+Validation: 24 rule/map/movement tests pass; changed scripts pass syntax checks. Local Android 0.4.0 compiles, v2/v3 signing and zip alignment pass, versionCode 1004. Package verification confirms the exact bundled HTML, coordinate art, offline SVG and no generated PNG artwork. Browser portraits 390 × 844 and 320 × 640 fit without document overflow; music toggle and a route to Eleni complete. Landscape controls were raised by 6 px to keep the joystick inside the viewport. Physical device listening and thumb-control review remain with the user.
 
 The live renderer now uses original coordinate-drawn pixel artwork (`assets/pixel-art.js`), replacing generated PNGs. Greek street signs use a 5 × 7 bitmap font; phone labels use larger system text. Buildings vary palettes, balcony/shutter layouts, laundry, roof equipment and storefronts. The researched map, original warm colors and story are retained. Historical 0.2 art notes below describe superseded assets.
 
