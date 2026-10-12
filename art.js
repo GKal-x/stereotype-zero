@@ -174,9 +174,9 @@
       if(o.type==='speaker'){box(c,x+6,y+6,ow-12,oh-12,'#172f3d');box(c,x+12,y+13,ow-24,oh-26,'#596775');}
     }
     const people=[...r.places.filter(p=>p.who).map(p=>({who:p.who,x:p.x*T+12,y:p.y*T+19})),{who:'aris',x:m.x*T+12,y:m.y*T+19,player:true}].sort((a,b)=>a.y-b.y);
-    for(const p of people)sprite(c,p.who,p.x,p.y,p.player?s.facing:'down',p.player?m.frame:0);
+    for(const p of people){const dx=m.x*T+12-p.x,dy=m.y*T+19-p.y,look=Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy<0?'up':'down');sprite(c,p.who,p.x,p.y,p.player?s.facing:Math.hypot(dx,dy)<T*3?look:'down',p.player?m.frame:0);}
     box(c,7*T+2,10*T+2,20,20,'#d7c39c');label(c,'↓',7*T+12,10*T+16,7,'#355460','center');
-    const near=E.nearest(s);if(near){box(c,near.x*T+8,near.y*T-31,9,10,'#f3dfae');label(c,'!',near.x*T+12,near.y*T-23,7,'#5c5245','center');}
+    const near=E.nearest(s);if(near){if(near.who){box(c,near.x*T+8,near.y*T-31,9,10,'#f3dfae');label(c,'!',near.x*T+12,near.y*T-23,7,'#5c5245','center');}else{c.strokeStyle='#e8c379';c.lineWidth=1;c.strokeRect(near.x*T+4,near.y*T+4,16,16);}}
     if(m.route.length){const end=m.route.at(-1);c.strokeStyle='#fff1c2';c.strokeRect(end[0]*T+5,end[1]*T+5,14,14);}
     c.restore();
   }
