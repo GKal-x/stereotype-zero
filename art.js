@@ -1,35 +1,20 @@
-/* Original generated character/building atlases, composed on a deterministic tile map. */
+/* Original coordinate-drawn pixel artwork on a compressed Athens street map. */
 (function(){
   'use strict';
-  const E=window.SZ,D=window.CityWorld,T=24,W=E.WIDTH*T,H=E.HEIGHT*T,A=window.CityAtlas;
-  const cast=new Image(),buildings=new Image();
-  const load=(image,src)=>new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('Could not load '+src));image.src=src;});
-  const ready=Promise.all([load(cast,'assets/cast-source.png'),load(buildings,'assets/buildings-source.png')]);
+  const E=window.SZ,D=window.CityWorld,T=24,W=E.WIDTH*T,H=E.HEIGHT*T,P=window.CityPixels;
+  const ready=Promise.resolve();
   const map=document.createElement('canvas');map.width=W;map.height=H;const g=map.getContext('2d');
   const camera={x:0,y:0,ready:false};
   function box(c,x,y,w,h,color){c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
-  function label(c,s,x,y,size=7,color='#334b5b',align='left'){c.fillStyle=color;c.font='bold '+size+'px monospace';c.textAlign=align;c.fillText(s,Math.round(x),Math.round(y));c.textAlign='left';}
-  const directionRow={down:0,left:1,right:2,up:3};
-  function sprite(c,who,x,y,facing='down',frame=0,height=34){
-    const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5,boss:5}[who]??0),r=A.cast[directionRow[facing]??0][column];
-    if(!r)return;const width=Math.round(r[2]/r[3]*height);
-    c.save();c.imageSmoothingEnabled=false;
-    if(who==='boss')c.filter='grayscale(.8)';
-    c.drawImage(cast,...r,Math.round(x-width/2),Math.round(y-height),width,height);c.restore();
-  }
-  function face(c,who='aris',size=64){
-    const col={aris:0,mina:3,eleni:4,dimos:5,boss:5}[who]??0,r=A.cast[0][col];c.imageSmoothingEnabled=false;
-    box(c,0,0,size,size,'#c1d8c4');
-    c.drawImage(cast,r[0],r[1],r[2],Math.round(r[3]*.48),3,1,size-6,size-2);
-  }
+  function label(c,s,x,y,size=7,color='#334b5b',align='left'){P.text(c,s,x,y,color,align);}
+  const sprite=P.sprite,face=P.face;
   function avatar(who){const c=document.createElement('canvas');c.width=64;c.height=64;c.setAttribute('aria-label',who+' portrait');face(c.getContext('2d'),who);return c;}
   function tree(c,x,y){
     box(c,x-3,y-12,7,19,'#5c4e41');box(c,x,y-9,2,15,'#9d7852');
-    const colors=['#23594e','#32785d','#56a56b','#7fbd75'];
-    for(let py=-40;py<2;py+=2)for(let px=-22;px<24;px+=2){
-      const distance=Math.min(Math.hypot(px+7,py+18)/17,Math.hypot(px-6,py+24)/18,Math.hypot(px,py+8)/18);
-      if(distance<1){const n=(px*17+py*31+4000)%13;box(c,x+px,y+py,2,2,colors[distance>.88?0:n<3?3:py<-20?2:1]);}
-    }
+    box(c,x-17,y-29,34,22,'#3d6657');box(c,x-21,y-22,42,17,'#3d6657');
+    box(c,x-14,y-34,28,8,'#3d6657');box(c,x-16,y-27,30,15,'#668654');
+    box(c,x-11,y-31,20,7,'#849963');box(c,x-19,y-20,9,9,'#668654');
+
   }
   const trees=D.TREES.map(p=>({x:p.x*T+12,y:p.y*T+19}));
   function plant(c,x,y){box(c,x-4,y-1,9,7,'#9a5f49');box(c,x-5,y-3,11,3,'#cf8e60');box(c,x-4,y-10,9,9,'#477e55');box(c,x-1,y-13,4,8,'#83af62');}
@@ -53,12 +38,7 @@
     for(const [x,y,w,h]of [[12,23,3,1],[12,33,3,1],[48,27,4,1],[48,40,4,1]])for(let i=0;i<w*T;i+=7)box(g,x*T+i,y*T,3,h*T,'#f5edcf');
     // Small planted verges make the pavement read as individual places.
     for(const t of trees){box(g,t.x-17,t.y-4,34,16,'#b8bd8e');box(g,t.x-18,t.y+11,36,3,'#b7ad85');}
-    const order={home:0,kiosk:1,work:2,cafe:3,flats:4,shop:5,venue:6,station:7};
-    for(const b of E.BUILDINGS){
-      const x=b.x*T,y=b.y*T,w=b.w*T,h=b.h*T,r=A.buildings[order[b.type]];
-      box(g,x+4,y+5,w,h,'#a9ad98');
-      g.drawImage(buildings,...r,x,y,w,h);
-    }
+    for(const b of E.BUILDINGS)P.building(g,b,T);
     // Doorways are pinned to interaction tiles, rather than hidden in the illustration.
     for(const p of E.PLACES.filter(p=>['home','kiosk','employer','shop','metro','venue'].includes(p.id))){
       const x=p.x*T+12,y=p.y*T;
@@ -72,10 +52,10 @@
     // Small street blades make intersections legible without covering the sprites.
     for(const road of D.STREETS.filter(r=>r.name)){
       const x=(road.w>road.h?road.x+1:road.x+road.w+.2)*T,y=(road.w>road.h?road.y-.4:road.y+3)*T;
-      box(g,x-2,y-8,Math.min(95,road.name.length*4.8+5),11,'#44667a');label(g,road.name,x,y,7,'#f3edd6');
+      box(g,x-2,y-9,P.textWidth(road.name)+6,13,'#44667a');label(g,road.name,x+1,y+1,7,'#f3edd6');
     }
     const stop=E.PLACES.find(p=>p.id==='bus');box(g,stop.x*T+12,stop.y*T-25,2,36,'#596c77');box(g,stop.x*T+4,stop.y*T-28,18,13,'#527fa8');label(g,'608',stop.x*T+13,stop.y*T-18,7,'#fff4d7','center');
-    box(g,24*T,43*T+6,49,15,'#314956');label(g,'LIVE · 19:00',24*T+3,43*T+16,6,'#edd7a3');
+    box(g,24*T,43*T+6,72,15,'#314956');label(g,'LIVE · 19:00',24*T+3,43*T+16,6,'#edd7a3');
     for(const id of ['north','south']){const p=E.PLACES.find(p=>p.id===id);box(g,p.x*T-32,p.y*T-8,70,13,'#44667a');label(g,id==='north'?'↑ ΑΝΩ ΠΑΤΗΣΙΑ':'↓ ΚΕΝΤΡΟ',p.x*T+3,p.y*T+2,7,'#fff4d7','center');}
   }
   function car(c,x,y,color,vertical=false){

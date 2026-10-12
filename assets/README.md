@@ -1,3 +1,9 @@
+# Current artwork: revision 0.4
+
+`pixel-art.js` is the live artwork source. It contains original coordinate-drawn 20 × 28 character sprites, Greek/Latin 5 × 7 bitmap lettering, and building drawings. No generated raster artwork or image filters are loaded by the game. Flat color clusters and integer coordinates keep contours readable. Each building position selects a stable palette, balcony/shutter layout, laundry, planting, awnings and roof equipment. Station, stockroom, shop, cafe, kiosk and basement venue have separate details. These are fictional buildings representing local architectural forms, not reproductions of individual addresses. Aris keeps the mustard jacket and shoulder bag; Mina terracotta, Eleni lilac and Dimos teal. The supervisor has an independent grey-clad sprite.
+
+The old PNGs and `atlas.js` below are retained as historical concept references only. They are not included in the portable game or APK.
+
 # Art revision 0.2
 
 Map revision 0.3 also includes `kato-patisia-reference.svg`, generated from downloaded OpenStreetMap geometry by `tools/create-reference-map.js`. It is a code-generated geographic reference, not an image-generation output. **© OpenStreetMap contributors · ODbL 1.0**. See [map sources and adaptation notes](../research/map-design.md) and the [retained source extract](../research/maps/README.md).
