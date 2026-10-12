@@ -26,3 +26,8 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch
 .action-buttons small{font:600 9px/1 system-ui,sans-serif;letter-spacing:0}
 @media(max-width:360px){.district small,.pocket small{font-size:10px}.control-message>span{font-size:10px}.control-message p{font-size:11px}}
 @media(orientation:landscape) and (max-height:550px){.control-deck{bottom:12px}}
+
+.encounter-stats{font:600 12px/1.5 system-ui,sans-serif;color:#355767;padding:6px 0}
+.encounter-tabs{display:flex;gap:5px;margin:8px 0}.encounter-tabs button{flex:1;min-height:44px;background:#e1e7d8;border:2px solid #bdc9be;border-radius:4px;color:#304e59;font:600 12px/1.2 system-ui,sans-serif;padding:6px}
+.encounter-tabs button[aria-pressed=true]{background:#355767;color:#fff1ce;border-color:#355767}
+.battle-panel{max-height:82%}.battle-panel .dialogue-head canvas{display:none}.battle-panel .dialogue-head{margin-bottom:4px}.battle-panel .scene-note{font-size:11px}

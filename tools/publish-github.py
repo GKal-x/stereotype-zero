@@ -56,7 +56,7 @@ def export_source(folder=None):
     fresh = folder is None
     folder = folder or Path(tempfile.mkdtemp(prefix='stereotype-zero-github-'))
     files = ['.gitignore', 'README.md', 'DESIGN.md', 'QA.md', 'index.html', 'style.css',
-        'world.js', 'world.test.js', 'map-ui.js', 'engine.js', 'engine.test.js', 'motion.js', 'motion.test.js', 'art.js', 'game.js', 'audio.js', 'build.js', 'serve.js',
+        'world.js', 'rooms.js', 'level.test.js', 'world.test.js', 'map-ui.js', 'engine.js', 'engine.test.js', 'motion.js', 'motion.test.js', 'art.js', 'game.js', 'audio.js', 'build.js', 'serve.js',
         'setup-android.ps1', 'build-android.ps1', 'android/README.md']
     for directory in ['android/app/src', '.github', 'research', 'tools', 'assets']:
         base = ROOT / directory
@@ -75,7 +75,7 @@ def export_source(folder=None):
         raise RuntimeError('Export contains a generated file or secret; refusing to publish.')
     if staged:
         git(folder, '-c', 'user.name=GKal-x', '-c', 'user.email=231666646+GKal-x@users.noreply.github.com',
-            'commit', '-m', 'Restore expressive character designs with a restrained art cleanup' if not fresh else 'Add Stereotype Zero first chapter and Android APK workflow')
+            'commit', '-m', 'Refine chapter interiors, conversations, battle choices and slower walking' if not fresh else 'Add Stereotype Zero first chapter and Android APK workflow')
     return folder, len(staged)
 
 

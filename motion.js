@@ -3,7 +3,7 @@
   'use strict';
   const DIRS={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
   class Motion{
-    constructor(engine,getState,onStep=()=>{}){this.engine=engine;this.getState=getState;this.onStep=onStep;this.duration=245;this.sync();}
+    constructor(engine,getState,onStep=()=>{}){this.engine=engine;this.getState=getState;this.onStep=onStep;this.duration=360;this.sync();}
     sync(){const s=this.getState();this.x=s.x;this.y=s.y;this.active=null;this.held=null;this.pending=null;this.route=[];this.target=null;this.walkTime=0;}
     hold(dir){if(!DIRS[dir])return;this.route=[];this.target=null;this.held=dir;if(!this.active)this.pending=dir;}
     release(){this.held=null;}
@@ -27,7 +27,7 @@
       else{this.route=[];this.target=null;}
       return null;
     }
-    get frame(){return this.active?[0,1,0,2][Math.floor(this.walkTime/125)%4]:0;}
+    get frame(){return this.active?[0,1,0,2][Math.floor(this.walkTime/160)%4]:0;}
   }
   const api={Motion,DIRS};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.CityMotion=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

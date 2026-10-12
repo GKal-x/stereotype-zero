@@ -28,11 +28,13 @@ jobs:
       - name: Check game rules and scripts
         shell: pwsh
         run: |
-          node --test engine.test.js motion.test.js world.test.js
+          node --test engine.test.js motion.test.js world.test.js level.test.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --check game.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --check map-ui.js
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --check rooms.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --check world.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -64,8 +66,8 @@ jobs:
         with:
           name: stereotype-zero-android-${{ github.run_number }}
           path: |
-            dist/stereotype-zero-0.4.1.apk
-            dist/stereotype-zero-0.4.1.apk.sha256
+            dist/stereotype-zero-0.5.0.apk
+            dist/stereotype-zero-0.5.0.apk.sha256
           if-no-files-found: error
           retention-days: 30
       - name: Publish a directly downloadable APK
@@ -74,7 +76,7 @@ jobs:
         shell: pwsh
         run: |
           $tag = "android-preview-$env:GITHUB_RUN_NUMBER"
-          gh release create $tag 'dist/stereotype-zero-0.4.1.apk' 'dist/stereotype-zero-0.4.1.apk.sha256' --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Stereotype Zero Android preview $env:GITHUB_RUN_NUMBER" --prerelease --notes "Restores the expressive original character designs with a light texture cleanup. Keeps varied Athens buildings, readable Greek street signs, steadier touch walking and scene-based original music. Offline first chapter for Android 8.0+. Install the APK below. Saves remain on this device. Prototype; Android device testing is ongoing. Built from $env:GITHUB_SHA."
+          gh release create $tag 'dist/stereotype-zero-0.5.0.apk' 'dist/stereotype-zero-0.5.0.apk.sha256' --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Stereotype Zero Android preview $env:GITHUB_RUN_NUMBER" --prerelease --notes "Walkable home, market, stockroom and basement interiors; remembered character conversations; clearer wage battle with explicit settlement choices; calmer walking and an Extra slow menu option. Existing saves migrate. Offline first chapter for Android 8.0+. Install the APK below. Saves remain on this device. Prototype; Android device testing is ongoing. Built from $env:GITHUB_SHA."
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           "### Install on your phone" >> $env:GITHUB_STEP_SUMMARY
           "Download the APK from https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag" >> $env:GITHUB_STEP_SUMMARY

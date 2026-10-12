@@ -17,7 +17,7 @@ test('Line 1 sequence keeps district branches out of the station list',()=>{
 });
 test('old saves retain money, relationships and quests while adopting a safe map position',()=>{
   const s=E.fresh();E.start(s);E.mina(s,'listen');E.buy(s,'groceries');s.version=1;s.x=20;s.y=9;
-  const restored=E.restore(JSON.stringify(s)),mina=E.PLACES.find(p=>p.id==='mina');assert.ok(restored);assert.equal(restored.version,2);assert.equal(restored.x,mina.x);assert.equal(restored.y,mina.y);assert.equal(restored.money,s.money);assert.deepEqual(restored.flags,s.flags);assert.deepEqual(restored.relations,s.relations);assert.deepEqual(restored.inventory,s.inventory);
+  const restored=E.restore(JSON.stringify(s)),mina=E.PLACES.find(p=>p.id==='mina');assert.ok(restored);assert.equal(restored.version,E.VERSION);assert.equal(restored.x,mina.x);assert.equal(restored.y,mina.y);assert.equal(restored.money,s.money);assert.deepEqual(restored.flags,s.flags);assert.deepEqual(restored.relations,s.relations);assert.deepEqual(restored.inventory,s.inventory);
   assert.equal(E.restore(JSON.stringify({...s,x:24,y:2})),null);assert.equal(E.restore(JSON.stringify({...s,x:-1})),null);
 });
 test('main evening route remains short enough for the chapter',()=>{
