@@ -1,3 +1,9 @@
+## Art restoration 0.5.1
+
+Restores the original textured building atlas: balconies, shutters, laundry, worn plaster, shop awnings, rooftop equipment and plants. The flat coordinate façades are no longer used on the street. Original source artwork is preserved; no new generated assets are added.
+
+Character sprites retain the refined cast and increase from 34 to 40 logical pixels tall. Each pose is reduced once with high-quality sampling and cached, then displayed at the game's pixel scale. This avoids the direct nearest-neighbour reduction that discarded small facial and clothing details. Portraits use the same improved reduction. Clear street lettering, 0.5 interiors, conversations, battle choices and slower walking remain.
+
 ## Level refinement 0.5.0
 
 Chapter 01 now has four walkable fictional interiors attached to the existing doors: the shared apartment, neighborhood market, stockroom and basement venue. Approach a doorway and press A. Indoors, walk or tap people and objects; furniture blocks movement. B routes to the exit instead of teleporting. Home contains Eleni, a bed, notes and a table; the market has a counter and community board; the stockroom has the supervisor and shift board; the basement has Dimos, a mixer and the stage. Entering the venue no longer ends the chapter: staying for the set does. Home rest is distinct from ending the night. The kiosk remains a pavement counter.
@@ -32,7 +38,7 @@ Playable first chapter: **Before the Last Train**, a fictional Kato Patisia bloc
 
 ## Play
 
-On your Android phone, sign into GitHub and open [the Android releases](https://github.com/GKal-x/stereotype-zero/releases). Open the newest preview, expand **Assets**, download `stereotype-zero-0.5.0.apk` and open it to install. No computer or Android Studio is needed. The app requires Android 8.0 or newer; physical-device testing is still pending.
+On your Android phone, sign into GitHub and open [the Android releases](https://github.com/GKal-x/stereotype-zero/releases). Open the newest preview, expand **Assets**, download `stereotype-zero-0.5.1.apk` and open it to install. No computer or Android Studio is needed. The app requires Android 8.0 or newer; physical-device testing is still pending.
 
 GitHub builds, tests and signs an APK whenever changes are pushed to `main`. Each successful build creates a release with a directly downloadable APK and also keeps a workflow artifact. The repository is private, so sign in with an account that can access it. See [Android installation and build instructions](android/README.md).
 

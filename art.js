@@ -1,24 +1,31 @@
-/* Original coordinate-drawn pixel artwork on a compressed Athens street map. */
+/* Textured neighbourhood artwork on a compressed Athens street map. */
 (function(){
   'use strict';
   const E=window.SZ,D=window.CityWorld,T=24,W=E.WIDTH*T,H=E.HEIGHT*T,P=window.CityPixels;
-  const cast=new Image(),A=window.CityAtlas;
-  const ready=new Promise((resolve,reject)=>{cast.onload=resolve;cast.onerror=()=>reject(new Error('Character art could not load'));cast.src='assets/cast-refined.png';});
+  const cast=new Image(),buildings=new Image(),A=window.CityAtlas;
+  function load(image,src){return new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('Artwork could not load: '+src));image.src=src;});}
+  const ready=Promise.all([load(cast,'assets/cast-refined.png'),load(buildings,'assets/buildings-source.png')]);
+  const spriteCache=new Map();
+  // Resample once at the intended pixel size; direct nearest-neighbour reduction
+  // was dropping eyes, fingers and the hoodie outline between animation frames.
+  function reduced(image,r,width,height){const tile=document.createElement('canvas');tile.width=width;tile.height=height;const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(image,...r,0,0,width,height);return tile;}
   const map=document.createElement('canvas');map.width=W;map.height=H;const g=map.getContext('2d');
   const camera={x:0,y:0,ready:false};
   function box(c,x,y,w,h,color){c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
   function label(c,s,x,y,size=7,color='#334b5b',align='left'){P.text(c,s,x,y,color,align);}
   const directionRow={down:0,left:1,right:2,up:3};
-  function sprite(c,who,x,y,facing='down',frame=0,height=34){
+  function sprite(c,who,x,y,facing='down',frame=0,height=40){
     if(who==='boss')return P.sprite(c,who,x,y,facing,frame,height);
     const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5}[who]??0),r=A.cast[directionRow[facing]??0][column];
     const width=Math.round(r[2]/r[3]*height);c.imageSmoothingEnabled=false;
-    c.drawImage(cast,...r,Math.round(x-width/2),Math.round(y-height),width,height);
+    const key=[who,facing,frame,height].join(':');
+    if(!spriteCache.has(key))spriteCache.set(key,reduced(cast,r,width,height));
+    c.drawImage(spriteCache.get(key),Math.round(x-width/2),Math.round(y-height));
   }
   function face(c,who='aris',size=64){
     if(who==='boss')return P.face(c,who,size);
     const col={aris:0,mina:3,eleni:4,dimos:5}[who]??0,r=A.cast[0][col];
-    box(c,0,0,size,size,'#c1cbb8');c.imageSmoothingEnabled=false;
+    box(c,0,0,size,size,'#c1cbb8');c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';
     c.drawImage(cast,r[0],r[1],r[2],Math.round(r[3]*.48),3,1,size-6,size-2);
   }
   function avatar(who){const c=document.createElement('canvas');c.width=64;c.height=64;c.setAttribute('aria-label',who+' portrait');face(c.getContext('2d'),who);return c;}
@@ -51,7 +58,13 @@
     for(const [x,y,w,h]of [[12,23,3,1],[12,33,3,1],[48,27,4,1],[48,40,4,1]])for(let i=0;i<w*T;i+=7)box(g,x*T+i,y*T,3,h*T,'#f5edcf');
     // Small planted verges make the pavement read as individual places.
     for(const t of trees){box(g,t.x-17,t.y-4,34,16,'#b8bd8e');box(g,t.x-18,t.y+11,36,3,'#b7ad85');}
-    for(const b of E.BUILDINGS)P.building(g,b,T);
+    const buildingIndex={home:0,kiosk:1,work:2,cafe:3,flats:4,shop:5,venue:6,station:7};
+    for(const b of E.BUILDINGS){
+      const r=A.buildings[buildingIndex[b.type]??4],w=b.w*T,h=b.h*T;
+      // Fit each façade to its existing collision footprint and doorway.
+      // Preserve original shutters, laundry, plaster, awnings and roof equipment.
+      g.drawImage(reduced(buildings,r,w,h),b.x*T,b.y*T);
+    }
     // Doorways are pinned to interaction tiles, rather than hidden in the illustration.
     for(const p of E.PLACES.filter(p=>['home','kiosk','employer','shop','metro','venue'].includes(p.id))){
       const x=p.x*T+12,y=p.y*T;
