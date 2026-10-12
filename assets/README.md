@@ -1,3 +1,11 @@
+## Supervisor, station and render update 0.6.0
+
+`supervisor-v1.png` is a new transparent generated atlas using `cast-refined.png` as a style reference, made with the built-in imagegen tool (not CLI). Original source is retained at `C:/Users/gkali/.codex/generated_images/01a13050-441d-75c1-9b4c-832856a699ba/exec-e64d7021-1c5c-4a2f-a681-4e276e249036.png`. `supervisor.js` stores measured opaque bounds, in front/left/right/back order. The output has real alpha and is copied into this project. Existing cast and building source files are preserved.
+
+Prompt: Create one middle-aged Athens stockroom supervisor matching the reference cast's chibi proportions, face language and clean dark pixel outlines. Receding dark-grey hair, short moustache, tired eyebrows, dusty blue short-sleeve shirt, charcoal trousers, dark shoes, pen in breast pocket; ordinary person, no villain caricature. Two columns/two rows of the same character, front/left/right/back, neutral standing, whole body, generous transparent separation. Large flat pixel clusters, two or three shades per material, strong silhouette and expressive face. Avoid gradients, glow, soft shading, texture, ground shadows, text, frames and scenery. True transparent background. Requested 1024 square; delivered source dimensions are measured rather than assumed.
+
+Artwork now uses nearest-neighbour reduction and integer display scaling, replacing 0.5.1's smooth reduction. Buildings retain source aspect ratios. Station props, train graphics, interiors and battle reactions are authored in `art.js`; no new raster assets are used for them. Transit side characters temporarily reuse the existing cast's sprites.
+
 ## Character refinement 0.4.1
 
 Restores the expressive 0.2 character proportions and identities, replacing the overly minimal 0.4 cast with a light cleanup of the original sheet. `assets/cast-refined.png` is edited from `cast-source.png` using the built-in imagegen tool, with true alpha transparency. `assets/cast-refined.js` contains newly measured frame bounds. Original art is preserved. No claim is made that the edited sheet is human-drawn. Buildings, signs, slower controls and score from 0.4 remain.

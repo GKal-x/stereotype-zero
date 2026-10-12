@@ -31,3 +31,10 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch
 .encounter-tabs{display:flex;gap:5px;margin:8px 0}.encounter-tabs button{flex:1;min-height:44px;background:#e1e7d8;border:2px solid #bdc9be;border-radius:4px;color:#304e59;font:600 12px/1.2 system-ui,sans-serif;padding:6px}
 .encounter-tabs button[aria-pressed=true]{background:#355767;color:#fff1ce;border-color:#355767}
 .battle-panel{max-height:82%}.battle-panel .dialogue-head canvas{display:none}.battle-panel .dialogue-head{margin-bottom:4px}.battle-panel .scene-note{font-size:11px}
+
+/* Crisp integer-sized game canvas and a visible encounter stage. */
+.world>canvas{position:absolute;left:0;top:0;transform:none}
+.encounter-scene{display:block;width:100%;height:auto;max-height:150px;object-fit:contain;background:#9ca99c;image-rendering:pixelated;border:2px solid #5c726d;margin:5px 0}
+.battle-panel{max-height:98%}.battle-panel .dialogue-head{margin-bottom:0}.battle-panel h2{font-size:17px;margin:2px 0}.battle-panel p{font-size:12px;line-height:1.35;margin:5px 0}.battle-panel .choice-list{margin-top:7px}.battle-panel .choice{min-height:48px;padding:6px}.battle-panel .scene-note{font-size:10px}.battle-panel .encounter-tabs{margin:5px 0}.battle-panel .encounter-tabs button{min-height:36px;font-size:11px}.battle-panel .battle-meter{margin:4px 0;height:7px}.battle-panel .encounter-stats{font-size:11px;padding:2px 0}
+.rail-diagram{border-left:5px solid #397b58;margin:12px;padding:4px 10px;display:grid;gap:14px;font:600 13px system-ui;color:#3a5957}.rail-diagram .current{color:#ad653c}
+@media(max-height:680px){.encounter-scene{max-height:100px}.battle-panel .battle-log{display:none}}

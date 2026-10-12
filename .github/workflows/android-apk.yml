@@ -66,8 +66,8 @@ jobs:
         with:
           name: stereotype-zero-android-${{ github.run_number }}
           path: |
-            dist/stereotype-zero-0.5.1.apk
-            dist/stereotype-zero-0.5.1.apk.sha256
+            dist/stereotype-zero-0.6.0.apk
+            dist/stereotype-zero-0.6.0.apk.sha256
           if-no-files-found: error
           retention-days: 30
       - name: Publish a directly downloadable APK
@@ -76,7 +76,7 @@ jobs:
         shell: pwsh
         run: |
           $tag = "android-preview-$env:GITHUB_RUN_NUMBER"
-          gh release create $tag 'dist/stereotype-zero-0.5.1.apk' 'dist/stereotype-zero-0.5.1.apk.sha256' --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Stereotype Zero Android preview $env:GITHUB_RUN_NUMBER" --prerelease --notes "Restored textured neighbourhood buildings, larger and more consistently sampled character sprites. Includes walkable interiors, remembered conversations, wage battle choices and calmer walking with an Extra slow menu option. Existing saves migrate. Offline first chapter for Android 8.0+. Install the APK below. Saves remain on this device. Prototype; Android device testing is ongoing. Built from $env:GITHUB_SHA."
+          gh release create $tag 'dist/stereotype-zero-0.6.0.apk' 'dist/stereotype-zero-0.6.0.apk.sha256' --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Stereotype Zero Android preview $env:GITHUB_RUN_NUMBER" --prerelease --notes "First playable Kato Patisia to Victoria train journey with ticket purchase, validation, gates, platform, train interior, passenger conversations and return trip. Crisp artwork without smoothing, proportionate buildings, matching supervisor, richer interiors and visual battle feedback. Existing saves migrate. Offline Android 8.0+ prototype. Install the APK below. Built from $env:GITHUB_SHA."
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           "### Install on your phone" >> $env:GITHUB_STEP_SUMMARY
           "Download the APK from https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag" >> $env:GITHUB_STEP_SUMMARY

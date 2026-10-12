@@ -81,3 +81,13 @@ No native Android APK or physical Android-device test in this pass. Screen-reade
 - Android build tools remain under the game's ignored `.android-tools` directory. The signing key is in ignored `android/signing/`; the unrelated root Android project was not modified.
 - Not yet tested on an Android device/emulator: installation, native Back, display cutouts, audio interruptions, WebView storage and process death. Desktop browser checks do not establish Android runtime correctness.
 
+
+
+## 0.6.0 transit and presentation verification — 13 October 2026
+
+- 38 Node tests pass: original evening, motion and world checks plus ticket activation/expiry, gate blocking, complete outward/return trip, local reachability, train save restore, malformed trip rejection, penniless return assistance and schema 3 migration.
+- Browser at 390 × 844: evidence response reduces objections 68 → 32 and opens an explicit result screen; Next reply reveals the blame counter and starred boundary. Both characters appear in the encounter stage and supervisor matches the cast.
+- Browser through actual controls: ticket purchase €8.40 → €7.20 at 17:23; gate validation → platform at 17:24; route to train doors and board; carriage destination prompt shows Agios Nikolaos / Attiki; arrive Victoria at 17:32; exit to the small square. Journey rules including reverse route additionally covered by deterministic tests.
+- PNG source assets preserved; supervisor has true alpha and measured crop bounds. Canvas smoothing disabled; integer CSS sizing avoids fractional resampling; façades retain aspect ratios. New source-backed supervisor replaces placeholder.
+- Local Android 0.6.0 signed with existing key; signature v2/v3, alignment, SDK metadata and three embedded atlases/offline bundle checked. GitHub workflow and release checked at delivery.
+- Physical Android graphics, feel, touch and sound still need user review. Victoria is a small authored square; intermediate districts are not playable. Train timing and station plans are fictional. Transit NPCs currently reuse cast appearances.
