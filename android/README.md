@@ -1,10 +1,10 @@
 # Stereotype Zero for Android
 
-Version 0.2.0 is a signed prototype APK for **Android 8.0 or newer**. It bundles the first chapter, graphics and procedural music. It needs no account, server or internet permission. A reasonably current Android System WebView is required for the JavaScript game.
+Version 0.3.0 is a signed prototype APK for **Android 8.0 or newer**. It bundles the first chapter, graphics and procedural music. It needs no account, server or internet permission. A reasonably current Android System WebView is required for the JavaScript game.
 
 ## Install on your phone
 
-1. On your phone, sign into GitHub and open [Stereotype Zero releases](https://github.com/GKal-x/stereotype-zero/releases). Open the newest Android preview, expand **Assets** and download `stereotype-zero-0.2.0.apk`. You can also transfer a locally built APK using USB or your own Drive.
+1. On your phone, sign into GitHub and open [Stereotype Zero releases](https://github.com/GKal-x/stereotype-zero/releases). Open the newest Android preview, expand **Assets** and download `stereotype-zero-0.3.0.apk`. You can also transfer a locally built APK using USB or your own Drive.
 2. Open the APK in your phone's Files app.
 3. If Android asks, open Settings and allow that file manager to **Install unknown apps / Allow from this source**, then return to the installer.
 4. Tap **Install**, then **Open**. The launcher icon is called **Stereotype Zero**.
@@ -46,4 +46,6 @@ The persistent development signing key is encrypted in the repository Actions se
 - Status/navigation bars and display cutouts are respected. Background events save progress, stop held movement and suspend WebAudio.
 - Official reference: [loading bundled HTML in WebView](https://developer.android.com/develop/ui/views/layout/webapps/load-local-content).
 
-The APK has passed compilation, v2/v3 signature verification, zip alignment and manifest/content inspection. Rules and movement have 18 passing Node tests. The bundled HTML has been checked in a phone-size desktop browser. **No Android phone or emulator run has been performed**, so touch behaviour, sound, lifecycle saves and system navigation still need a device check. This is an APK for testing the first chapter, not a Play Store release.
+Rules, movement, new map reachability and old-save migration have 24 passing Node tests. The bundled HTML includes both sprite atlases and the attributed street-reference SVG; it needs no network. Tap the minimap for local directions, the Athens overview and the real-street reference. Wider districts are future chapters.
+
+The APK passes compilation, v2/v3 signature verification, zip alignment and manifest/content inspection. The bundled HTML is checked in a phone-size desktop browser. **No Android phone or emulator run has been performed**, so touch behaviour, sound, lifecycle saves and system navigation still need a device check. This is an APK for testing the first chapter, not a Play Store release.

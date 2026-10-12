@@ -1,5 +1,7 @@
 # Art revision 0.2
 
+Map revision 0.3 also includes `kato-patisia-reference.svg`, generated from downloaded OpenStreetMap geometry by `tools/create-reference-map.js`. It is a code-generated geographic reference, not an image-generation output. **© OpenStreetMap contributors · ODbL 1.0**. See [map sources and adaptation notes](../research/map-design.md) and the [retained source extract](../research/maps/README.md).
+
 Generated with the built-in image generation tool, then copied into this project. These are original Athens character/building concepts; no Pokémon artwork was supplied or copied. The art is an initial production direction, with more varied residents and bespoke interiors still needed.
 
 - `cast-source.png`: 1536 × 1024 transparent atlas. Six columns: Aris neutral, Aris left step, Aris right step, Mina, Eleni, Dimos. Four rows: front, left, right, back. Aris wears a mustard hoodie and olive shoulder bag; Mina terracotta; Eleni lilac; Dimos teal.

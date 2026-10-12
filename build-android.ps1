@@ -46,11 +46,11 @@ if ($SigningKeystore -and -not (Test-Path $SigningKeystore)) { throw 'The suppli
 if (-not (Test-Path $keystore)) {
     Run-Tool "$jdkRoot/bin/keytool.exe" @('-genkeypair', '-keystore', $keystore, '-storepass', 'android', '-keypass', 'android', '-alias', 'prototype', '-keyalg', 'RSA', '-keysize', '2048', '-validity', '10000', '-dname', 'CN=Stereotype Zero Prototype')
 }
-$apkPath = "$outputRoot/stereotype-zero-0.2.0.apk"
+$apkPath = "$outputRoot/stereotype-zero-0.3.0.apk"
 Run-Tool "$jdkRoot/bin/java.exe" @('-jar', "$buildTools/lib/apksigner.jar", 'sign', '--ks', $keystore, '--ks-key-alias', 'prototype', '--ks-pass', 'pass:android', '--key-pass', 'pass:android', '--out', $apkPath, "$buildRoot/aligned.apk")
 Run-Tool "$jdkRoot/bin/java.exe" @('-jar', "$buildTools/lib/apksigner.jar", 'verify', '--verbose', $apkPath)
 Run-Tool "$buildTools/zipalign.exe" @('-c', '-p', '4', $apkPath)
 Run-Tool "$buildTools/aapt2.exe" @('dump', 'badging', $apkPath)
 $hash = (Get-FileHash $apkPath -Algorithm SHA256).Hash.ToLower()
-"$hash  stereotype-zero-0.2.0.apk" | Set-Content "$apkPath.sha256" -Encoding ascii
+"$hash  stereotype-zero-0.3.0.apk" | Set-Content "$apkPath.sha256" -Encoding ascii
 Write-Host "Ready: $apkPath"

@@ -26,7 +26,7 @@ Romance and sexual relationships are part of the wider design, not implemented i
 
 ## Art and feel
 
-Top-down pixel city, 768 × 528 logical world pixels, 24-pixel tiles, nearest-neighbor scaling. A responsive viewport follows Aris with camera easing. Limestone, faded peach, blue-grey roads, terracotta and ochre; warm windows and planted pavements. The game fills the screen between a compact status bar and a navy thumbstick/A/B control deck. Dialogue uses cream RPG windows over the street, with character portraits. Landscape places controls over the lower corners.
+Top-down pixel city, 1536 × 1152 logical world pixels, 24-pixel tiles, nearest-neighbor scaling. A responsive viewport follows Aris with camera easing. Limestone, faded peach, blue-grey roads, terracotta and ochre; warm windows and planted pavements. The game fills the screen between a compact status bar and a navy thumbstick/A/B control deck. Dialogue uses cream RPG windows over the street, with character portraits. Landscape places controls over the lower corners. The minimap and street banner provide local orientation.
 
 Recognizable details: stacked balconies, apartment entrances, AC units, laundry, potted plants, kiosk stock, awnings, café furniture, traffic markings, trolley wires, bins, posters and station signage. Original Greek signs give texture; dialogue is English in this version. The map represents a composite block inspired by the neighborhood, not a surveyed location.
 
@@ -53,7 +53,9 @@ NORTH
 SOUTH
 ```
 
-All nine interaction points are reachable. Tap a person or doorway to find a collision-aware path, tap pavement for an exact destination, or walk manually. The journal also offers named destinations. Only the nearby interaction prompt appears over the map. Every 12 successful tile steps advances one minute; dialogues and errands have explicit time costs. No timer advances while a player reads or pauses.
+The diagram above records the original 0.1 block. Version 0.3 replaces that geography with the researched 64 × 48 tile neighborhood in [map-design.md](research/map-design.md): station and Acharnon west, Patision east, Iakovaton north, Skiathou around home, Sifnou to the south, and Koliatsou southeast. Twelve destinations, 24 building footprints and three squares provide several routes. The station approach is underground; exposed tracks beyond it block walking.
+
+All twelve interaction points are reachable. Tap a person or doorway to find a collision-aware path, tap pavement for an exact destination, or walk manually. The journal and map also offer named destinations. Only the nearby interaction prompt appears over the map. Every 12 successful tile steps advances one minute; dialogues and errands have explicit time costs. No timer advances while a player reads or pauses.
 
 ## Level flow and teaching
 
@@ -76,6 +78,7 @@ The train marker is a boundary preview with the real Line 1 station sequence. It
 | Back | X or Escape | B |
 | Journal / bag / directions / saves | J | Top-left menu |
 | Phone | P | Top-right phone |
+| Neighborhood / Athens / real-street map | M | Tap minimap or journal map option |
 | Choose menu option | Arrows, Tab; Z confirms | Tap option |
 | Walk to person / doorway / pavement | Click target | Tap target |
 | Audio | Music button | Music button |
@@ -132,7 +135,11 @@ Future palette: separate authored themes for home, station, street, live venue a
 
 `engine.js`: deterministic world state, collision, routing, resource updates, relationship effects, battle rules, ending state, validation and save serialization. Independent of the DOM and tested with Node.
 
-`game.js`: thumbstick, keyboard and tap input, authored scenes, typewriter dialogue, HUD and lifecycle handling. UI mode prevents movement during conversations/battles. Click paths use breadth-first search across the 32 × 22 grid.
+`world.js`: authored 64 × 48 neighborhood, streets, squares, building/railway collision, destination positions, north-up city diagram and migration anchors. Geographic sources and compression decisions are documented separately from fiction.
+
+`game.js`: thumbstick, keyboard and tap input, authored scenes, typewriter dialogue, HUD and lifecycle handling. UI mode prevents movement during conversations/battles. Click paths use breadth-first search across the 64 × 48 grid.
+
+`map-ui.js`: local destinations, Athens station/district overview, zoomable offline street reference and named route descriptions. Wider districts are explicitly future chapters.
 
 `motion.js`: continuous sprite interpolation over discrete rule-state tiles, 155 ms per step. Held input does not rely on keyboard repeat; short taps queue one step; cancellation clears routes; animation carries residual frame time across tile boundaries. Arrival interactions wait for the final step animation.
 
@@ -142,11 +149,11 @@ Future palette: separate authored themes for home, station, street, live venue a
 
 `index.html` / `style.css`: responsive handheld interface, buttons and live text. No external dependencies or backend. Save state remains in browser storage under a game-specific key. Invalid saves fail without replacing the current state.
 
-City complexity is bounded: nine places, three relationship values, a small inventory, explicit flags, one encounter, two ending destinations. Ambient movement is separate from the story clock. Later district state should likewise use a finite set of conditions and authored events rather than simulating every person in Athens.
+City complexity is bounded: twelve places, three relationship values, a small inventory, explicit flags, one encounter, two ending destinations. Ambient movement is separate from the story clock. Later district state should likewise use a finite set of conditions and authored events rather than simulating every person in Athens.
 
 ## Validation and open issues
 
-Eighteen automated tests cover reachable locations, exact ground routing, collision/mode locks, shopping, one-time delivery, battle counters, social prerequisites, victory/settlement/exit, recovery, a complete chapter, early/on-time/late arrival, saves and movement timing/input cancellation. Arriving early at the venue advances the ending clock to the 19:00 set; arriving exactly at 19:00 counts as on time. JavaScript syntax checks are required alongside them.
+Twenty-four automated tests cover location-to-location reachability, geographical relationships, railway/tunnel access, old-save migration, chapter walking budget, exact ground routing, collision/mode locks, shopping, one-time delivery, battle counters, social prerequisites, victory/settlement/exit, recovery, a complete chapter, early/on-time/late arrival, saves and movement timing/input cancellation. Arriving early at the venue advances the ending clock to the 19:00 set; arriving exactly at 19:00 counts as on time. JavaScript syntax checks are required alongside them.
 
 Browser visual/input and physical Android checks are recorded separately; automated engine tests do not establish their success. Small-screen panels are scrollable. Full screen-reader map navigation, controller API input, localized Greek dialogue, in-app interiors and the wider district network remain future work. Signed APKs are available from the standalone game repository's releases.
 

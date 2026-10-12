@@ -2,6 +2,15 @@
 
 Date: 12 October 2026.
 
+## Athens map revision 0.3.0
+
+- Read the OSM street map and retained a small attributed geometry extract. Checked STASY's Line 1 sequence and official municipal/OASA references for route 608. Sources and the distinction between real streets, compressed gameplay and fictional addresses are documented in `research/map-design.md`.
+- 24 Node tests pass. New map tests cover all destination pairs, railway/tunnel access, north/south and east/west anchor relationships, station order, old-save migration and chapter walking budget. Syntax checks cover world, map UI, art, game and audio.
+- Browser: loaded the existing 0.2 evening into the new world; €28.20, 17:45 and completed wages/dinner remained. Used the neighborhood map's station destination, walked to Kato Patisia, and verified the station scene at 17:46. The station's Read the Athens map option opens the Athens tab.
+- Browser: inspected Neighborhood / Athens / Real streets. Verified selectable Zefyri explains its separate journey; the real-street SVG loads from the bundled edition. At 390 × 844, Zoom + expands the map inside its scroll area (536px content in 315px viewport) while document width remains 390px. Map destinations have separate larger buttons below the diagram. The reference retains attribution, real road geometry and the tunnel distinction.
+- Android: local 0.3.0 compilation succeeds; v2/v3 signatures, zip alignment and package metadata pass. Application ID and signing key remain stable, versionCode 1003. The package embeds both PNG atlases and the street-reference SVG. The game requires no map network access.
+- This is one expanded playable neighborhood plus an orientation atlas. Other districts, train/bus journeys, building interiors and live timetables are not implemented. Physical Android testing remains pending.
+
 ## Art and controls revision 0.2.0
 
 - 18 Node tests pass: 12 engine/routing tests and 6 motion tests. New coverage includes exact pavement destinations, short taps, held input without OS repeat, release/cancellation, blocked movement, arrival timing, save position synchronization and continuous frame time across tile boundaries. Game, art and audio syntax checks pass.

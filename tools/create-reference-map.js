@@ -1,0 +1,14 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),root=path.join(__dirname,'..');
+const data=JSON.parse(fs.readFileSync(path.join(root,'research/maps/osm-reference.json'),'utf8'));
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+// Keep map coordinates north-up. Latitude/longitude scale includes cos(latitude).
+const project=p=>[(p.lon-23.7255)*62500,(38.017-p.lat)*79000];
+const out=['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 930 820" role="img" aria-label="Real streets around Kato Patisia, Athens. North is up."><defs><clipPath id="clip"><rect width="930" height="775"/></clipPath></defs><rect width="930" height="820" fill="#e9e4d3"/><g clip-path="url(#clip)">'];
+for(const e of data.elements){if(!e.geometry)continue;const t=e.tags,g=e.geometry.map(project),points=g.map(p=>p.map(n=>n.toFixed(1)).join(',')).join(' ');if(t.highway&&!['footway','steps','path'].includes(t.highway)){const major=/primary|secondary/.test(t.highway);out.push(`<polyline points="${points}" fill="none" stroke="${major?'#c3a66e':'#fffaf0'}" stroke-width="${major?12:5}"/>`);}else if(['rail','subway'].includes(t.railway))out.push(`<polyline points="${points}" fill="none" stroke="#45886c" stroke-width="4" ${t.tunnel==='yes'?'stroke-dasharray="8 6"':''}/>`);else if(t.leisure==='park')out.push(`<polygon points="${points}" fill="#aed09e"/>`);}
+const named=[['Αχαρνών',23.7288,38.0157,-87],['Πατησίων',23.7354,38.0166,-88],['Ιακωβάτων',23.7306,38.0147,0],['Σκιάθου',23.7301,38.01185,0],['Σίφνου',23.7297,38.01048,0],['Ευγ. Καραβία',23.7300,38.01265,-10],['Στρ. Καλλάρη',23.7260,38.0127,0],['Γαλατσίου',23.7363,38.01585,0],['Πλ. Αγ. Παρασκευής',23.73135,38.01305,0],['Πλ. Κολιάτσου',23.7345,38.0102,0]];
+for(const [n,lon,lat,rotation]of named){const [x,y]=project({lat,lon});out.push(`<text x="${x}" y="${y}" transform="rotate(${rotation} ${x} ${y})" font-family="sans-serif" font-size="17" font-weight="bold" fill="#304956" stroke="#e9e4d3" stroke-width="4" paint-order="stroke">${esc(n)}</text>`);}
+for(const e of data.elements.filter(e=>e.tags.railway==='station'&&e.type==='node')){const [x,y]=project(e);out.push(`<circle cx="${x}" cy="${y}" r="9" fill="#30845d" stroke="#fffaf0" stroke-width="3"/><text x="${x+16}" y="${y+6}" font-family="sans-serif" font-size="19" font-weight="bold" fill="#175c41" stroke="#e9e4d3" stroke-width="4" paint-order="stroke">${esc(e.tags.name)}</text>`);}
+out.push('</g><text x="890" y="32" font-family="sans-serif" font-size="21" fill="#304956">N ↑</text><rect y="775" width="930" height="45" fill="#243e49"/><text x="16" y="803" fill="#f5ecd5" font-family="sans-serif" font-size="17">© OpenStreetMap contributors · ODbL 1.0 · Reference, 12 Oct 2026</text></svg>');
+fs.writeFileSync(path.join(root,'assets/kato-patisia-reference.svg'),out.join('\n'));
+console.log('Created attributed north-up Kato Patisia street reference.');

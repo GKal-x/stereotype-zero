@@ -6,10 +6,12 @@
 <meta name="theme-color" content="#273849">
 <title>Stereotype Zero · Kato Patisia</title>
 <link rel="stylesheet" href="style.css">
+<script src="world.js" defer></script>
 <script src="engine.js" defer></script>
 <script src="motion.js" defer></script>
 <script src="assets/atlas.js" defer></script>
 <script src="art.js" defer></script>
+<script src="map-ui.js" defer></script>
 <script src="audio.js" defer></script>
 <script src="game.js" defer></script>
 </head>
@@ -26,6 +28,7 @@
 <main class="world" id="world" aria-label="Kato Patisia game">
 <canvas id="game" width="320" height="320" tabindex="0" aria-label="Neighborhood map. Use the movement joystick or arrow keys. Tap a person or doorway to walk there. Press A to talk."></canvas>
 <div id="location-tag" class="location-tag">ΠΑΤΗΣΙΑ · BACKSTREETS</div>
+<button id="map" class="minimap-button" aria-label="Open neighborhood and Athens map"><canvas id="mini-map" width="128" height="96" aria-hidden="true"></canvas><span>MAP · N ↑</span></button>
 <div id="walk-target" class="walk-target" hidden></div>
 <div id="nearby-prompt" class="nearby-prompt" hidden><span>A</span><b></b></div>
 <div id="overlay" class="overlay"></div>
