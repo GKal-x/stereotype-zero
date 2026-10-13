@@ -90,15 +90,15 @@
   function allPlaces(q){return [...q.places,...q.rooms.filter(id=>extraRooms[id]).flatMap(id=>extraRooms[id].places)];}
   const family=[
     {id:'you',name:'You',relation:'The child you play in this opening.'},
-    {id:'mother',name:'Mum',relation:'Your mother. Portrayed around 30–35 in this childhood adaptation.'},
-    {id:'father',name:'Dad',relation:'Your father. Portrayed around 30–35 in this childhood adaptation.'},
+    {id:'mother',name:'Mum',relation:'Your mother.'},
+    {id:'father',name:'Dad',relation:'Your father.'},
     {id:'brother',name:'Omiros',relation:'Your younger brother, three years younger than you.'},
     {id:'maternal-grandfather',name:'Omiros',relation:'Your mother’s father. Your grandfather, distinct from your brother.'},
     {id:'maternal-grandmother',name:'Tasoula',relation:'Your mother’s mother.'},
     {id:'paternal-grandfather',name:'George',relation:'Your father’s father.'},
     {id:'paternal-grandmother',name:'Vilma',relation:'Your father’s mother.'},
     {id:'maternal-aunt',name:'Io',relation:'Your mother’s sister.'},
-    {id:'paternal-uncle',name:'Manolis',relation:'Your father’s brother. This opening takes place before the later loss.'}
+    {id:'paternal-uncle',name:'Manolis',relation:'Your father’s brother.'}
   ];
   const playRounds=[
     {cue:'Omiros has stopped running and is waiting with his feet apart.',hint:'He is ready. A gentle pass gives him time.',answer:'pass',text:'He catches the ball between his shoes, then sends it back. “Again!”'},
