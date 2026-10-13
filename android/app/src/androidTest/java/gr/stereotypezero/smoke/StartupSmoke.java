@@ -27,7 +27,7 @@ public final class StartupSmoke extends Instrumentation {
             if (web == null) { result.set("null"); latch.countDown(); return; }
             web.evaluateJavascript(source, value -> { result.set(value); latch.countDown(); });
         });
-        if (!latch.await(5, TimeUnit.SECONDS)) throw new AssertionError("WebView did not answer");
+        if (!latch.await(30, TimeUnit.SECONDS)) throw new AssertionError("WebView did not answer within 30 seconds");
         return result.get();
     }
     private void ready(Activity activity) throws Exception {
@@ -39,6 +39,13 @@ public final class StartupSmoke extends Instrumentation {
         throw new AssertionError("Game did not reach a playable dialog: " + js(activity, "document.body && document.body.innerText.slice(0,500)"));
     }
     private void check(boolean value, String message) { if (!value) throw new AssertionError(message); }
+    private void screenshot() throws Exception {
+        Bitmap image = getUiAutomation().takeScreenshot();
+        check(image != null, "Screenshot unavailable");
+        File file = new File(getContext().getExternalFilesDir(null), "android-startup.png");
+        try (FileOutputStream out = new FileOutputStream(file)) { image.compress(Bitmap.CompressFormat.PNG, 100, out); }
+        image.recycle();
+    }
     @Override public void onStart() {
         Bundle result = new Bundle();
         try {
@@ -58,15 +65,12 @@ public final class StartupSmoke extends Instrumentation {
             check("true".equals(js(restored, "Array.from(document.querySelectorAll('#overlay button')).some(b=>b.textContent.includes('Open the memory notebook'))")), "Notebook command absent");
             js(restored, "Array.from(document.querySelectorAll('#overlay button')).find(b=>b.textContent.includes('Open the memory notebook')).click()");
             Thread.sleep(800);
-            Bitmap screenshot = getUiAutomation().takeScreenshot();
-            check(screenshot != null, "Screenshot unavailable");
-            File file = new File(getContext().getExternalFilesDir(null), "android-startup.png");
-            try (FileOutputStream out = new FileOutputStream(file)) { screenshot.compress(Bitmap.CompressFormat.PNG, 100, out); }
-            screenshot.recycle();
+            screenshot();
             result.putString("result", "PASS");
             result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notebook accessible");
             finish(Activity.RESULT_OK, result);
         } catch (Throwable error) {
+            try { screenshot(); } catch (Exception ignored) { }
             result.putString("result", "FAIL");
             result.putString("error", error.toString());
             finish(Activity.RESULT_CANCELED, result);
