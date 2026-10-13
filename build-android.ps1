@@ -46,11 +46,24 @@ if ($SigningKeystore -and -not (Test-Path $SigningKeystore)) { throw 'The suppli
 if (-not (Test-Path $keystore)) {
     Run-Tool "$jdkRoot/bin/keytool.exe" @('-genkeypair', '-keystore', $keystore, '-storepass', 'android', '-keypass', 'android', '-alias', 'prototype', '-keyalg', 'RSA', '-keysize', '2048', '-validity', '10000', '-dname', 'CN=Stereotype Zero Prototype')
 }
-$apkPath = "$outputRoot/stereotype-zero-0.12.0.apk"
+$apkPath = "$outputRoot/stereotype-zero-0.12.1.apk"
 Run-Tool "$jdkRoot/bin/java.exe" @('-jar', "$buildTools/lib/apksigner.jar", 'sign', '--ks', $keystore, '--ks-key-alias', 'prototype', '--ks-pass', 'pass:android', '--key-pass', 'pass:android', '--out', $apkPath, "$buildRoot/aligned.apk")
 Run-Tool "$jdkRoot/bin/java.exe" @('-jar', "$buildTools/lib/apksigner.jar", 'verify', '--verbose', $apkPath)
 Run-Tool "$buildTools/zipalign.exe" @('-c', '-p', '4', $apkPath)
 Run-Tool "$buildTools/aapt2.exe" @('dump', 'badging', $apkPath)
 $hash = (Get-FileHash $apkPath -Algorithm SHA256).Hash.ToLower()
-"$hash  stereotype-zero-0.12.0.apk" | Set-Content "$apkPath.sha256" -Encoding ascii
+"$hash  stereotype-zero-0.12.1.apk" | Set-Content "$apkPath.sha256" -Encoding ascii
 Write-Host "Ready: $apkPath"
+
+# Separate instrumentation APK, signed by the same prototype key. Never released.
+$smokeRoot = Join-Path $PSScriptRoot 'android/app/src/androidTest'
+$smokeBuild = Join-Path $buildRoot 'smoke'
+foreach ($folder in @($smokeBuild, "$smokeBuild/classes", "$smokeBuild/dex")) { New-Item -ItemType Directory -Force $folder | Out-Null }
+Run-Tool "$buildTools/aapt2.exe" @('link', '-o', "$smokeBuild/unsigned.apk", '-I', "$sdkPlatform/android.jar", '--manifest', "$smokeRoot/AndroidManifest.xml")
+$smokeSources = @(Get-ChildItem "$smokeRoot/java" -Filter '*.java' -Recurse | ForEach-Object { $_.FullName })
+Run-Tool "$jdkRoot/bin/javac.exe" (@('-encoding', 'UTF-8', '--release', '8', '-classpath', "$sdkPlatform/android.jar", '-d', "$smokeBuild/classes") + $smokeSources)
+Run-Tool "$jdkRoot/bin/jar.exe" @('cf', "$smokeBuild/classes.jar", '-C', "$smokeBuild/classes", '.')
+Run-Tool "$jdkRoot/bin/java.exe" @('-cp', "$buildTools/lib/d8.jar", 'com.android.tools.r8.D8', '--lib', "$sdkPlatform/android.jar", '--min-api', '26', '--output', "$smokeBuild/dex", "$smokeBuild/classes.jar")
+Run-Tool "$jdkRoot/bin/jar.exe" @('uf', "$smokeBuild/unsigned.apk", '-C', "$smokeBuild/dex", 'classes.dex')
+Run-Tool "$buildTools/zipalign.exe" @('-f', '-p', '4', "$smokeBuild/unsigned.apk", "$smokeBuild/aligned.apk")
+Run-Tool "$jdkRoot/bin/java.exe" @('-jar', "$buildTools/lib/apksigner.jar", 'sign', '--ks', $keystore, '--ks-key-alias', 'prototype', '--ks-pass', 'pass:android', '--key-pass', 'pass:android', '--out', "$outputRoot/startup-tests.apk", "$smokeBuild/aligned.apk")

@@ -76,17 +76,62 @@ jobs:
         with:
           name: stereotype-zero-android-${{ github.run_number }}
           path: |
-            dist/stereotype-zero-0.12.0.apk
-            dist/stereotype-zero-0.12.0.apk.sha256
+            dist/stereotype-zero-0.12.1.apk
+            dist/stereotype-zero-0.12.1.apk.sha256
+            dist/startup-tests.apk
           if-no-files-found: error
           retention-days: 30
-      - name: Publish a directly downloadable APK
+
+  android-startup:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: stereotype-zero-android-${{ github.run_number }}
+          path: dist
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Verify startup and save recovery in Android WebView
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: |
+            adb install -r dist/stereotype-zero-0.12.1.apk
+            adb install -r dist/startup-tests.apk
+            adb shell am instrument -w gr.stereotypezero.smoke/gr.stereotypezero.smoke.StartupSmoke | tee dist/android-startup.txt
+            adb logcat -d > dist/android-logcat.txt
+            grep -q 'INSTRUMENTATION_RESULT: result=PASS' dist/android-startup.txt
+            adb pull /sdcard/Android/data/gr.stereotypezero.smoke/files/android-startup.png dist/android-startup.png
+      - name: Keep Android startup evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-startup-${{ github.run_number }}
+          path: |
+            dist/android-startup.txt
+            dist/android-logcat.txt
+            dist/android-startup.png
+          if-no-files-found: warn
+
+  release:
+    needs: [build, android-startup]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: stereotype-zero-android-${{ github.run_number }}
+          path: dist
+      - name: Publish the verified Android build
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: pwsh
         run: |
-          $tag = "android-preview-$env:GITHUB_RUN_NUMBER"
-          gh release create $tag 'dist/stereotype-zero-0.12.0.apk' 'dist/stereotype-zero-0.12.0.apk.sha256' --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Stereotype Zero Android preview $env:GITHUB_RUN_NUMBER" --prerelease --notes "Expanded years before Aris: memory notebook, shared kit gathering, Hyper-ego and social encounters, Deers scout uniforms, a two-patrol camp, Plaka school, December 2008 testimony and TEI Chalkidas chapters. Historical context is sourced separately from personal memories. Original camp score; no commercial recording is bundled. Full later biography remains in development. Existing saves migrate. Android 8.0+. Install the APK below. Built from $env:GITHUB_SHA."
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          "### Install on your phone" >> $env:GITHUB_STEP_SUMMARY
-          "Download the APK from https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag" >> $env:GITHUB_STEP_SUMMARY
+          gh release create "android-preview-$GITHUB_RUN_NUMBER" dist/stereotype-zero-0.12.1.apk dist/stereotype-zero-0.12.1.apk.sha256 --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Stereotype Zero Android preview $GITHUB_RUN_NUMBER" --prerelease --notes "Android startup repair: stream the bundled game instead of passing a giant HTML string to WebView. Visible loading and retry screen; same save origin. Release gated by an actual Android 15 emulator startup, notebook and save-relaunch test. Includes the seven life chapters and all preview 21 content. Android 8.0+. Built from $GITHUB_SHA."

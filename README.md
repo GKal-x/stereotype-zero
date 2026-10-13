@@ -1,3 +1,11 @@
+## Android startup repair — 0.12.1
+
+Preview 21 was reported to show only the native dark background on a phone. Its bundled HTML is roughly 19 MB. The Android host now streams that local asset through the existing appassets origin instead of passing a giant string to loadDataWithBaseURL. Inline images remain allowed; remote loads stay blocked. The same HTTPS origin preserves existing DOM storage. A native loading screen, timeout/error message and Retry action replace silent startup failure.
+
+The Android workflow now builds a separate, same-key instrumentation APK and runs the release APK in an Android 15 emulator before publishing. The smoke check waits for the seven-chapter game and atlases, verifies the storage origin, saves/relaunches the game, opens the notebook and captures a device screenshot. Failed startup prevents release publication; evidence is retained as a GitHub artifact. This is Android runtime validation, beyond the earlier desktop browser and package checks. The test APK is not included in release downloads.
+
+Game content and saves retain the v0.12.0 expansion. Device-specific behavior still needs confirmation on the reporting phone; the exact native cause cannot be proved from the blank screenshot alone.
+
 ## A life before Aris — 0.12.0
 
 Seven playable periods now lead to Aris: the childhood opening, Deers scout preparation, a two-patrol summer camp, the Plaka school assembly, December 2008 news and a station recollection, TEI Chalkidas/Psachna, and the shared adult home. These are first-pass authored chapters and compact layouts, not a finished biography or a surveyed city. Erasmus, ISAP and the longer adult years still need expansion.

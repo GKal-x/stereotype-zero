@@ -1,3 +1,9 @@
+## Native startup regression — 0.12.1
+
+A user screenshot of preview 21 showed only the Activity background, before the HTML boot screen. Package inspection alone did not catch this. The startup path has been changed from a giant loadDataWithBaseURL string to a streamed APK asset at the same origin, with a visible native loader and retry/error states. Both main and test APKs compile and sign locally; embedded content checks pass.
+
+Release publication is now gated on an Android 15 emulator instrumentation job. It checks initial playable dialog, seven chapters and new atlases, stable origin, save availability on a second launch and opening the memory notebook. Its result and actual Android screenshot are stored in the run’s android-startup artifact. Check that job for the runtime result; a successful package build alone is no longer sufficient. The reporting physical phone remains the final device-specific verification.
+
 ## Life-world expansion 0.12.0
 
 77 automated tests pass. New coverage checks two seven-child patrols, notebook/kit idempotence, encounter prerequisites, ordinary-action bypass prevention, zero-focus agency, pauses, exact save recovery, stepping away without losing kit, all seven chapters through the Aris reset, old-save migration and malformed notebook/encounter state. All new destinations and existing interiors remain reachable with furniture/person collisions.
