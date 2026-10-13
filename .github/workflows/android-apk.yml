@@ -32,6 +32,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --check game.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --check opening.js
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --check cinematics.js
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --check map-ui.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --check memories.js
@@ -70,8 +74,8 @@ jobs:
         with:
           name: stereotype-zero-android-${{ github.run_number }}
           path: |
-            dist/stereotype-zero-0.10.0.apk
-            dist/stereotype-zero-0.10.0.apk.sha256
+            dist/stereotype-zero-0.11.0.apk
+            dist/stereotype-zero-0.11.0.apk.sha256
           if-no-files-found: error
           retention-days: 30
       - name: Publish a directly downloadable APK
@@ -80,7 +84,7 @@ jobs:
         shell: pwsh
         run: |
           $tag = "android-preview-$env:GITHUB_RUN_NUMBER"
-          gh release create $tag 'dist/stereotype-zero-0.10.0.apk' 'dist/stereotype-zero-0.10.0.apk.sha256' --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Stereotype Zero Android preview $env:GITHUB_RUN_NUMBER" --prerelease --notes "A playable adapted family afternoon: help prepare an outing bag, share a record with Dad and keep a cooperative ball game going with Omiros. New younger-parent and child-brother sprites, family record and saved rally progress. Later memories and Aris remain available; full biography remains in development. Existing saves migrate. Android 8.0+. Install the APK below. Built from $env:GITHUB_SHA."
+          gh release create $tag 'dist/stereotype-zero-0.11.0.apk' 'dist/stereotype-zero-0.11.0.apk.sha256' --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Stereotype Zero Android preview $env:GITHUB_RUN_NUMBER" --prerelease --notes "A new childhood opening: explore home, play with Omiros, watch Dad leave for work, then an ambiguous island and sky sequence before his early return. Saved cutscenes, automatic transition to the next age, subtle adult sprite refinements and scene music. Later memories and Aris remain available; full biography remains in development. Existing saves migrate. Android 8.0+. Install the APK below. Built from $env:GITHUB_SHA."
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           "### Install on your phone" >> $env:GITHUB_STEP_SUMMARY
           "Download the APK from https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag" >> $env:GITHUB_STEP_SUMMARY

@@ -2,9 +2,9 @@
 (function(){
   'use strict';
   const E=window.SZ,D=window.CityWorld,T=24,W=E.WIDTH*T,H=E.HEIGHT*T,P=window.CityPixels;
-  const cast=new Image(),buildings=new Image(),supervisor=new Image(),memories=new Image(),family=new Image(),A=window.CityAtlas;
+  const cast=new Image(),buildings=new Image(),supervisor=new Image(),memories=new Image(),family=new Image(),adults=new Image(),A=window.CityAtlas;
   function load(image,src){return new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('Artwork could not load: '+src));image.src=src;});}
-  const ready=Promise.all([load(cast,'assets/cast-refined.png'),load(buildings,'assets/buildings-source.png'),load(supervisor,'assets/supervisor-v1.png'),load(memories,'assets/memories-v1.png'),load(family,'assets/family-v1.png')]);
+  const ready=Promise.all([load(cast,'assets/cast-refined.png'),load(buildings,'assets/buildings-source.png'),load(supervisor,'assets/supervisor-v1.png'),load(memories,'assets/memories-v1.png'),load(family,'assets/family-v1.png'),load(adults,'assets/adults-refined-v1.png')]);
   const spriteCache=new Map();
   // Cache crisp samples at the intended pixel size; never blur the pixel clusters.
   function reduced(image,r,width,height){const tile=document.createElement('canvas');tile.width=width;tile.height=height;const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(image,...r,0,0,width,height);return tile;}
@@ -17,10 +17,10 @@
 
     const familyRow={'family-mother':0,'family-father':1,'family-brother':2}[who];
     const memoryRow={'memory-child':0,'memory-scout':1,'memory-adult':2,'memory-partner':3}[who];
-    const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5}[who]??0),r=familyRow!==undefined?window.FamilyAtlas[familyRow][directionRow[facing]??0]:memoryRow!==undefined?window.MemoryAtlas[memoryRow][directionRow[facing]??0]:who==='boss'?window.SupervisorAtlas[directionRow[facing]??0]:A.cast[directionRow[facing]??0][column];
+    const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5}[who]??0),r=familyRow!==undefined?window.FamilyAtlas[familyRow][directionRow[facing]??0]:memoryRow!==undefined?(memoryRow>=2?window.AdultAtlas[memoryRow-2]:window.MemoryAtlas[memoryRow])[directionRow[facing]??0]:who==='boss'?window.SupervisorAtlas[directionRow[facing]??0]:A.cast[directionRow[facing]??0][column];
     const width=Math.round(r[2]/r[3]*height);c.imageSmoothingEnabled=false;
     const key=[who,facing,frame,height].join(':');
-    if(!spriteCache.has(key))spriteCache.set(key,reduced(familyRow!==undefined?family:memoryRow!==undefined?memories:who==='boss'?supervisor:cast,r,width,height));
+    if(!spriteCache.has(key))spriteCache.set(key,reduced(familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r,width,height));
     const tile=spriteCache.get(key),left=Math.round(x-width/2),top=Math.round(y-height);
     if((memoryRow!==undefined||familyRow!==undefined)&&frame){
       // Rig the existing pose on the pixel grid: the torso stays coherent while
@@ -35,9 +35,9 @@
 
     const familyRow={'family-mother':0,'family-father':1,'family-brother':2}[who];
     const memoryRow={'memory-child':0,'memory-scout':1,'memory-adult':2,'memory-partner':3}[who];
-    const col={aris:0,mina:3,eleni:4,dimos:5}[who]??0,r=familyRow!==undefined?window.FamilyAtlas[familyRow][0]:memoryRow!==undefined?window.MemoryAtlas[memoryRow][0]:who==='boss'?window.SupervisorAtlas[0]:A.cast[0][col];
+    const col={aris:0,mina:3,eleni:4,dimos:5}[who]??0,r=familyRow!==undefined?window.FamilyAtlas[familyRow][0]:memoryRow!==undefined?(memoryRow>=2?window.AdultAtlas[memoryRow-2]:window.MemoryAtlas[memoryRow])[0]:who==='boss'?window.SupervisorAtlas[0]:A.cast[0][col];
     box(c,0,0,size,size,'#c1cbb8');c.imageSmoothingEnabled=false;
-    c.drawImage(familyRow!==undefined?family:memoryRow!==undefined?memories:who==='boss'?supervisor:cast,r[0],r[1],r[2],Math.round(r[3]*.48),3,1,size-6,size-2);
+    c.drawImage(familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r[0],r[1],r[2],Math.round(r[3]*.48),3,1,size-6,size-2);
   }
   function avatar(who){const c=document.createElement('canvas');c.width=64;c.height=64;c.setAttribute('aria-label',who+' portrait');face(c.getContext('2d'),who);return c;}
   function tree(c,x,y){
@@ -99,7 +99,8 @@
     c.save();c.translate(Math.round(x),Math.round(y));if(vertical)c.rotate(Math.PI/2);
     box(c,-18,-8,37,16,'#344958');box(c,-18,-6,37,13,color);box(c,-8,-8,17,16,color);box(c,-5,-6,11,12,'#b7d8d8');box(c,-4,-5,4,10,'#6f9aab');box(c,-14,-9,7,2,'#263842');box(c,9,-9,7,2,'#263842');box(c,-14,8,7,2,'#263842');box(c,9,8,7,2,'#263842');box(c,17,-4,2,3,'#ffe7a7');box(c,17,3,2,3,'#ffe7a7');c.restore();
   }
-  function render(c,s,m,t,dt){
+  function render(c,s,m,t,dt){if(!window.CityCinematics.scene(c,s,sprite))renderWorld(c,s,m,t,dt);window.CityCinematics.overlay(c,s);}
+  function renderWorld(c,s,m,t,dt){
     if(s.room)return interior(c,s,m,dt,t);
     const vw=c.canvas.width,vh=c.canvas.height;
     const wantX=Math.max(0,Math.min(W-vw,m.x*T+12-vw/2)),wantY=Math.max(0,Math.min(H-vh,m.y*T+12-vh*.55));
@@ -134,7 +135,7 @@
   }
   function interior(c,s,m,dt,t){
     const r=E.Rooms.rooms[s.room],w=r.width*T,h=r.height*T,vw=c.canvas.width,vh=c.canvas.height;
-    const wx=Math.max(0,Math.min(w-vw,m.x*T+12-vw/2)),wy=Math.max(0,Math.min(h-vh,m.y*T+12-vh*.55)),ease=1-Math.exp(-dt/85);
+    const focus=E.Opening.current(s)?.kind!=='explore'&&E.Opening.current(s)?{x:7,y:5}:m,wx=Math.max(0,Math.min(w-vw,focus.x*T+12-vw/2)),wy=Math.max(0,Math.min(h-vh,m.y*T+12-vh*.55)),ease=1-Math.exp(-dt/85);
     if(!camera.ready){camera.x=wx;camera.y=wy;camera.ready=true;}else{camera.x+=(wx-camera.x)*ease;camera.y+=(wy-camera.y)*ease;}
     box(c,0,0,vw,vh,'#293b43');c.save();c.translate(-Math.round(camera.x),-Math.round(camera.y));box(c,0,0,w,h,'#69736c');box(c,T,T,w-2*T,h-2*T,r.color);
     const domestic=['home','memory-shared-home','memory-scouts'].includes(s.room)||s.room.startsWith('memory-child-')||s.room==='memory-adult-bedroom';
@@ -201,7 +202,8 @@
     }
     const people=[...E.actors(s).map(a=>{const p=E.actorPose(s,a.id);return {who:p.who,x:p.x*T+12,y:p.y*T+19,facing:p.facing,frame:p.frame};}),{who:E.Memories.current(s)?.avatar||'aris',x:m.x*T+12,y:m.y*T+19,player:true}].sort((a,b)=>a.y-b.y);
     for(const p of people)sprite(c,p.who,p.x,p.y,p.player?s.facing:p.facing,p.player?m.frame:p.frame,p.who==='family-brother'?23:p.who==='memory-child'?(p.player?30:23):40);
-    const near=E.nearest(s);if(near){if(near.who){const lift=near.who==='memory-child'?14:31;box(c,near.x*T+8,near.y*T-lift,9,10,'#f3dfae');label(c,'!',near.x*T+12,near.y*T-lift+8,7,'#5c5245','center');}else{c.strokeStyle='#e8c379';c.lineWidth=1;c.strokeRect(near.x*T+4,near.y*T+4,16,16);}}
+    if(['inside-roll','after-dad-play'].includes(E.Opening.current(s)?.id)){const elapsed=s.memory.opening.elapsed,x=(5.5+Math.sin(elapsed/250)*.4)*T+12,y=5*T+18;box(c,x-3,y-3,7,7,'#f6edd2');box(c,x-1,y-1,3,3,'#40515b');}
+    const near=E.nearest(s);if(near&&(!E.Opening.current(s)||E.Opening.current(s).kind==='explore')){if(near.who){const lift=near.who==='memory-child'?14:31;box(c,near.x*T+8,near.y*T-lift,9,10,'#f3dfae');label(c,'!',near.x*T+12,near.y*T-lift+8,7,'#5c5245','center');}else{c.strokeStyle='#e8c379';c.lineWidth=1;c.strokeRect(near.x*T+4,near.y*T+4,16,16);}}
     if(m.route.length){const end=m.route.at(-1);c.strokeStyle='#fff1c2';c.strokeRect(end[0]*T+5,end[1]*T+5,14,14);}
     c.restore();
   }

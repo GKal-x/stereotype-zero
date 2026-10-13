@@ -1,6 +1,7 @@
 /* Three playable adaptations for testing the autobiographical handover. */
 (function(root){
   'use strict';
+  const Opening=typeof module!=='undefined'&&module.exports?require('./opening.js'):root.CityOpening;
   const scenes=[
     {id:'courtyard',room:'memory-courtyard',name:'Patisia · the whole street',age:'AGE 6',avatar:'memory-child',goal:'Play with the ball and spend a moment with Omiros. Then return to the doorway.',intro:'A small courtyard. A ball. Your younger brother wants to join you. For now, the neighbourhood is somewhere to play.',required:['ball','brother'],objects:[{x:1,y:1,w:5,h:2,type:'home-front'},{x:10,y:1,w:3,h:2,type:'planter'},{x:1,y:7,w:2,h:1,type:'bench'},{x:11,y:7,w:2,h:1,type:'planter'}],places:[{id:'ball',name:'Play with the ball',x:8,y:5},{id:'brother',name:'Spend a moment with Omiros',x:4,y:5,who:'memory-child'},{id:'continue-memory',name:'Return to the doorway',x:7,y:2}]},
     {id:'scouts',room:'memory-scouts',name:'22ο Άρεως · getting ready',age:'YEARS LATER',avatar:'memory-scout',goal:'Prepare the shared kit and check the route. Then gather by the door.',intro:'The scout centre is familiar now. This time, others are looking to you to help get the group ready. You can ask for help too.',required:['kit','route'],objects:[{x:1,y:1,w:3,h:3,type:'bookstall'},{x:6,y:2,w:4,h:2,type:'table'},{x:11,y:2,w:2,h:4,type:'shelf'},{x:1,y:7,w:3,h:1,type:'bench'}],places:[{id:'kit',name:'Prepare the shared kit',x:5,y:3},{id:'route',name:'Check the route together',x:8,y:4},{id:'scout-friend',name:'Talk to a fellow leader',x:4,y:6,who:'dimos'},{id:'continue-memory',name:'Gather by the door',x:7,y:10}]},
@@ -29,12 +30,12 @@
   };
   // Connected rooms are authored adaptations, not surveyed floor plans.
   const door=(id,name,x,y,to,arrival,facing)=>({id,name,x,y,to,arrival,facing,door:true});
-  const childhood=scenes[0];childhood.name='Patisia · one more game';childhood.startRoom='memory-child-living';childhood.start={x:4,y:5};
-  childhood.intro='Mum is getting a bag ready for a family outing. Dad is choosing a record. Outside, Omiros has found the ball. You have enough energy for all three rooms at once—or so you think.';
-  childhood.required=['mother','father','child-water','outing-book','outing-bag','brother','ball'];
+  const childhood=scenes[0];childhood.name='Patisia · a shadow overhead';childhood.age='CHILDHOOD';childhood.startRoom='memory-child-living';childhood.start={x:6,y:5};
+  childhood.intro='The home is yours to explore. Records, books, a game waiting under the television. Omiros wants another turn with the ball. Dad will be leaving for work soon.';
+  childhood.required=['indoor-play','ball'];
   scenes[0].places.find(p=>p.id==='continue-memory').x=12;scenes[0].places.find(p=>p.id==='continue-memory').y=9;
   scenes[0].places.find(p=>p.id==='continue-memory').name='Leave this childhood moment';
-  scenes[0].goal='Help Mum prepare the outing bag, spend time with Dad, then keep a ball game going with Omiros. Meet at the courtyard gate when everyone is ready.';
+  scenes[0].goal='Explore home, play with Omiros, then follow the afternoon as it unfolds.';
   scenes[0].places.push(door('child-home','Enter the family home',4,3,'memory-child-living',{x:7,y:9},'up'));
   scenes[0].places.find(p=>p.id==='brother').speaker='Omiros';
   scenes[0].places.find(p=>p.id==='brother').who='family-brother';
@@ -48,10 +49,11 @@
     'memory-adult-bedroom':{name:'Shared home · bedroom',scene:'shared-home',objects:[{x:9,y:2,w:3,h:4,type:'bed'},{x:1,y:1,w:3,h:3,type:'wardrobe'},{x:1,y:6,w:2,h:3,type:'bookstall'}],places:[{id:'adult-reading',name:'Read a few pages',x:3,y:7},door('adult-bedroom-return','Back to the living room',7,10,'memory-shared-home',{x:7,y:9},'down')]}
   };
   const living=extraRooms['memory-child-living'];living.places.find(p=>p.id==='mother').who='family-mother';living.places.find(p=>p.id==='father').who='family-father';
+  living.places.push({id:'indoor-play',name:'Play with Omiros',speaker:'Omiros',x:5,y:5,who:'family-brother'});
+  choices['indoor-play']=['pass'];texts['indoor-play:pass']='You roll the ball between you. Omiros sends it back.';
   living.objects.find(o=>o.type==='table').album=true;
   living.objects.push({x:7,y:7,w:1,h:1,type:'backpacks'});
-  living.places.push({id:'outing-bag',name:'Pack the outing bag',x:8,y:7},{id:'family-album',name:'Look at the family album',x:4,y:7});
-  extraRooms['memory-child-bedroom'].places.push({id:'outing-book',name:'Choose a book for the outing',x:3,y:5});
+  living.places.push({id:'family-album',name:'Look at the family album',x:4,y:7});
   const scouts=scenes[1];scouts.places=scouts.places.filter(p=>p.id!=='scout-friend');
   scouts.places.push({id:'gerasimos',name:'Talk to Gerasimos',speaker:'Gerasimos',x:4,y:6,who:'memory-scout',patrol:[[4,6],[5,6],[5,7],[4,7]]},{id:'vaggelis',name:'Talk to Vaggelis',speaker:'Vaggelis',x:9,y:7,who:'memory-scout',patrol:[[9,7],[9,8],[8,8],[8,7]]},door('scout-store-door','Enter the kit room',12,8,'memory-scout-store',{x:7,y:9},'right'));
   scouts.objects.find(o=>o.type==='table').type='map-table';
@@ -62,8 +64,8 @@
   home.places.push({id:'adult-tv',name:'Watch something together',x:4,y:2},{id:'laptop',name:'Close the laptop for tonight',x:10,y:8},door('adult-kitchen-door','Go to the kitchen',12,4,'memory-adult-kitchen',{x:7,y:9},'right'),door('adult-bedroom-door','Go to the bedroom',7,10,'memory-adult-bedroom',{x:7,y:9},'down'));
   const items={
     'scout-books':{body:'A field guide and a well-used handbook sit on the shelf.',options:['Check the field guide'],choices:['read'],texts:['You compare the guide with the map: landmarks first, then direction and distance. You leave the book where the others can find it.']},
-    mother:{speaker:'Mum',body:'“We’re going out later, whirlwind. Can you help? Water from the kitchen, one book from your room, then put them in the bag. And don’t leave your brother behind.”',options:['“I can do all of that!”','“Does the ball count as luggage?”'],choices:['game','outside'],texts:['“One room at a time! I’d like the water to reach the bag, not the carpet.”','“The ball can come. It still doesn’t count as a water bottle.”']},
-    father:{speaker:'Dad',body:'“You’ve gone past this room three times already. Come and choose a record with me. We have time for one side before we leave.”',options:['“You choose one.”','“Let me look through them.”'],choices:['choose','browse'],texts:['“Then listen to this bit.” He lowers the needle. For a moment, your feet stop moving.','“Hold it by the edges. You can choose; I’ll put it on.” A small job becomes something you do together.']},
+    mother:{speaker:'Mum',body:'“You two have enough energy for the whole building today.”',options:['“We’re only playing!”','“We’ll be careful.”'],choices:['game','outside'],texts:['“I can hear that from the kitchen.”','“Then keep the ball away from the records.”']},
+    father:{speaker:'Dad',body:'“I have to leave for work in a little while. Want to hear this bit first?”',options:['“You choose one.”','“Let me look through them.”'],choices:['choose','browse'],texts:['He lowers the needle. For a moment, your feet stop moving.','“Hold it by the edges. You choose; I’ll put it on.”']},
     'outing-book':{body:'The shelf is full of possibilities. There is room for one book in the outing bag.',options:['Choose a book to take'],choices:['take'],texts:['You choose a book and hold it against your chest. Now for the water and the bag in the living room.']},
     'outing-bag':{body:'The bag is waiting by the table. A bottle, a book, and room for a few family things.',options:['Put the bottle and book inside'],choices:['pack'],texts:['The bottle goes upright. The book fits beside it. You call, “Ready!” Mum answers, “The bag is ready. You still need to find your brother.”']},
     'child-tv':{body:'The television sits on a heavy wooden cabinet.',options:['Turn it on','Turn it off'],choices:['on','off'],texts:['The screen lights up. You watch for a while.','The screen goes dark. You can hear the courtyard again.']},
@@ -105,18 +107,9 @@
     {cue:'The ball comes back too quickly and bounces beside your foot.',hint:'Steady the ball before trying anything bigger.',answer:'steady',text:'You stop it under your shoe. Omiros copies you with an invisible ball.'},
     {cue:'Omiros steps aside. The low wall ahead is clear.',hint:'There is room for a gentle shot at the wall.',answer:'shot',text:'The ball taps the wall and rolls back between you. Omiros laughs. “Again! Again!”'}
   ];
-  function initial(){return {scene:null,visited:{},choices:{},completed:false,met:false,afternoon:{round:0,attempts:0,finished:false}};}
-  function goal(s){const q=current(s);if(q?.id!=='courtyard')return q?.goal||'';const v=s.memory.visited,c=s.memory.choices;
-    if(!v['courtyard:mother'])return 'Mum is in the living room. Talk to her about getting ready for the outing.';
-    if(!v['courtyard:father'])return 'Spend a moment with Dad by the record player in the living room.';
-    if(c['courtyard:child-water']!=='fill'&&!v['courtyard:outing-bag'])return 'Fill the outing bottle at the kitchen sink. The kitchen door is on the left of the living room.';
-    if(!v['courtyard:outing-book'])return 'Choose one book from your bedroom. Its door is on the right of the living room.';
-    if(!v['courtyard:outing-bag'])return 'Put the bottle and book in the bag beside the living-room table.';
-    if(!v['courtyard:brother'])return 'Omiros is in the courtyard. Ask him to play with you.';
-    if(!v['courtyard:ball'])return 'Play with the ball in the courtyard. Read each cue and keep the game going together.';
-    return 'The bag is ready and you have played together. Meet at the courtyard gate to finish this afternoon.';
-  }
+  function initial(){return {scene:null,visited:{},choices:{},completed:false,met:false,afternoon:{round:0,attempts:0,finished:false},opening:Opening.initial()};}
+  function goal(s){const q=current(s);return q?.id==='courtyard'?Opening.current(s)?.goal||'Watch the afternoon unfold.':q?.goal||'';}
   function current(s){return scenes.find(q=>q.id===s.memory?.scene)||null;}
-  function complete(s){const q=current(s);return !!q&&q.required.every(id=>s.memory.visited[q.id+':'+id])&&(q.id!=='shared-home'||['books','guitar','records'].some(id=>s.memory.visited[q.id+':'+id]));}
-  const api={scenes,extraRooms,items,family,playRounds,goal,propState,allPlaces,choices,texts,initial,current,complete};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.CityMemories=api;
+  function complete(s){const q=current(s);return q?.id==='courtyard'?s.memory.opening.beat==='done':!!q&&q.required.every(id=>s.memory.visited[q.id+':'+id])&&(q.id!=='shared-home'||['books','guitar','records'].some(id=>s.memory.visited[q.id+':'+id]));}
+  const api={Opening,scenes,extraRooms,items,family,playRounds,goal,propState,allPlaces,choices,texts,initial,current,complete};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.CityMemories=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

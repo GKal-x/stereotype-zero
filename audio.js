@@ -2,6 +2,7 @@
    Notes/events also feed build.js so downloadable WAVs match the game. */
 (function(root){
   'use strict';
+  const Opening=typeof module!=='undefined'&&module.exports?require('./opening.js'):root.CityOpening;
   const scenes={street:{bpm:84,bass:[38,34,41,36],lead:[62,null,null,69,null,null,65,null,64,null,null,null,62,null,null,null,60,null,null,65,null,null,64,null,62,null,null,null,null,null,null,null]},battle:{bpm:96,bass:[38,38,39,36],lead:[62,null,63,null,null,null,69,null,65,null,null,null,64,null,63,null]},venue:{bpm:108,bass:[38,34,41,36],lead:[62,null,65,69,null,67,65,null,64,null,62,null,null,60,62,null]},home:{bpm:72,bass:[38,34,41,36],lead:[62,null,null,null,65,null,null,null,64,null,null,null,62,null,null,null]}};
   Object.assign(scenes,{
     childhood:{bpm:92,bass:[48,43,45,41],lead:[72,null,76,79,null,76,74,null,72,null,67,null,69,null,72,null],pluck:true},
@@ -10,13 +11,16 @@
     work:{bpm:66,bass:[38,39,38,36],lead:[50,null,null,null,null,null,51,null,57,null,null,null,53,null,null,null],sparse:true},
     station:{bpm:80,bass:[40,36,43,38],lead:[64,null,null,67,null,null,71,null,null,null,66,null,64,null,null,null],sparse:true},
     train:{bpm:100,bass:[40,43,38,36],lead:[71,null,null,67,null,null,64,null,66,null,null,69,null,null,67,null],rolling:true},
-    victoria:{bpm:86,bass:[45,43,41,40],lead:[69,null,72,null,76,null,null,74,72,null,67,null,69,null,null,null],pluck:true}
+    victoria:{bpm:86,bass:[45,43,41,40],lead:[69,null,72,null,76,null,null,74,72,null,67,null,69,null,null,null],pluck:true},
+    omen:{bpm:58,bass:[33,33,38,33],lead:[69,null,null,null,null,null,70,null,null,null,null,null,64,null,null,null],sparse:true},
+    silence:{bpm:60,bass:[33,33,33,33],lead:[null]}
   });
   const roomScenes={home:'home','memory-shared-home':'home','memory-courtyard':'childhood','memory-scouts':'scouts',shop:'shop',employer:'work',venue:'venue',metro:'station',platform:'station','victoria-platform':'station',train:'train',victoria:'victoria'};
   for(const id of ['memory-child-living','memory-child-bedroom','memory-child-kitchen'])roomScenes[id]='childhood';
   roomScenes['memory-scout-store']='scouts';roomScenes['memory-adult-kitchen']='home';roomScenes['memory-adult-bedroom']='home';
-  function sceneFor(s){if(s.mode==='battle'&&!s.battle?.result)return 'battle';if(s.mode==='ending')return s.ending?.where==='gig'?'venue':'home';return roomScenes[s.room]||(!s.room&&Math.hypot(s.x-27,s.y-43)<6?'venue':'street');}
+  function sceneFor(s){if(s.memory?.scene==='courtyard'&&Opening){const theme=Opening.music(s);if(theme)return theme;}if(s.mode==='battle'&&!s.battle?.result)return 'battle';if(s.mode==='ending')return s.ending?.where==='gig'?'venue':'home';return roomScenes[s.room]||(!s.room&&Math.hypot(s.x-27,s.y-43)<6?'venue':'street');}
   function events(mode,i){const s=scenes[mode]||scenes.street,beat=30/s.bpm,bar=Math.floor(i/8)%16,chord=Math.floor(bar/4),out=[];
+    if(mode==='silence')return out;
     const add=(note,duration,type,volume)=>{if(note!==null)out.push({note,duration,type,volume});};
     // Street melody leaves every other two-bar phrase empty: space for the city.
     const phrase=Math.floor(i/32)%4,lead=s.lead[i%s.lead.length];
@@ -39,7 +43,7 @@
     tone(note,t,d=.16,type='triangle',volume=.3){if(!this.context||note===null)return;const o=this.context.createOscillator(),g=this.context.createGain(),filter=this.context.createBiquadFilter();o.type=type;o.frequency.value=440*Math.pow(2,(note-69)/12);filter.type='lowpass';filter.frequency.value=type==='square'?1250:2400;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(volume,t+.018);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(filter);filter.connect(g);g.connect(this.bus||this.master);o.onended=()=>{o.disconnect();filter.disconnect();g.disconnect();};o.start(t);o.stop(t+d+.02);}
     drum(t,volume){const s=this.context.createBufferSource(),g=this.context.createGain(),filter=this.context.createBiquadFilter();s.buffer=this.noise;filter.type='highpass';filter.frequency.value=2500;g.gain.setValueAtTime(volume,t);g.gain.exponentialRampToValueAtTime(.0001,t+.065);s.connect(filter);filter.connect(g);g.connect(this.bus||this.master);s.onended=()=>{s.disconnect();filter.disconnect();g.disconnect();};s.start(t);s.stop(t+.08);}
     schedule(){if(!this.enabled)return;if(document.hidden){this.next=this.context.currentTime+.05;return;}if(this.next<this.context.currentTime-.25)this.next=this.context.currentTime+.04;while(this.next<this.context.currentTime+.12){for(const e of events(this.mode,this.step++)){if(e.noise)this.drum(this.next,e.volume);else this.tone(e.note,this.next,e.duration,e.type,e.volume);}this.next+=30/scenes[this.mode].bpm;}}
-    effect(kind='step'){if(!this.enabled||kind==='step')return;this.tone(kind==='choice'?69:kind==='win'?74:kind==='blocked'?38:50,this.context.currentTime,.08,'triangle',.10);}
+    effect(kind='step'){if(!this.enabled||kind==='step'||this.mode==='silence')return;this.tone(kind==='choice'?69:kind==='win'?74:kind==='blocked'?38:50,this.context.currentTime,.08,'triangle',.10);}
     phrase(){if(!this.enabled)return;[62,69,65,64,62].forEach((note,i)=>this.tone(note,this.context.currentTime+i*.18,.35,'triangle',.22));}
   }
   if(typeof module!=='undefined'&&module.exports)module.exports={scenes,events,sceneFor,roomScenes};else{root.CityAudio=CityAudio;root.CityScore={scenes,events,sceneFor,roomScenes};}

@@ -1,3 +1,17 @@
+## A shadow overhead — 0.11.0
+
+Begin as a child at home with Omiros. Explore the connected rooms, then roll the ball to start the story. Dad leaves for work; after a little more play Mum sends the children outside. Complete the cooperative ball game and look up. A brief tropical island cut shows only a descending helicopter-like shadow and smoke, then an original bird silhouette crosses above the children. Return through the ordinary doorway and tell Mum. Dad comes home early: “You’re early.” / “Something happened.” Silence and a fade lead automatically to the scout age.
+
+This is an authored, ambiguous adaptation of the supplied story. No explicit impact, named victim, explanation or supernatural claim is shown. The later scout and adult snapshots, handover to Aris, wages encounter and railway journey remain playable; the full life story still needs more chapters. The original bird is not a Pokémon character.
+
+Save schema 8 stores the opening beat and elapsed cutscene time. Previous childhood saves gain the opening while preserving completed rallies and optional object choices; later memories and Aris saves continue where they were. The player cannot walk during scripted moments. Dad follows a clear path with walking animation, ordinary room exploration and doors remain available at the free-play stages, and music changes from childhood to a sparse ominous theme and then silence.
+
+The adult couple's existing costumes and proportions are retained with subtle photo-inspired hair/beard changes. See assets/adults-art-brief.md for the unchanged generated source, final prompt and adaptation limits. Raw photographs and private biography notes are excluded from game exports.
+
+68 automated tests cover the story, timed save recovery, old saves, earlier quests, transport, collisions and score. Browser phone-layout review and a signed offline APK accompany this release; physical-phone playback remains for user review.
+
+Earlier release notes follow for history; the outing-bag opening below is superseded.
+
 ## A family afternoon 0.10.0
 
 The childhood opening now starts beside Mum in the living room and follows an authored small story: help get a family outing bag ready, share a record with Dad, and play with Omiros before meeting at the courtyard gate. Fetch a filled bottle from the kitchen and a book from the bedroom, then put both in the living-room bag. The bag cannot be packed by merely drinking water or skipping the items. The journal gives the next concrete task; room doors remain automatic.

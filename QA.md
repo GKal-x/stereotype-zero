@@ -1,3 +1,11 @@
+## Childhood shadow opening 0.11.0
+
+68 Node tests pass, including the complete opening route, blocked early exit, Dad's animated departure, cooperative play retries, return-home proximity, unexplained final exchange, automatic age transition, save recovery during the island timer, malformed timing rejection, schema 7 migration and score changes. Existing Aris encounters, railway journeys, doors, collisions and movement checks pass.
+
+Phone-size browser review (412 × 915) confirms compact named dialogue, family framing, the island shadow, absence of explicit impact, and final dialogue. Browser error log is empty. New source modules pass syntax checks. The local signed APK passes v2/v3 signature verification and contains six embedded PNGs, the opening/cinematics modules, all atlases, offline map and compiled Activity; exact packaged HTML is checked. APK version 0.11.0-prototype, local versionCode 1019. No physical Android device was available for a touch/audio playthrough.
+
+The island/sky scenes are an initial code-drawn cinematic pass. Adult likeness refinements are generated from existing art and reference, not hand-drawn sprites. The opening is an adaptation and the full biography remains in development. Historical release notes follow.
+
 ## Level refinement 0.5.0
 
 Chapter 01 now has four walkable fictional interiors attached to the existing doors: the shared apartment, neighborhood market, stockroom and basement venue. Approach a doorway and press A. Indoors, walk or tap people and objects; furniture blocks movement. B routes to the exit instead of teleporting. Home contains Eleni, a bed, notes and a table; the market has a counter and community board; the stockroom has the supervisor and shift board; the basement has Dimos, a mixer and the stage. Entering the venue no longer ends the chapter: staying for the set does. Home rest is distinct from ending the night. The kiosk remains a pavement counter.
