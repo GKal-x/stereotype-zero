@@ -91,3 +91,12 @@ No native Android APK or physical Android-device test in this pass. Screen-reade
 - PNG source assets preserved; supervisor has true alpha and measured crop bounds. Canvas smoothing disabled; integer CSS sizing avoids fractional resampling; façades retain aspect ratios. New source-backed supervisor replaces placeholder.
 - Local Android 0.6.0 signed with existing key; signature v2/v3, alignment, SDK metadata and three embedded atlases/offline bundle checked. GitHub workflow and release checked at delivery.
 - Physical Android graphics, feel, touch and sound still need user review. Victoria is a small authored square; intermediate districts are not playable. Train timing and station plans are fictional. Transit NPCs currently reuse cast appearances.
+
+
+## 0.7.0 playable memory introduction
+
+- 45 deterministic tests pass, including all existing world, train, motion and wage checks, plus every memory objective's reachability, local action gates, memory dialogue/save recovery, malformed save rejection, schema 4 train migration, fresh independent Aris state after the complete three-scene path, and optional musician continuity without wage/trust rewards.
+- Browser 390 × 844: new Begin the memories entry and age/role HUD; walk-to-ball via journal, choose Pass to Omiros, return to exploration. Saved home memory loads with correct avatar and objectives; window interaction opens explicit handover; Take control of Aris restores 17:20 / €8.40, normal map/phone and independent quests.
+- Art: separate provisional child, scout, adult and partner sprites with measured alpha bounds; no likeness claims. Shared home uses supplied blue/yellow/parquet/furniture vocabulary in an invented compact layout. Room props and ball effect are native canvas graphics.
+- Three adapted moments are a short introduction test, not the complete narrated life. Sensitive raw narration and reference photos stay outside publisher exports. Existing chapter score reused; dedicated prologue score and multi-frame memory walk animation remain future work.
+- APK signing, offline package and GitHub build/release results checked at delivery. Physical Android controls, sound, visual clarity and narrative pacing require phone review.

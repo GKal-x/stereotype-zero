@@ -1,3 +1,11 @@
+## Memory sprites 0.7.0
+
+Saved project asset: `assets/memories-v1.png`; measured bounds: `assets/memories-atlas.js`. Built-in imagegen mode, style-reference generation using `cast-refined.png`, not CLI. Original saved source: `C:/Users/gkali/.codex/generated_images/01a13050-441d-75c1-9b4c-832856a699ba/exec-e44f490b-c167-4d7a-95ae-b1fc899da82f.png`. True alpha is preserved. The sprites are provisional fictional depictions, not actual likenesses; original cast assets remain intact.
+
+Generation brief: four columns (front, left, right, back), four rows (six-year-old boy in cream tee/brick-red shorts/blue shoes; same person as young adult scout in teal shirt/mustard neckerchief/navy trousers/brown boots; adult with subtle beard/navy tee/teal pocket/jeans/white shoes; adult woman with wavy brown hair/rust shirt/dark-teal trousers/cream shoes). Match the expressive chibi proportions and clean dark pixel outlines of the reference. Large flat clusters, three shades per material, full bodies, generous transparent separation; no texture, smoothing, ground shadows, text, props or Aris's mustard hoodie. Requested 1536 × 1024. Source bounds are measured from alpha components rather than assumed cell sizes. The child avatar is displayed smaller; the younger brother is smaller again. Walking uses directional poses with the existing motion system; a dedicated multi-frame memory walk sheet remains future art work.
+
+Courtyard, scout details, blue/yellow room palette, parquet, guitar and record crate are code-native artwork in `art.js`. These are simplified fictional layouts inspired by narration and reference photos; the photographs are not included in the repository or APK. The scout avatar is stylised, not an assertion of historical uniform details.
+
 ## Supervisor, station and render update 0.6.0
 
 `supervisor-v1.png` is a new transparent generated atlas using `cast-refined.png` as a style reference, made with the built-in imagegen tool (not CLI). Original source is retained at `C:/Users/gkali/.codex/generated_images/01a13050-441d-75c1-9b4c-832856a699ba/exec-e64d7021-1c5c-4a2f-a681-4e276e249036.png`. `supervisor.js` stores measured opaque bounds, in front/left/right/back order. The output has real alpha and is copied into this project. Existing cast and building source files are preserved.

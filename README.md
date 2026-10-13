@@ -1,3 +1,13 @@
+## Playable story introduction 0.7.0
+
+Choose **Begin the memories** to play three short adapted scenes: childhood in a Patisia courtyard, preparing together at the scout centre, and an adult shared home inspired by the supplied interior palette. Walk, interact, make small choices and meet each scene's objectives. The final window interaction explicitly hands control to Aris at 17:20 with €8.40 and his original independent quests. An optional fictional musician encounter becomes available in the basement afterward. You can also start directly as Aris or load an existing save.
+
+This is the short introduction prototype discussed in the scenario plan, not the complete 40–50-minute autobiographical prologue. Dialogue, tasks and room plans are adaptations for review, not exact remembered events. Character appearances are provisional, not verified likenesses. Family bereavement, violence, diagnoses, doctoral disputes and other sensitive life events are not depicted in this slice. Raw life-story notes and photographs stay outside the game's publisher exports.
+
+Memory play has its own objectives and age/role HUD, with money and stress meters hidden. B opens the memory journal; its destination buttons walk to interactions, and the journal saves progress. Save schema 5 preserves the scene, visited interactions, choices, handover and optional encounter; earlier saves migrate without losing existing evening or train progress. Childhood walking does not advance Aris's evening clock. Handover resets his resources and quests while preserving the memory record.
+
+45 automated tests cover existing chapter rules plus reachable memory objectives, gates, saved choices, malformed save rejection, schema 4 train migration, independent Aris handover and optional musician continuity. Browser and Android packaging checks are recorded in task delivery; physical-phone review remains needed. The present release reuses the existing original chapter score; a dedicated prologue score and the longer biography remain future work.
+
 ## Transit and visual feedback 0.6.0
 
 The first playable rail trip links Kato Patisia to a small Victoria square and returns through Agios Nikolaos and Attiki. Enter the existing Kato Patisia station on Acharnon, buy a €1.20 urban ticket at the machine, validate at the blue gate and board the train. Walk in the carriage, speak to a passenger, then continue to the stop. Tickets activate at validation for 90 story minutes and cover the return while valid. Expired tickets block re-entry; a fictional attendant assistance option prevents players without money becoming stranded. Intermediate districts and the wider line are not playable yet. Station layouts and the eight-minute story trip are authored approximations, not a real timetable or station survey. Four new fictional conversations remember visits; their temporary sprites reuse cast appearances.
@@ -50,7 +60,7 @@ Playable first chapter: **Before the Last Train**, a fictional Kato Patisia bloc
 
 ## Play
 
-On your Android phone, sign into GitHub and open [the Android releases](https://github.com/GKal-x/stereotype-zero/releases). Open the newest preview, expand **Assets**, download `stereotype-zero-0.6.0.apk` and open it to install. No computer or Android Studio is needed. The app requires Android 8.0 or newer; physical-device testing is still pending.
+On your Android phone, sign into GitHub and open [the Android releases](https://github.com/GKal-x/stereotype-zero/releases). Open the newest preview, expand **Assets**, download `stereotype-zero-0.7.0.apk` and open it to install. No computer or Android Studio is needed. The app requires Android 8.0 or newer; physical-device testing is still pending.
 
 GitHub builds, tests and signs an APK whenever changes are pushed to `main`. Each successful build creates a release with a directly downloadable APK and also keeps a workflow artifact. The repository is private, so sign in with an account that can access it. See [Android installation and build instructions](android/README.md).
 

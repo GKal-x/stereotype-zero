@@ -15,3 +15,9 @@ for(const id of ['home','employer','metro','platform','train','victoria','battle
  fs.writeFileSync(path.join(root,'dist/qa-'+id+'.html'),html.replace('<head>','<head>'+seed));
 }
 console.log('Development preview fixtures emitted to dist/qa-*.html.');
+
+const memoryState=E.fresh();E.startMemories(memoryState);
+function emitMemory(name,s){if(!E.restore(E.snapshot(s)))throw Error('Invalid memory fixture '+name);const seed='<script>localStorage.setItem("stereotype-zero-save",'+JSON.stringify(E.snapshot(s))+');</script>';fs.writeFileSync(path.join(root,'dist/qa-memory-'+name+'.html'),html.replace('<head>','<head>'+seed));}
+function walkMemory(s,id){const p=E.places(s).find(p=>p.id===id);for(const [x,y]of E.path(s,p))E.move(s,x-s.x,y-s.y);}
+for(const q of E.Memories.scenes){emitMemory(q.id,memoryState);for(const id of q.required){walkMemory(memoryState,id);E.memoryAct(memoryState,id,E.Memories.choices[id][0]);}if(q.id==='shared-home'){walkMemory(memoryState,'books');E.memoryAct(memoryState,'books','shelf');}walkMemory(memoryState,'continue-memory');if(q.id==='shared-home')emitMemory('handover',memoryState);E.advanceMemory(memoryState);}
+const venue=E.PLACES.find(p=>p.id==='venue');memoryState.x=venue.x;memoryState.y=venue.y;E.enter(memoryState,'venue');walkMemory(memoryState,'older-musician');emitMemory('encounter',memoryState);
