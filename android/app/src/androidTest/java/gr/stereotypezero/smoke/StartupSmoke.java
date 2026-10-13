@@ -42,7 +42,7 @@ public final class StartupSmoke extends Instrumentation {
     private void screenshot() throws Exception {
         Bitmap image = getUiAutomation().takeScreenshot();
         check(image != null, "Screenshot unavailable");
-        File file = new File(getContext().getExternalFilesDir(null), "android-startup.png");
+        File file = new File(getTargetContext().getExternalFilesDir(null), "android-startup.png");
         try (FileOutputStream out = new FileOutputStream(file)) { image.compress(Bitmap.CompressFormat.PNG, 100, out); }
         image.recycle();
     }

@@ -109,7 +109,7 @@ jobs:
             adb install -r dist/startup-tests.apk
             adb shell am instrument -w gr.stereotypezero.smoke/gr.stereotypezero.smoke.StartupSmoke | tee dist/android-startup.txt
             adb logcat -d > dist/android-logcat.txt
-            adb pull /sdcard/Android/data/gr.stereotypezero.smoke/files/android-startup.png dist/android-startup.png
+            adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-startup.png dist/android-startup.png
             grep -q 'INSTRUMENTATION_RESULT: result=PASS' dist/android-startup.txt
       - name: Keep Android startup evidence
         if: always()
