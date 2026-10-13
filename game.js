@@ -129,7 +129,7 @@
   function load(){let loaded;try{loaded=E.restore(localStorage.getItem('stereotype-zero-save'));}catch{}if(!loaded){$('save-status').textContent='No valid save found.';return;}state=loaded;motion.sync();Art.resetCamera();pendingInteraction=null;route=[];audio.setScene(state.mode==='battle'?'battle':'street');if(state.mode==='battle')battle();else if(state.mode==='ending')ending();else{state.mode='explore';overlay.className='overlay';$('location-tag').hidden=false;canvas.focus({preventScroll:true});line(E.Memories.current(state)?'YOU':'ARIS · INNER VOICE',E.Memories.current(state)?.goal||(state.room?'Back inside. The evening is where you left it.':'Back on the block. The evening is where you left it.'));}hud();$('save-status').textContent='Evening loaded.';}
 
   let extraSlow=false;try{extraSlow=localStorage.getItem('stereotype-zero-slow')==='true';}catch{}
-  const keys=new Map();let stickPointer=null,typing=null,pendingInteraction=null,lastTime=0,toastTimer=null,tapStart=null;
+  const keys=new Map();let stickPointer=null,stickStrength=0,typing=null,pendingInteraction=null,lastTime=0,toastTimer=null,tapStart=null;
   const joystick=$('joystick'),knob=$('stick-knob');
   function releaseInput(){keys.clear();stickPointer=null;knob.style.transform='';motion.stop();}
   function finishTyping(){if(typing){typing.node.textContent=typing.text;typing=null;return true;}return false;}
@@ -139,7 +139,7 @@
   function confirm(){if(finishTyping())return;if(state.mode==='explore')interact();else if(overlay.contains(document.activeElement)&&document.activeElement.matches('button'))document.activeElement.click();else overlay.querySelector('button:not(:disabled)')?.click();}
   function back(){finishTyping();if(state.mode==='battle'){if(state.battle.result)overlay.querySelector('button')?.click();else line('ARIS','Choose Walk away to leave this encounter.');}else if(state.mode==='explore'&&E.Memories.current(state)){journal();}else if(state.mode==='explore'&&state.room){const exit=E.places(state).find(p=>p.id==='exit');motion.go(E.path(state,exit),exit);}else close();}
   function directionInput(dir){if(state.mode!=='explore')return;pendingInteraction=null;motion.hold(dir);}
-  function stickMove(e){const r=joystick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,radius=r.width*.32,length=Math.hypot(dx,dy),factor=length>radius?radius/length:1;knob.style.transform='translate('+Math.round(dx*factor)+'px,'+Math.round(dy*factor)+'px)';if(length<r.width*.20){motion.release();return;}const previous=motion.held,horizontal=previous==='left'||previous==='right';const useX=previous?(horizontal?Math.abs(dx)*1.3>Math.abs(dy):Math.abs(dx)>Math.abs(dy)*1.3):Math.abs(dx)>Math.abs(dy);directionInput(useX?(dx>0?'right':'left'):(dy>0?'down':'up'));}
+  function stickMove(e){const r=joystick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,radius=r.width*.32,length=Math.hypot(dx,dy),factor=length>radius?radius/length:1;knob.style.transform='translate('+Math.round(dx*factor)+'px,'+Math.round(dy*factor)+'px)';const input=window.CityMotion.stick(dx,dy,r.width,motion.held);stickStrength=input.strength;if(!input.dir){motion.release();return;}directionInput(input.dir);}
   joystick.addEventListener('pointerdown',e=>{if(state.mode!=='explore'||stickPointer!==null)return;e.preventDefault();stickPointer=e.pointerId;joystick.setPointerCapture(e.pointerId);stickMove(e);});
   joystick.addEventListener('pointermove',e=>{if(e.pointerId===stickPointer){e.preventDefault();stickMove(e);}});
   function releaseStick(e){if(e.pointerId!==stickPointer)return;stickPointer=null;knob.style.transform='';motion.release();}
@@ -178,11 +178,11 @@
   new ResizeObserver(resize).observe($('world'));resize();
   function loop(t){
     const dt=lastTime?Math.min(100,t-lastTime):16;lastTime=t;
-    motion.duration=extraSlow?480:state.room?420:360;
+    motion.duration=(state.room?520:480)+(extraSlow?140:0)+(stickPointer!==null?Math.round((1-stickStrength)*150):0);
     const arrived=motion.update(dt);if(arrived&&state.mode==='explore')interact(arrived);
     if(pendingInteraction&&!motion.moving&&state.mode==='explore'){const p=pendingInteraction;pendingInteraction=null;interact(p);}
     if(typing){typing.shown+=dt*.09;typing.node.textContent=typing.text.slice(0,Math.floor(typing.shown));if(typing.shown>=typing.text.length)typing=null;}
-    nearby();audio.setScene(state.mode==='battle'&&!state.battle.result?'battle':state.mode==='ending'?(state.ending.where==='gig'?'venue':'home'):(state.room==='home'||state.room==='memory-shared-home')?'home':state.room==='venue'?'venue':!state.room&&Math.hypot(state.x-27,state.y-43)<6?'venue':'street');Art.render(ctx,state,motion,t,dt);const scene=overlay.querySelector('.encounter-scene');if(scene)Art.encounter(scene.getContext('2d'),state,t);requestAnimationFrame(loop);
+    nearby();audio.setScene(window.CityScore.sceneFor(state));Art.render(ctx,state,motion,t,dt);const scene=overlay.querySelector('.encounter-scene');if(scene)Art.encounter(scene.getContext('2d'),state,t);requestAnimationFrame(loop);
   }
   function pauseGame(){releaseInput();pendingInteraction=null;if(state.flags.started)save(false);if(audio.context)audio.context.suspend().catch(()=>{});}
   function resumeGame(){if(audio.context&&audio.enabled){audio.next=audio.context.currentTime+.05;audio.context.resume().catch(()=>{});}}

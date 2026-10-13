@@ -1,3 +1,13 @@
+## Interiors, place scores and movement 0.8.0
+
+Furniture uses code-native pixel art with transparent silhouettes, visible table legs, cabinet fronts, a monitor and keyboard, bedding, upholstered seating, stocked bookshelves, produce crates, labelled cartons, a drum kit, microphone, speaker cones and mixer controls. Existing room footprints and reachable interactions are preserved. Home and scout interiors use warm wooden floors; the basement uses darker tiles. Street buildings and character atlases are preserved.
+
+Eleven original arrangements cover the street, home, market, stockroom, venue, station, train, Victoria square, childhood courtyard, scout centre and wage encounter. Stations share one theme; the two homes share another. Scores crossfade when changing places. Mute remains respected. Offline WAV previews are generated as `dist/score-*.wav`; Android synthesises the same note events without streaming. These are original prototype chiptune arrangements, not final recordings.
+
+Walking now takes 480 ms per outdoor tile or 520 ms indoors, with up to 150 ms added for gentle joystick pressure. Extra slow adds 140 ms. Neutral-zone and axis hysteresis reduce accidental movement and diagonal switching. Each step captures its own duration so changing pressure cannot snap the sprite mid-step. Release finishes the current tile; a changed direction cannot queue another tile after release. Physical-phone touch review is still needed.
+
+50 automated tests pass, including score coverage for every room, distinct deterministic sound events, joystick thresholds, direction release and changing pressure mid-step. Existing saves remain compatible.
+
 ## Playable story introduction 0.7.0
 
 Choose **Begin the memories** to play three short adapted scenes: childhood in a Patisia courtyard, preparing together at the scout centre, and an adult shared home inspired by the supplied interior palette. Walk, interact, make small choices and meet each scene's objectives. The final window interaction explicitly hands control to Aris at 17:20 with €8.40 and his original independent quests. An optional fictional musician encounter becomes available in the basement afterward. You can also start directly as Aris or load an existing save.

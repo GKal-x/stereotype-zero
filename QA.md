@@ -100,3 +100,5 @@ No native Android APK or physical Android-device test in this pass. Screen-reade
 - Art: separate provisional child, scout, adult and partner sprites with measured alpha bounds; no likeness claims. Shared home uses supplied blue/yellow/parquet/furniture vocabulary in an invented compact layout. Room props and ball effect are native canvas graphics.
 - Three adapted moments are a short introduction test, not the complete narrated life. Sensitive raw narration and reference photos stay outside publisher exports. Existing chapter score reused; dedicated prologue score and multi-frame memory walk animation remain future work.
 - APK signing, offline package and GitHub build/release results checked at delivery. Physical Android controls, sound, visual clarity and narrative pacing require phone review.
+
+0.8.0: 50 rules/motion/audio tests pass. Android 8+ local APK builds and verifies with v2/v3 signing. Interior browser review uses the offline bundle at phone viewport. New props retain collision footprints; all existing level/memory routes remain reachable. Physical-phone controls and listening feedback remain user review items.

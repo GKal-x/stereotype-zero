@@ -4,7 +4,7 @@ import re
 import zipfile
 
 root = Path(__file__).resolve().parents[1]
-apk = root / 'dist/stereotype-zero-0.7.0.apk'
+apk = root / 'dist/stereotype-zero-0.8.0.apk'
 with zipfile.ZipFile(apk) as archive:
     html = archive.read('assets/stereotype-zero.html')
     assert html == (root / 'android/build/assets/stereotype-zero.html').read_bytes()

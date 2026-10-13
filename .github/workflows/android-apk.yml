@@ -28,7 +28,7 @@ jobs:
       - name: Check game rules and scripts
         shell: pwsh
         run: |
-          node --test engine.test.js motion.test.js world.test.js level.test.js memories.test.js
+          node --test engine.test.js motion.test.js world.test.js level.test.js memories.test.js audio.test.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --check game.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -41,6 +41,8 @@ jobs:
           node --check world.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --check assets/pixel-art.js
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --check props.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --check art.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -68,8 +70,8 @@ jobs:
         with:
           name: stereotype-zero-android-${{ github.run_number }}
           path: |
-            dist/stereotype-zero-0.7.0.apk
-            dist/stereotype-zero-0.7.0.apk.sha256
+            dist/stereotype-zero-0.8.0.apk
+            dist/stereotype-zero-0.8.0.apk.sha256
           if-no-files-found: error
           retention-days: 30
       - name: Publish a directly downloadable APK
@@ -78,7 +80,7 @@ jobs:
         shell: pwsh
         run: |
           $tag = "android-preview-$env:GITHUB_RUN_NUMBER"
-          gh release create $tag 'dist/stereotype-zero-0.7.0.apk' 'dist/stereotype-zero-0.7.0.apk.sha256' --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Stereotype Zero Android preview $env:GITHUB_RUN_NUMBER" --prerelease --notes "Three short playable adapted memories: childhood courtyard, scout centre and shared home, followed by a clear handover to Aris. New provisional sprites, memory saves and an optional later musician encounter. Includes existing wages, interiors and first train journey. This is an introduction preview, not the full autobiography. Existing saves migrate. Android 8.0+. Install the APK below. Built from $env:GITHUB_SHA."
+          gh release create $tag 'dist/stereotype-zero-0.8.0.apk' 'dist/stereotype-zero-0.8.0.apk.sha256' --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Stereotype Zero Android preview $env:GITHUB_RUN_NUMBER" --prerelease --notes "Recognisable pixel furniture with raised fronts and details. Eleven original location scores with soft transitions. Slower joystick walking with gentle pressure range and stable steps. Includes memory introduction, wages and first train journey. Existing saves migrate. Android 8.0+. Install the APK below. Built from $env:GITHUB_SHA."
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           "### Install on your phone" >> $env:GITHUB_STEP_SUMMARY
           "Download the APK from https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag" >> $env:GITHUB_STEP_SUMMARY

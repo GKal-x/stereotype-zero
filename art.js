@@ -127,7 +127,11 @@
     const wx=Math.max(0,Math.min(w-vw,m.x*T+12-vw/2)),wy=Math.max(0,Math.min(h-vh,m.y*T+12-vh*.55)),ease=1-Math.exp(-dt/85);
     if(!camera.ready){camera.x=wx;camera.y=wy;camera.ready=true;}else{camera.x+=(wx-camera.x)*ease;camera.y+=(wy-camera.y)*ease;}
     box(c,0,0,vw,vh,'#293b43');c.save();c.translate(-Math.round(camera.x),-Math.round(camera.y));box(c,0,0,w,h,'#69736c');box(c,T,T,w-2*T,h-2*T,r.color);
-    for(let y=T;y<h-T;y+=12)for(let x=T;x<w-T;x+=24){box(c,x,y,24,1,'#a69f8c');box(c,x,y,1,12,'#b3ac99');}
+    const domestic=['home','memory-shared-home','memory-scouts'].includes(s.room);
+    for(let y=T;y<h-T;y+=domestic?12:24)for(let x=T;x<w-T;x+=24){
+      if(domestic){box(c,x+1,y+1,23,11,(x/24+y/12)%3?'#b69a71':'#c6aa80');box(c,x+3,y+5,15,1,'#ab8f68');}
+      else{box(c,x+1,y+1,23,23,s.room==='venue'?((x+y)%48?'#827c80':'#898287'):r.color);box(c,x,y,24,1,s.room==='venue'?'#726e73':'#b0afa0');box(c,x,y,1,24,s.room==='venue'?'#726e73':'#b0afa0');}
+    }
     // Baseboards, wall tiles and lived-in objects give each room a particular use.
     box(c,T,22,w-2*T,3,'#594f45');
     for(let x=T;x<w-T;x+=24){box(c,x,2,22,20,s.room==='venue'?'#51465e':'#d9c9a7');box(c,x+1,4,1,17,'#b6a78c');}
@@ -151,7 +155,7 @@
     if(r.transit)stationDecor(c,s,w,h,t);
     // Wall windows and furniture are drawn on the same pixel grid.
     for(const x of [3*T,10*T]){box(c,x,5,28,17,'#243c49');box(c,x+2,7,24,13,s.room==='venue'?'#6e6279':'#a6bfc0');box(c,x+13,7,2,13,'#e0d5b9');}
-    for(const o of r.objects){const x=o.x*T,y=o.y*T,ow=o.w*T,oh=o.h*T;box(c,x+2,y+4,ow,oh,'#777b6b');
+    for(const o of r.objects){if(window.CityProps.draw(c,o,T,s.room))continue;const x=o.x*T,y=o.y*T,ow=o.w*T,oh=o.h*T;box(c,x+2,y+4,ow,oh,'#777b6b');
       const colors={table:'#a78058',desk:'#a78058',bed:'#817c9d',kitchen:'#c6c6ac',counter:'#9c875f',shelf:'#8e805f',boxes:'#b59a71',produce:'#86916c',stage:'#796c7c',mixer:'#496374',speaker:'#34434b',bench:'#956e50','ticket-machine':'#547991',gates:'#9aa9a1','train-exterior':'#aaa88c','train-window':'#688b95','train-seat':'#567963','home-front':'#e1c59b','cafe-front':'#b27d65',bookstall:'#9e8056',planter:'#9e7854',sofa:'#aa7968',amp:'#435460'};
       box(c,x,y,ow,oh,'#35464a');box(c,x+2,y+2,ow-4,oh-4,colors[o.type]);
       if(o.type==='home-front'){for(let dx=6;dx<ow-14;dx+=24){box(c,x+dx,y+7,16,24,'#325e79');box(c,x+dx+2,y+9,12,19,'#84a8b1');box(c,x+dx+7,y+8,2,22,'#e4dab9');}box(c,x+ow/2-9,y+oh-22,18,22,'#2c6076');box(c,x+ow/2+4,y+oh-11,2,3,'#e1b76b');box(c,x,y+2,ow,3,'#a37e5d');}
