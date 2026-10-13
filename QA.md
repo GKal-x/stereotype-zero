@@ -103,4 +103,4 @@ No native Android APK or physical Android-device test in this pass. Screen-reade
 
 0.8.0: 50 rules/motion/audio tests pass. Android 8+ local APK builds and verifies with v2/v3 signing. Interior browser review uses the offline bundle at phone viewport. New props retain collision footprints; all existing level/memory routes remain reachable. Physical-phone controls and listening feedback remain user review items.
 
-0.9.0: 57 tests pass. Connected memory rooms, solid NPCs/trees, doorway crossings, gate validation and legacy furniture relocation covered. Browser review checks named bottom dialogue and entering a bedroom by movement only. Memory appearances and parent dialogue are provisional adaptations. Full autobiographical chapters and new childhood encounters remain future work.
+0.9.0: 58 tests pass. Connected memory rooms, solid NPCs/trees, doorway crossings, gate validation and legacy furniture relocation covered. Browser review checks named bottom dialogue and entering a bedroom by movement only. Memory appearances and parent dialogue are provisional adaptations. Full autobiographical chapters and new childhood encounters remain future work.

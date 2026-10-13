@@ -10,7 +10,7 @@ Tree trunks, street furniture, pots, people, walls and room furniture block move
 
 Conversations and item interactions use compact bottom dialogue boxes with speaker labels and choices. Menus, encounters and chapter cards retain their dedicated panels. Object choices are saved: the television responds on/off, the laptop visibly closes, and record/guitar interactions play an original phrase when music is enabled. Books, computer, kitchen, tent and compass have small contextual actions. They are not full minigames or inventory systems.
 
-57 automated tests cover the existing chapter and score plus solid actors/trees, connected-room routes, doorway arrivals, held-input transitions, ticket checks, NPC reservations, item save recovery and schema 5 migration. Schema 6 moves legacy saves clear of newly occupied tiles while preserving story/resources. Physical-phone review remains needed for the new doors and walking feel.
+58 automated tests cover the existing chapter and score plus solid actors/trees, connected-room routes, doorway arrivals, held-input transitions, ticket checks, NPC reservations, item save recovery and schema 5 migration. Schema 6 moves legacy saves clear of newly occupied tiles while preserving story/resources. Physical-phone review remains needed for the new doors and walking feel.
 
 ## Interiors, place scores and movement 0.8.0
 
