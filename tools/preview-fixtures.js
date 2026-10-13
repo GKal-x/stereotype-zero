@@ -18,8 +18,10 @@ console.log('Development preview fixtures emitted to dist/qa-*.html.');
 
 const memoryState=E.fresh();E.startMemories(memoryState);
 function emitMemory(name,s){if(!E.restore(E.snapshot(s)))throw Error('Invalid memory fixture '+name);const seed='<script>localStorage.setItem("stereotype-zero-save",'+JSON.stringify(E.snapshot(s))+');</script>';fs.writeFileSync(path.join(root,'dist/qa-memory-'+name+'.html'),html.replace('<head>','<head>'+seed));}
-function walkMemory(s,id){const p=E.places(s).find(p=>p.id===id);for(const [x,y]of E.path(s,p))E.move(s,x-s.x,y-s.y);}
-for(const q of E.Memories.scenes){emitMemory(q.id,memoryState);for(const id of q.required){walkMemory(memoryState,id);E.memoryAct(memoryState,id,E.Memories.choices[id][0]);}if(q.id==='shared-home'){walkMemory(memoryState,'books');E.memoryAct(memoryState,'books','shelf');}walkMemory(memoryState,'continue-memory');if(q.id==='shared-home')emitMemory('handover',memoryState);E.advanceMemory(memoryState);}
+const {walk:walkMemory,act:actMemory}=require('./walk-memory.js');
+{const s=E.fresh();E.startMemories(s);walkMemory(s,'ball');emitMemory('ball-game',s);}
+{const s=E.fresh();E.startMemories(s);walkMemory(s,'father');emitMemory('dad',s);}
+for(const q of E.Memories.scenes){emitMemory(q.id,memoryState);for(const id of q.required){actMemory(memoryState,id);}if(q.id==='shared-home'){walkMemory(memoryState,'books');E.memoryAct(memoryState,'books','shelf');}walkMemory(memoryState,'continue-memory');if(q.id==='shared-home')emitMemory('handover',memoryState);E.advanceMemory(memoryState);}
 for(const [id,r]of Object.entries(E.Memories.extraRooms)){const s=E.fresh();E.startMemories(s);s.memory.scene=r.scene;s.room=id;Object.assign(s,E.Rooms.rooms[id].spawn);emitMemory(id.replace('memory-',''),s);}
 {const s=E.fresh();E.startMemories(s);s.room='memory-child-living';s.x=11;s.y=5;s.facing='right';emitMemory('door',s);}
 const venue=E.PLACES.find(p=>p.id==='venue');memoryState.x=venue.x;memoryState.y=venue.y;E.enter(memoryState,'venue');walkMemory(memoryState,'older-musician');emitMemory('encounter',memoryState);

@@ -40,7 +40,7 @@
       poly([[3,h-5],[w*.33,-3],[w-3,h-5]],dark);poly([[7,h-7],[w*.33,1],[w-7,h-7]],'#b7995d');poly([[w*.33,1],[w*.33,h-7],[w-7,h-7]],'#8b8857');poly([[10,h-7],[w*.33,9],[w*.33+10,h-7]],'#3d554c');b(w*.33-1,5,2,h-13,'#e0c792');b(2,h-4,w-4,2,'#d0b47d');return true;
     }
     if(o.type==='backpacks'){
-      for(let j=4;j<w-12;j+=19){b(j+3,2,9,3,dark);b(j,6,15,h-12,'#55776a');b(j+2,8,11,5,'#a1b18a');b(j+2,h-20,11,11,'#809679');b(j+3,17,2,9,'#c1b781');b(j+10,17,2,9,'#c1b781');}return true;
+      for(let j=4;j<w-12;j+=19){b(j+3,2,9,3,dark);b(j,6,15,h-12,'#55776a');b(j+2,8,11,5,o.packed?'#d4c485':'#a1b18a');b(j+2,h-20,11,11,'#809679');b(j+3,17,2,9,'#c1b781');b(j+10,17,2,9,'#c1b781');if(o.packed){b(j+2,1,3,7,'#93b8bb');b(j+8,3,5,5,'#b66c53');}}return true;
     }
     if(o.type==='map-table'){
       draw(c,{...o,type:'table'},T,'memory-scouts');oval(w-17,12,7,7,dark);oval(w-17,12,5,5,'#e4dec2');poly([[w-17,7],[w-20,14],[w-17,12]],'#ba624c');poly([[w-17,17],[w-14,10],[w-17,12]],'#557b85');return true;
@@ -58,7 +58,7 @@
         b(w*.32,17,w*.43,7,'#d2cbb4');for(let j=0;j<6;j++)b(w*.34+j*5,19,3,1,'#697977');oval(w*.83,20,3,4,'#d5d0be');b(7,3,12,16,light);b(9,6,8,1,'#76928d');b(9,10,7,1,'#76928d');return true;
       }
       if(room==='memory-scouts'){b(10,4,w-20,Math.max(12,top-8),'#c7d0a9');for(let j=0;j<4;j++){b(14+j*12,7,1,top-12,'#92a18c');b(14+j*10,8+j*5,12,2,'#aa6952');}return true;}
-      oval(w*.28,top*.48,9,5,'#f0e4ca');oval(w*.28,top*.48,6,3,'#c18d67');oval(w*.72,top*.48,9,5,'#f0e4ca');oval(w*.72,top*.48,6,3,'#b47b53');b(w*.49,4,6,9,'#527e83');b(w*.49+6,6,3,4,light);b(w*.17-13,top*.4,1,8,'#d8d4c5');return true;
+      oval(w*.28,top*.48,9,5,'#f0e4ca');oval(w*.28,top*.48,6,3,'#c18d67');oval(w*.72,top*.48,9,5,'#f0e4ca');oval(w*.72,top*.48,6,3,'#b47b53');b(w*.49,4,6,9,'#527e83');b(w*.49+6,6,3,4,light);b(w*.17-13,top*.4,1,8,'#d8d4c5');if(o.album){b(6,top-12,18,13,'#7e5145');b(7,top-11,2,11,'#caac76');b(11,top-9,9,7,'#c5c8a8');}return true;
     }
     if(o.type==='bed'){
       b(2,-6,w-4,h+4,dark);b(4,-4,w-8,h,wood);b(5,-3,w-10,13,'#ad875f');b(5,11,w-10,h-18,'#e3d9be');b(8,14,w-16,14,'#f6ebd2');b(9,15,w-18,2,'#fff4dc');b(6,32,w-12,h-40,'#678b96');b(6,33,w-12,4,'#9db2b1');for(let j=11;j<w-9;j+=9)b(j,38,1,h-47,'#80a0a7');b(5,h-8,w-10,6,'#3e6173');leg(3,h-3);leg(w-7,h-3);return true;

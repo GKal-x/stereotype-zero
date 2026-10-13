@@ -1,3 +1,15 @@
+## A family afternoon 0.10.0
+
+The childhood opening now starts beside Mum in the living room and follows an authored small story: help get a family outing bag ready, share a record with Dad, and play with Omiros before meeting at the courtyard gate. Fetch a filled bottle from the kitchen and a book from the bedroom, then put both in the living-room bag. The bag cannot be packed by merely drinking water or skipping the items. The journal gives the next concrete task; room doors remain automatic.
+
+The courtyard has a cooperative three-rally encounter: read Omiros and the ball, choose a gentle pass, steady the return, then try the low wall. Wrong choices allow a supportive retry and never cost Aris money, energy or stress. Partial progress is saved. This introduces cues and commands through play, not a family fight. Completing the family tasks and the game leads to a short closing scene before the later scout snapshot. The full childhood years, bereavement and longer autobiography are still future chapters.
+
+Mum and Dad have new original sprites inspired by the supplied later-life photo, interpreted around 30–35. Omiros has a separate small-child sprite inspired by the adult reference. Clothes and period likenesses remain provisional. The family album and journal record maternal grandparents Omiros/Tasoula, paternal grandparents George/Vilma, aunt Io and uncle Manolis, with distinct identities for brother Omiros and grandfather Omiros. Those relatives' appearances and personal voices are not invented in this release. Names/relationships come from the user's account; the afternoon, dialogue and outing are fictional adaptations for review.
+
+Built-in image generation produced the new atlas; see assets/family-art-brief.md for the final prompt and limits. Only stylised sprites are included; the supplied photographs and raw biography remain outside publisher exports. Existing street artwork and other cast are preserved.
+
+Save schema 7 retains outing choices and rally state. Schema 6 saves preserve previously completed ball play, later memories and Aris progress. 64 automated tests cover the chapter, earlier gameplay, interactions, collisions and audio. Phone-size browser checks and signed Android packaging are part of delivery; physical-phone feedback remains needed.
+
 ## Connected memories and solid movement 0.9.0
 
 New players start as the child. Existing saves remain available; beginning a new story follows childhood, scouting and adult memories before the explicit handover to Aris. This remains three short adapted periods, not the full autobiography or a completed childhood battle chapter.

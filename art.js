@@ -2,9 +2,9 @@
 (function(){
   'use strict';
   const E=window.SZ,D=window.CityWorld,T=24,W=E.WIDTH*T,H=E.HEIGHT*T,P=window.CityPixels;
-  const cast=new Image(),buildings=new Image(),supervisor=new Image(),memories=new Image(),A=window.CityAtlas;
+  const cast=new Image(),buildings=new Image(),supervisor=new Image(),memories=new Image(),family=new Image(),A=window.CityAtlas;
   function load(image,src){return new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('Artwork could not load: '+src));image.src=src;});}
-  const ready=Promise.all([load(cast,'assets/cast-refined.png'),load(buildings,'assets/buildings-source.png'),load(supervisor,'assets/supervisor-v1.png'),load(memories,'assets/memories-v1.png')]);
+  const ready=Promise.all([load(cast,'assets/cast-refined.png'),load(buildings,'assets/buildings-source.png'),load(supervisor,'assets/supervisor-v1.png'),load(memories,'assets/memories-v1.png'),load(family,'assets/family-v1.png')]);
   const spriteCache=new Map();
   // Cache crisp samples at the intended pixel size; never blur the pixel clusters.
   function reduced(image,r,width,height){const tile=document.createElement('canvas');tile.width=width;tile.height=height;const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(image,...r,0,0,width,height);return tile;}
@@ -15,13 +15,14 @@
   const directionRow={down:0,left:1,right:2,up:3};
   function sprite(c,who,x,y,facing='down',frame=0,height=40){
 
+    const familyRow={'family-mother':0,'family-father':1,'family-brother':2}[who];
     const memoryRow={'memory-child':0,'memory-scout':1,'memory-adult':2,'memory-partner':3}[who];
-    const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5}[who]??0),r=memoryRow!==undefined?window.MemoryAtlas[memoryRow][directionRow[facing]??0]:who==='boss'?window.SupervisorAtlas[directionRow[facing]??0]:A.cast[directionRow[facing]??0][column];
+    const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5}[who]??0),r=familyRow!==undefined?window.FamilyAtlas[familyRow][directionRow[facing]??0]:memoryRow!==undefined?window.MemoryAtlas[memoryRow][directionRow[facing]??0]:who==='boss'?window.SupervisorAtlas[directionRow[facing]??0]:A.cast[directionRow[facing]??0][column];
     const width=Math.round(r[2]/r[3]*height);c.imageSmoothingEnabled=false;
     const key=[who,facing,frame,height].join(':');
-    if(!spriteCache.has(key))spriteCache.set(key,reduced(memoryRow!==undefined?memories:who==='boss'?supervisor:cast,r,width,height));
+    if(!spriteCache.has(key))spriteCache.set(key,reduced(familyRow!==undefined?family:memoryRow!==undefined?memories:who==='boss'?supervisor:cast,r,width,height));
     const tile=spriteCache.get(key),left=Math.round(x-width/2),top=Math.round(y-height);
-    if(memoryRow!==undefined&&frame){
+    if((memoryRow!==undefined||familyRow!==undefined)&&frame){
       // Rig the existing pose on the pixel grid: the torso stays coherent while
       // each leg takes the opposite stride. No whole-sprite sliding animation.
       const split=Math.floor(height*.72),half=Math.floor(width/2),stride=frame===1?1:-1;
@@ -32,10 +33,11 @@
   }
   function face(c,who='aris',size=64){
 
+    const familyRow={'family-mother':0,'family-father':1,'family-brother':2}[who];
     const memoryRow={'memory-child':0,'memory-scout':1,'memory-adult':2,'memory-partner':3}[who];
-    const col={aris:0,mina:3,eleni:4,dimos:5}[who]??0,r=memoryRow!==undefined?window.MemoryAtlas[memoryRow][0]:who==='boss'?window.SupervisorAtlas[0]:A.cast[0][col];
+    const col={aris:0,mina:3,eleni:4,dimos:5}[who]??0,r=familyRow!==undefined?window.FamilyAtlas[familyRow][0]:memoryRow!==undefined?window.MemoryAtlas[memoryRow][0]:who==='boss'?window.SupervisorAtlas[0]:A.cast[0][col];
     box(c,0,0,size,size,'#c1cbb8');c.imageSmoothingEnabled=false;
-    c.drawImage(memoryRow!==undefined?memories:who==='boss'?supervisor:cast,r[0],r[1],r[2],Math.round(r[3]*.48),3,1,size-6,size-2);
+    c.drawImage(familyRow!==undefined?family:memoryRow!==undefined?memories:who==='boss'?supervisor:cast,r[0],r[1],r[2],Math.round(r[3]*.48),3,1,size-6,size-2);
   }
   function avatar(who){const c=document.createElement('canvas');c.width=64;c.height=64;c.setAttribute('aria-label',who+' portrait');face(c.getContext('2d'),who);return c;}
   function tree(c,x,y){
@@ -198,13 +200,19 @@
       else{box(c,x-2,y+17,5,9,'#d6bb8b');box(c,x+21,y+17,5,9,'#d6bb8b');box(c,x+3,y+20,18,4,'#213c44');}
     }
     const people=[...E.actors(s).map(a=>{const p=E.actorPose(s,a.id);return {who:p.who,x:p.x*T+12,y:p.y*T+19,facing:p.facing,frame:p.frame};}),{who:E.Memories.current(s)?.avatar||'aris',x:m.x*T+12,y:m.y*T+19,player:true}].sort((a,b)=>a.y-b.y);
-    for(const p of people)sprite(c,p.who,p.x,p.y,p.player?s.facing:p.facing,p.player?m.frame:p.frame,p.who==='memory-child'?(p.player?30:23):40);
+    for(const p of people)sprite(c,p.who,p.x,p.y,p.player?s.facing:p.facing,p.player?m.frame:p.frame,p.who==='family-brother'?23:p.who==='memory-child'?(p.player?30:23):40);
     const near=E.nearest(s);if(near){if(near.who){const lift=near.who==='memory-child'?14:31;box(c,near.x*T+8,near.y*T-lift,9,10,'#f3dfae');label(c,'!',near.x*T+12,near.y*T-lift+8,7,'#5c5245','center');}else{c.strokeStyle='#e8c379';c.lineWidth=1;c.strokeRect(near.x*T+4,near.y*T+4,16,16);}}
     if(m.route.length){const end=m.route.at(-1);c.strokeStyle='#fff1c2';c.strokeRect(end[0]*T+5,end[1]*T+5,14,14);}
     c.restore();
   }
   let ballEffect=null;
   function memoryReact(choice){ballEffect={choice,start:performance.now()};}
+  function playScene(c,s,t){const w=c.canvas.width,h=c.canvas.height,age=ballEffect?(t-ballEffect.start)/900:2,active=age>=0&&age<1,still=window.matchMedia('(prefers-reduced-motion: reduce)').matches,p=active&&!still?Math.sin(age*Math.PI):0;
+    c.imageSmoothingEnabled=false;box(c,0,0,w,h,'#e2d2a9');box(c,0,0,w,15,'#b2a586');box(c,0,14,w,2,'#8c9477');for(let x=0;x<w;x+=24)box(c,x,20,1,h-20,'#ccbc96');
+    sprite(c,'memory-child',43+p*3,h-9,'right',p>.3?1:0,36);sprite(c,'family-brother',w-43,h-9,'left',p>.6?2:0,28);
+    const bx=active&&ballEffect.choice==='pass'?73+p*(w-146):73,by=h-17-(active&&ballEffect.choice==='shot'?p*(h-36):0);
+    box(c,bx-4,by-4,9,9,'#fff1cf');box(c,bx-2,by-2,4,4,'#39515a');box(c,bx+2,by+2,2,2,'#39515a');
+  }
   function memoryDecor(c,s,w,h,t){
     if(s.room==='memory-courtyard'){
       box(c,T,T,w-2*T,10,'#b7ab88');for(let x=T;x<w-T;x+=12)box(c,x,T+9,9,2,'#8c9476');
@@ -252,5 +260,5 @@
   }
   ready.then(prepare);
   function minimap(c,s){const w=c.canvas.width,h=c.canvas.height,sx=w/E.WIDTH,sy=h/E.HEIGHT;box(c,0,0,w,h,'#e1d2ae');for(const r of D.STREETS)box(c,r.x*sx,r.y*sy,r.w*sx,r.h*sy,'#869696');box(c,D.RAIL.x*sx,0,D.RAIL.w*sx,h,'#45876a');for(const r of D.SQUARES)box(c,r.x*sx,r.y*sy,r.w*sx,r.h*sy,'#acbe8f');for(const b of E.BUILDINGS)box(c,b.x*sx,b.y*sy,b.w*sx,b.h*sy,'#b79c78');for(const p of E.PLACES.filter(p=>['home','employer','shop','venue','metro'].includes(p.id)))box(c,p.x*sx-1,p.y*sy-1,3,3,p.id==='metro'?'#2b7e54':'#5b696f');box(c,s.x*sx-2,s.y*sy-2,5,5,'#bf5c45');}
-  window.CityArt={ready,render,battle,memoryReact,encounter,react,avatar,face,sprite,minimap,T,camera,resetCamera:()=>{camera.ready=false;}};
+  window.CityArt={ready,render,battle,memoryReact,playScene,encounter,react,avatar,face,sprite,minimap,T,camera,resetCamera:()=>{camera.ready=false;}};
 })();
