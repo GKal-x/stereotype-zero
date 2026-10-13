@@ -89,7 +89,7 @@ public final class MainActivity extends Activity {
         startup.setPadding(32, 32, 32, 32);
         startup.setBackgroundColor(Color.rgb(23, 43, 41));
         startupText = new TextView(this);
-        startupText.setText("Opening Stereotype Zero 0.12.1…");
+        startupText.setText("Opening Stereotype Zero 0.13.0…");
         startupText.setTextColor(Color.WHITE);
         startupText.setTextSize(18);
         startupText.setGravity(Gravity.CENTER);

@@ -1,4 +1,4 @@
-/* Original pixel scenes and silhouettes; no aircraft body or explicit impact. */
+/* Original code-native cutscenes. Historical cuts and personal recollections remain separate. */
 (function(){
   'use strict';
   const O=window.CityOpening;
@@ -11,9 +11,14 @@
     for(const [dx,dy]of [[-.5,-.3],[-.13,-.57],[.48,-.3],[.38,.42],[-.42,.32]]){const x=cx+dx*rx,y=cy+dy*ry;rect(c,x-1,y-6,3,16,'#7e7850');poly(c,[[x,y-13],[x-14,y-8],[x-5,y-7],[x-11,y+1],[x,y-5],[x+12,y],[x+6,y-7],[x+15,y-9]],'#375f55');rect(c,x-2,y-12,5,5,'#668a56');}
     const x=-30+p*(w*.63+30),y=cy-ry*.37+p*ry*.48,scale=1-p*.54;
     c.save();c.translate(Math.round(x),Math.round(y));c.scale(scale,scale);
-    poly(c,[[-8,-6],[5,-8],[11,-3],[9,5],[1,8],[-7,3]],'#304f4c');rect(c,-2,5,3,18,'#304f4c');rect(c,-9,19,17,3,'#304f4c');
-    const turn=Math.floor(elapsed/180)%4,rotors=[[-29,-2,58,3],[-19,-19,38,3],[-2,-27,3,54],[-19,16,38,3]][turn];rect(c,...rotors,'#355752');
-    for(let i=0;i<5;i++){const trail=(elapsed/300+i*.25)%2,sz=3+i;rect(c,-7-i*5,8+i*5-trail*4,sz,sz,i%2?'#78867b':'#5a7066');}c.restore();
+    // Readable helicopter shadow: cabin, tail boom, stabiliser, skids and rotor.
+    c.rotate(-.28+p*.45);
+    poly(c,[[-13,-7],[-5,-12],[9,-11],[17,-5],[17,5],[8,10],[-7,9],[-14,3]],'#294b49');
+    poly(c,[[-12,-3],[-42,-1],[-47,-8],[-50,-8],[-48,6],[-40,6],[-12,4]],'#294b49');
+    rect(c,-45,-12,3,25,'#34534e');rect(c,-51,-2,15,3,'#34534e');
+    rect(c,-10,-15,25,2,'#34534e');rect(c,-10,13,25,2,'#34534e');rect(c,-5,-15,2,30,'#34534e');
+    const angle=elapsed/110;c.save();c.rotate(angle);rect(c,-38,-1,76,3,'#355752');rect(c,-1,-30,3,60,'#355752');c.restore();
+    for(let i=0;i<8;i++){const sz=4+i*1.5;rect(c,-25-i*7,8+i*4-Math.sin(elapsed/500+i)*3,sz,sz,i%2?'#78867b':'#5a7066');}c.restore();
     if(b.id==='island'&&elapsed<650){c.fillStyle='rgba(12,24,30,'+(1-elapsed/650)+')';c.fillRect(0,0,w,h);}
   }
   function sky(c,s,sprite){const w=c.canvas.width,h=c.canvas.height,b=O.current(s);rect(c,0,0,w,h,'#b8d5d6');rect(c,0,h*.25,w,h*.3,'#c7ddda');rect(c,0,h*.55,w,h*.45,'#ded1ad');
@@ -23,5 +28,18 @@
   }
   function scene(c,s,sprite){const b=O.current(s);if(!b)return false;if(b.scene==='island'){island(c,s);return true;}if(b.scene==='sky'){sky(c,s,sprite);return true;}return false;}
   function overlay(c,s){const b=O.current(s);if(!b)return;let alpha=0;if(['island-fade','island-return','fade-out'].includes(b.id))alpha=s.memory.opening.elapsed/b.duration;if(alpha){c.fillStyle='rgba(12,24,30,'+Math.min(1,alpha)+')';c.fillRect(0,0,c.canvas.width,c.canvas.height);}}
-  window.CityCinematics={scene,overlay};
+  function caption(id,t){if(id==='december')return t<2500?'Exarcheia, 6 December 2008. A historical cut, outside your character’s viewpoint.':t<5500?'An officer fires. Fifteen-year-old Alexandros Grigoropoulos is killed.':'Back in Plaka, the news is still travelling. The city will not feel the same.';if(id==='station')return t<2200?'You remember being dragged inside.':t<5500?'They hit you. You were children.':'No player command caused this. Your friend is waiting in the aftermath.';return t<2500?'After Manolis died, the house changed.':t<5500?'Their grief became anger. They hit you.':'You were a child. The anger did not end at the edge of that room.';}
+  function film(c,id,t,sprite){const w=c.canvas.width,h=c.canvas.height,p=Math.min(1,t/8000);rect(c,0,0,w,h,id==='december'?'#263842':'#76796f');rect(c,0,120,w,80,'#9c9987');
+    if(id==='december'){for(const x of [0,220]){rect(c,x,15,100,105,'#756a62');rect(c,x+10,26,22,37,'#273b43');rect(c,x+54,27,26,43,'#273b43');rect(c,x+4,92,92,4,'#a3947d');}rect(c,0,153,w,2,'#b6ac93');}
+    else {rect(c,12,18,w-24,85,id==='family'?'#c3b18e':'#87948f');rect(c,32,30,55,42,'#364b54');rect(c,30,72,59,4,'#d1c2a4');rect(c,210,104,85,12,'#5e5047');rect(c,218,116,6,21,'#3f4140');}
+    const victimX=id==='december'?204:181-(t<2200?p*28:8),victimY=158;
+    const hit=t>=2800;const fallen=t>=3400;
+    if(id==='december'){// Anonymous silhouette: the historical victim never uses the player’s portrait.
+      c.save();c.translate(victimX,victimY);if(fallen)c.rotate(-Math.PI/2);rect(c,-7,-35,14,13,'#293239');rect(c,-8,-23,17,18,'#434e55');rect(c,-6,-5,5,8,'#28353f');rect(c,3,-5,5,8,'#28353f');c.restore();
+    }else if(fallen){c.save();c.translate(victimX,victimY-12);c.rotate(-Math.PI/2);sprite(c,id==='family'?'memory-child':'memory-teen',0,0,'left',0,id==='family'?33:40);c.restore();}else sprite(c,id==='family'?'memory-child':'memory-teen',victimX,victimY,'left',t<2200?1:0,id==='family'?33:40);
+    if(id==='family'){sprite(c,'family-father',125,158,'right',0,42);if(hit&&t<3400)rect(c,137,128,26,4,'#ba936f');sprite(c,'family-mother',58,151,'right',0,40);}
+    else {const x=id==='december'?98:143;rect(c,x-8,119,17,28,'#273b4b');rect(c,x-7,109,15,12,'#ac9171');rect(c,x-9,106,19,5,'#233546');rect(c,x-6,147,5,13,'#233546');rect(c,x+3,147,5,13,'#233546');if(id==='december'){rect(c,x+6,126,25,4,'#ac9171');rect(c,x+26,122,10,4,'#202a30');if(t>=2800&&t<2920)poly(c,[[x+36,121],[x+44,124],[x+36,128]],'#d5ba7a');}else {const rise=hit&&t<3400;poly(c,[[x+5,126],[x+18,rise?111:136],[x+22,rise?113:139],[x+10,132]],'#263b4a');rect(c,x+20,rise?102:135,3,22,'#273239');}}
+    if(t>5500){c.fillStyle='rgba(15,24,31,'+Math.min(.88,(t-5500)/4000)+')';c.fillRect(0,0,w,h);}
+  }
+  window.CityCinematics={scene,overlay,film,caption};
 })();

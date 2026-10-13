@@ -1,3 +1,15 @@
+## Life chapters redesign — 0.13.0
+
+Notes now begin with the next objective, list automatically saved moments and show carried equipment. No page collecting or generic reflection button is required. Previous saves retain their notes and chapter. Later saves do not rewind chapters already passed: begin the memories again to replay the opening.
+
+School teens now use the same displayed height as classmates and a wider pixel-grid silhouette. The childhood helicopter shadow has an identifiable cabin, boom, rotor, skids and a smoke trail. Collected supplies, handouts and notes disappear from the scene and collision map.
+
+Camp keeps two patrols of seven, with distinct jobs and conversations. Three practical encounters replace the fixed-answer quiz. Every task offers two viable approaches with stated effort costs; taking a break restores effort, and leaving retains equipment. The tent is visibly assembled across its three tasks; assemblies gather notes and people. Hyper-ego appears through the impulse to carry everything yourself rather than as a translucent opponent. Aris’s existing wages system is unchanged pending its separate redesign.
+
+December begins with an animated historical cut outside the player’s viewpoint: an officer fires and the teenager falls, without gore or invented dialogue. The player remains at school in Plaka. A compact adapted damaged centre street is playable, with burned frontage, debris, fire, a police cordon and an interaction helping someone get around the debris. Station and family violence are short animated adaptations of the narrator’s testimony. They are not archival reconstructions and do not claim a named station, exact date or officer. A parent recollection is optional in the later home. A return button allows each cut to be skipped; the resulting account remains readable.
+
+Research and issue checklist: [life redesign](research/life-redesign-2026-10.md). The seven chapters are still short playable sketches; a larger geographically detailed December map and a full tactical redesign of Aris’s wages encounter remain future work. Android startup remains streamed with the same save origin, and release publication still requires an actual Android emulator startup/save/relaunch/Notes test.
+
 ## Android startup repair — 0.12.1
 
 Preview 21 was reported to show only the native dark background on a phone. Its bundled HTML is roughly 19 MB. The Android host now streams that local asset through the existing appassets origin instead of passing a giant string to loadDataWithBaseURL. Inline images remain allowed; remote loads stay blocked. The same HTTPS origin preserves existing DOM storage. A native loading screen, timeout/error message and Retry action replace silent startup failure.

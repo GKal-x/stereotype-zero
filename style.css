@@ -59,3 +59,5 @@ body[data-cinematic=true] .nearby-prompt,body[data-cinematic=true] .location-tag
 @keyframes memory-recall{0%,100%{opacity:1}45%,60%{opacity:0}}
 .memory-recall #game{animation:memory-recall 1.5s ease-in-out}
 @media(prefers-reduced-motion:reduce){.memory-recall #game{animation:none}}
+
+.memory-film-panel{max-width:480px}.memory-film{display:block;width:100%;height:auto;image-rendering:pixelated;border:3px solid #253b46}.film-caption{min-height:4.5em;font-size:15px;line-height:1.45;color:#263e4a}.notebook-panel .choices{grid-template-columns:1fr}

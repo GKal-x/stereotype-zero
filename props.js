@@ -3,13 +3,18 @@
 (function(root){
   'use strict';
   function draw(c,o,T,room){
-    const handled=['camp-water','camp-cord','camp-compass','campfire','notice','school-front','workbench','table','desk','bed','kitchen','counter','shelf','boxes','produce','stage','mixer','speaker','bench','sofa','amp','bookstall','guitars','record-player','tv-console','fridge','wardrobe','tent','backpacks','map-table'];
+    const handled=['burnt-shop','barricade','street-fire','glass','police-line','camp-water','camp-cord','camp-compass','campfire','notice','school-front','workbench','table','desk','bed','kitchen','counter','shelf','boxes','produce','stage','mixer','speaker','bench','sofa','amp','bookstall','guitars','record-player','tv-console','fridge','wardrobe','tent','backpacks','map-table'];
     if(!handled.includes(o.type))return false;
     const x=o.x*T,y=o.y*T,w=o.w*T,h=o.h*T;
     const b=(a,d,e,f,col)=>{c.fillStyle=col;c.fillRect(Math.round(x+a),Math.round(y+d),Math.round(e),Math.round(f));};
     const oval=(a,d,rx,ry,col)=>{c.fillStyle=col;c.beginPath();c.ellipse(Math.round(x+a),Math.round(y+d),rx,ry,0,0,Math.PI*2);c.fill();};
     const poly=(points,col)=>{c.fillStyle=col;c.beginPath();points.forEach(([a,d],i)=>i?c.lineTo(x+a,y+d):c.moveTo(x+a,y+d));c.closePath();c.fill();};
     const wood='#79533e',rim='#d1aa75',dark='#34434a',light='#eadcc0';
+    if(o.type==='burnt-shop'){b(0,-12,w,h+12,'#615951');b(5,-6,w-10,h-2,'#252f32');for(let i=7;i<w-8;i+=9)b(i,0,4,h-13,'#48433d');poly([[0,h],[11,h-8],[21,h],[30,h-4],[w,h]],'#beb7a4');return true;}
+    if(o.type==='barricade'){b(1,6,w-2,12,'#685949');for(let i=2;i<w-8;i+=13){b(i,1,7,19,'#879188');b(i+3,3,2,16,'#b3b3a0');}b(0,9,w,3,'#3a4443');return true;}
+    if(o.type==='street-fire'){b(0,16,w,7,'#3b4240');poly([[3,17],[6,3],[11,9],[15,-3],[21,16]],'#bc7446');poly([[9,18],[13,7],[18,18]],'#d5ac62');for(let i=0;i<3;i++)b(5+i*3,-10-i*9,10+i*3,8,'#737a72');return true;}
+    if(o.type==='glass'){for(let i=0;i<6;i++)poly([[i*4,8+i%3*4],[i*4+6,9+i%3*4],[i*4+2,14+i%3*4]],'#b4c6bd');return true;}
+    if(o.type==='police-line'){for(let i=2;i<w-12;i+=19){b(i+2,-13,12,9,'#253b4a');b(i+4,-5,9,7,'#ad9677');b(i,2,16,21,'#354b57');b(i+2,5,12,15,'#8caaa9');b(i+3,7,10,2,'#d1d1bc');}return true;}
     if(o.type==='camp-water'){b(7,0,10,3,dark);b(6,3,12,18,'#4e8a9b');b(8,5,3,12,'#a3c6c8');b(6,13,12,6,'#ddd4af');return true;}
     if(o.type==='camp-cord'){for(let i=0;i<3;i++){b(3+i*2,3+i*2,17-i*4,2,'#d7c595');b(3+i*2,17-i*2,17-i*4,2,'#d7c595');b(3+i*2,3+i*2,2,14-i*4,'#aa8a59');b(18-i*2,3+i*2,2,14-i*4,'#aa8a59');}return true;}
     if(o.type==='camp-compass'){b(4,3,16,17,dark);b(6,5,12,13,light);b(11,6,2,7,'#bd6850');b(11,13,2,5,'#476b7f');b(5,11,3,2,'#8c9e8d');b(16,11,3,2,'#8c9e8d');return true;}

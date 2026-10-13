@@ -20,7 +20,7 @@
     const familyRow={'family-mother':0,'family-father':1,'family-brother':2}[who];
     const memoryRow={'memory-child':0,'memory-scout':1,'memory-adult':2,'memory-partner':3}[who];
     const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5}[who]??0),r=youthRow!==undefined?window.YouthAtlas[youthRow][directionRow[facing]??0]:scoutRow!==undefined?window.ScoutAtlas[scoutRow][directionRow[facing]??0]:familyRow!==undefined?window.FamilyAtlas[familyRow][directionRow[facing]??0]:memoryRow!==undefined?(memoryRow>=2?window.AdultAtlas[memoryRow-2]:window.MemoryAtlas[memoryRow])[directionRow[facing]??0]:who==='boss'?window.SupervisorAtlas[directionRow[facing]??0]:A.cast[directionRow[facing]??0][column];
-    const width=Math.round(r[2]/r[3]*height);c.imageSmoothingEnabled=false;
+    const width=Math.round((youthRow!==undefined?Math.max(.58,r[2]/r[3]):r[2]/r[3])*height);c.imageSmoothingEnabled=false;
     const key=[who,facing,frame,height].join(':');
     if(!spriteCache.has(key))spriteCache.set(key,reduced(youthRow!==undefined?youth:scoutRow!==undefined?scouts:familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r,width,height));
     const tile=spriteCache.get(key),left=Math.round(x-width/2),top=Math.round(y-height);
@@ -170,7 +170,7 @@
     if(r.transit)stationDecor(c,s,w,h,t);
     // Wall windows and furniture are drawn on the same pixel grid.
     for(const x of r.outdoor?[]:[3*T,10*T]){box(c,x,5,28,17,'#243c49');box(c,x+2,7,24,13,s.room==='venue'?'#6e6279':'#a6bfc0');box(c,x+13,7,2,13,'#e0d5b9');}
-    for(const o of r.objects){const prop={...o,...E.Memories.propState(s)};if(window.CityProps.draw(c,prop,T,s.room))continue;const x=o.x*T,y=o.y*T,ow=o.w*T,oh=o.h*T;box(c,x+2,y+4,ow,oh,'#777b6b');
+    for(const o of E.roomObjects(s)){const prop={...o,...E.Memories.propState(s)};if(window.CityProps.draw(c,prop,T,s.room))continue;const x=o.x*T,y=o.y*T,ow=o.w*T,oh=o.h*T;box(c,x+2,y+4,ow,oh,'#777b6b');
       const colors={table:'#a78058',desk:'#a78058',bed:'#817c9d',kitchen:'#c6c6ac',counter:'#9c875f',shelf:'#8e805f',boxes:'#b59a71',produce:'#86916c',stage:'#796c7c',mixer:'#496374',speaker:'#34434b',bench:'#956e50','ticket-machine':'#547991',gates:'#9aa9a1','train-exterior':'#aaa88c','train-window':'#688b95','train-seat':'#567963','home-front':'#e1c59b','cafe-front':'#b27d65',bookstall:'#9e8056',planter:'#9e7854',sofa:'#aa7968',amp:'#435460'};
       box(c,x,y,ow,oh,'#35464a');box(c,x+2,y+2,ow-4,oh-4,colors[o.type]);
       if(o.type==='home-front'){for(let dx=6;dx<ow-14;dx+=24){box(c,x+dx,y+7,16,24,'#325e79');box(c,x+dx+2,y+9,12,19,'#84a8b1');box(c,x+dx+7,y+8,2,22,'#e4dab9');}box(c,x+ow/2-9,y+oh-22,18,22,'#2c6076');box(c,x+ow/2+4,y+oh-11,2,3,'#e1b76b');box(c,x,y+2,ow,3,'#a37e5d');}
@@ -205,7 +205,7 @@
       else{box(c,x-2,y+17,5,9,'#d6bb8b');box(c,x+21,y+17,5,9,'#d6bb8b');box(c,x+3,y+20,18,4,'#213c44');}
     }
     const people=[...E.actors(s).map(a=>{const p=E.actorPose(s,a.id);return {who:p.who,x:p.x*T+12,y:p.y*T+19,facing:p.facing,frame:p.frame};}),{who:E.Memories.current(s)?.avatar||'aris',x:m.x*T+12,y:m.y*T+19,player:true}].sort((a,b)=>a.y-b.y);
-    for(const p of people)sprite(c,p.who,p.x,p.y,p.player?s.facing:p.facing,p.player?m.frame:p.frame,p.who==='scout-gerasimos'?46:p.who==='scout-vaggelis'||p.who==='memory-scout'?38:p.who==='memory-teen'?36:p.who==='family-brother'?23:p.who==='memory-child'?(p.player?30:23):40);
+    for(const p of people)sprite(c,p.who,p.x,p.y,p.player?s.facing:p.facing,p.player?m.frame:p.frame,p.who==='scout-gerasimos'?46:p.who==='scout-vaggelis'||p.who==='memory-scout'?38:p.who==='memory-teen'?40:p.who==='family-brother'?23:p.who==='memory-child'?(p.player?30:23):40);
     if(['inside-roll','after-dad-play'].includes(E.Opening.current(s)?.id)){const elapsed=s.memory.opening.elapsed,x=(5.5+Math.sin(elapsed/250)*.4)*T+12,y=5*T+18;box(c,x-3,y-3,7,7,'#f6edd2');box(c,x-1,y-1,3,3,'#40515b');}
     const near=E.nearest(s);if(near&&(!E.Opening.current(s)||E.Opening.current(s).kind==='explore')){if(near.who){const lift=near.who==='memory-child'?14:31;box(c,near.x*T+8,near.y*T-lift,9,10,'#f3dfae');label(c,'!',near.x*T+12,near.y*T-lift+8,7,'#5c5245','center');}else{c.strokeStyle='#e8c379';c.lineWidth=1;c.strokeRect(near.x*T+4,near.y*T+4,16,16);}}
     if(m.route.length){const end=m.route.at(-1);c.strokeStyle='#fff1c2';c.strokeRect(end[0]*T+5,end[1]*T+5,14,14);}

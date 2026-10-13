@@ -29,3 +29,5 @@ const venue=E.PLACES.find(p=>p.id==='venue');memoryState.x=venue.x;memoryState.y
 for(const beat of ['dad-leaving','island','bird','tell-mum','dad-news','fade-out']){const s=E.fresh();E.startMemories(s);storyTo(s,beat);if(['island','bird'].includes(beat))s.memory.opening.elapsed=2100;emitMemory(beat,s);}
 
 {const s=E.fresh();E.startMemories(s);storyTo(s,'scouts');for(const id of E.Memories.current(s).required)actMemory(s,id);walkMemory(s,'continue-memory');E.advanceMemory(s);for(const id of ['camp-water','camp-compass','camp-cord'])actMemory(s,id);walkMemory(s,'hyper-ego');E.beginMemoryEncounter(s,'hyper');emitMemory('hyper-battle',s);}
+
+{const s=E.fresh();E.startMemories(s);s.memory.scene='december';s.room='memory-december';s.x=6;s.y=5;s.facing='up';emitMemory('news-cut',s);}

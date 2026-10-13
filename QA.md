@@ -1,3 +1,9 @@
+## Life redesign — 0.13.0
+
+79 automated checks pass, including both practical encounter strategies, effort recovery and resuming, all seven chapters, every connected-room path, collected prop/interaction removal after reload, and existing Aris/transit/save behavior. JS syntax checks cover the UI and cinematic renderer.
+
+Phone-size browser review checks school character height, camp task commands/costs and outcome text, Notes and December street layout. New film scenes are labelled historical cut or personal recollection. Published Android startup evidence remains required from the release workflow; physical-phone controls/audio still require user feedback.
+
 ## Native startup regression — 0.12.1
 
 A user screenshot of preview 21 showed only the Activity background, before the HTML boot screen. Package inspection alone did not catch this. The startup path has been changed from a giant loadDataWithBaseURL string to a streamed APK asset at the same origin, with a visible native loader and retry/error states. Both main and test APKs compile and sign locally; embedded content checks pass.

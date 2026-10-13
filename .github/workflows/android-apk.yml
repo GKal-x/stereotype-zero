@@ -76,8 +76,8 @@ jobs:
         with:
           name: stereotype-zero-android-${{ github.run_number }}
           path: |
-            dist/stereotype-zero-0.12.1.apk
-            dist/stereotype-zero-0.12.1.apk.sha256
+            dist/stereotype-zero-0.13.0.apk
+            dist/stereotype-zero-0.13.0.apk.sha256
             dist/startup-tests.apk
           if-no-files-found: error
           retention-days: 30
@@ -105,7 +105,7 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           script: |
-            adb install -r dist/stereotype-zero-0.12.1.apk
+            adb install -r dist/stereotype-zero-0.13.0.apk
             adb install -r dist/startup-tests.apk
             adb shell am instrument -w gr.stereotypezero.smoke/gr.stereotypezero.smoke.StartupSmoke | tee dist/android-startup.txt
             adb logcat -d > dist/android-logcat.txt
@@ -134,4 +134,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "android-preview-$GITHUB_RUN_NUMBER" dist/stereotype-zero-0.12.1.apk dist/stereotype-zero-0.12.1.apk.sha256 --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Stereotype Zero Android preview $GITHUB_RUN_NUMBER" --prerelease --notes "Android startup repair: stream the bundled game instead of passing a giant HTML string to WebView. Visible loading and retry screen; same save origin. Release gated by an actual Android 15 emulator startup, notebook and save-relaunch test. Includes the seven life chapters and all preview 21 content. Android 8.0+. Built from $GITHUB_SHA."
+          gh release create "android-preview-$GITHUB_RUN_NUMBER" dist/stereotype-zero-0.13.0.apk dist/stereotype-zero-0.13.0.apk.sha256 --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Stereotype Zero Android preview $GITHUB_RUN_NUMBER" --prerelease --notes "Life chapters redesign: consistent school sprite scale, clearer helicopter shadow, automatic Notes with next objective, disappearing pickups, distinct camp activities, practical task encounters with two strategies and visible effort costs. Historical December 2008 cutscene, playable adapted damaged Athens street and personal police/parent violence recollections. Existing Android streamed startup and emulator/save-relaunch release gate retained. Android 8.0+. Built from $GITHUB_SHA."

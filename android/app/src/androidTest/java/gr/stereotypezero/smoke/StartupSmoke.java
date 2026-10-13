@@ -62,12 +62,12 @@ public final class StartupSmoke extends Instrumentation {
             check("true".equals(js(restored, "Array.from(document.querySelectorAll('#overlay button')).some(b=>b.textContent.includes('Continue a saved evening') && !b.disabled)")), "Saved game not available on relaunch");
             js(restored, "Array.from(document.querySelectorAll('#overlay button')).find(b=>b.textContent.includes('Continue a saved evening')).click()");
             js(restored, "document.getElementById('journal').click()");
-            check("true".equals(js(restored, "Array.from(document.querySelectorAll('#overlay button')).some(b=>b.textContent.includes('Open the memory notebook'))")), "Notebook command absent");
-            js(restored, "Array.from(document.querySelectorAll('#overlay button')).find(b=>b.textContent.includes('Open the memory notebook')).click()");
+            check("true".equals(js(restored, "Array.from(document.querySelectorAll('#overlay button')).some(b=>b.textContent.includes('Notes · next step and past moments'))")), "Notebook command absent");
+            js(restored, "Array.from(document.querySelectorAll('#overlay button')).find(b=>b.textContent.includes('Notes · next step and past moments')).click()");
             Thread.sleep(800);
             screenshot();
             result.putString("result", "PASS");
-            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notebook accessible");
+            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notes accessible");
             finish(Activity.RESULT_OK, result);
         } catch (Throwable error) {
             try { screenshot(); } catch (Exception ignored) { }
