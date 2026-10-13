@@ -2,9 +2,9 @@
 (function(){
   'use strict';
   const E=window.SZ,D=window.CityWorld,T=24,W=E.WIDTH*T,H=E.HEIGHT*T,P=window.CityPixels;
-  const cast=new Image(),buildings=new Image(),supervisor=new Image(),memories=new Image(),family=new Image(),adults=new Image(),A=window.CityAtlas;
+  const cast=new Image(),buildings=new Image(),supervisor=new Image(),memories=new Image(),family=new Image(),adults=new Image(),scouts=new Image(),youth=new Image(),A=window.CityAtlas;
   function load(image,src){return new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('Artwork could not load: '+src));image.src=src;});}
-  const ready=Promise.all([load(cast,'assets/cast-refined.png'),load(buildings,'assets/buildings-source.png'),load(supervisor,'assets/supervisor-v1.png'),load(memories,'assets/memories-v1.png'),load(family,'assets/family-v1.png'),load(adults,'assets/adults-refined-v1.png')]);
+  const ready=Promise.all([load(cast,'assets/cast-refined.png'),load(buildings,'assets/buildings-source.png'),load(supervisor,'assets/supervisor-v1.png'),load(memories,'assets/memories-v1.png'),load(family,'assets/family-v1.png'),load(adults,'assets/adults-refined-v1.png'),load(scouts,'assets/scouts-v2.png'),load(youth,'assets/youth-v1.png')]);
   const spriteCache=new Map();
   // Cache crisp samples at the intended pixel size; never blur the pixel clusters.
   function reduced(image,r,width,height){const tile=document.createElement('canvas');tile.width=width;tile.height=height;const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(image,...r,0,0,width,height);return tile;}
@@ -15,14 +15,16 @@
   const directionRow={down:0,left:1,right:2,up:3};
   function sprite(c,who,x,y,facing='down',frame=0,height=40){
 
+    const youthRow={'memory-teen':0,'memory-student':1}[who];
+    const scoutRow={'memory-scout':0,'scout-gerasimos':1,'scout-vaggelis':2}[who];
     const familyRow={'family-mother':0,'family-father':1,'family-brother':2}[who];
     const memoryRow={'memory-child':0,'memory-scout':1,'memory-adult':2,'memory-partner':3}[who];
-    const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5}[who]??0),r=familyRow!==undefined?window.FamilyAtlas[familyRow][directionRow[facing]??0]:memoryRow!==undefined?(memoryRow>=2?window.AdultAtlas[memoryRow-2]:window.MemoryAtlas[memoryRow])[directionRow[facing]??0]:who==='boss'?window.SupervisorAtlas[directionRow[facing]??0]:A.cast[directionRow[facing]??0][column];
+    const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5}[who]??0),r=youthRow!==undefined?window.YouthAtlas[youthRow][directionRow[facing]??0]:scoutRow!==undefined?window.ScoutAtlas[scoutRow][directionRow[facing]??0]:familyRow!==undefined?window.FamilyAtlas[familyRow][directionRow[facing]??0]:memoryRow!==undefined?(memoryRow>=2?window.AdultAtlas[memoryRow-2]:window.MemoryAtlas[memoryRow])[directionRow[facing]??0]:who==='boss'?window.SupervisorAtlas[directionRow[facing]??0]:A.cast[directionRow[facing]??0][column];
     const width=Math.round(r[2]/r[3]*height);c.imageSmoothingEnabled=false;
     const key=[who,facing,frame,height].join(':');
-    if(!spriteCache.has(key))spriteCache.set(key,reduced(familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r,width,height));
+    if(!spriteCache.has(key))spriteCache.set(key,reduced(youthRow!==undefined?youth:scoutRow!==undefined?scouts:familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r,width,height));
     const tile=spriteCache.get(key),left=Math.round(x-width/2),top=Math.round(y-height);
-    if((memoryRow!==undefined||familyRow!==undefined)&&frame){
+    if((youthRow!==undefined||scoutRow!==undefined||memoryRow!==undefined||familyRow!==undefined)&&frame){
       // Rig the existing pose on the pixel grid: the torso stays coherent while
       // each leg takes the opposite stride. No whole-sprite sliding animation.
       const split=Math.floor(height*.72),half=Math.floor(width/2),stride=frame===1?1:-1;
@@ -33,11 +35,13 @@
   }
   function face(c,who='aris',size=64){
 
+    const youthRow={'memory-teen':0,'memory-student':1}[who];
+    const scoutRow={'memory-scout':0,'scout-gerasimos':1,'scout-vaggelis':2}[who];
     const familyRow={'family-mother':0,'family-father':1,'family-brother':2}[who];
     const memoryRow={'memory-child':0,'memory-scout':1,'memory-adult':2,'memory-partner':3}[who];
-    const col={aris:0,mina:3,eleni:4,dimos:5}[who]??0,r=familyRow!==undefined?window.FamilyAtlas[familyRow][0]:memoryRow!==undefined?(memoryRow>=2?window.AdultAtlas[memoryRow-2]:window.MemoryAtlas[memoryRow])[0]:who==='boss'?window.SupervisorAtlas[0]:A.cast[0][col];
+    const col={aris:0,mina:3,eleni:4,dimos:5}[who]??0,r=youthRow!==undefined?window.YouthAtlas[youthRow][0]:scoutRow!==undefined?window.ScoutAtlas[scoutRow][0]:familyRow!==undefined?window.FamilyAtlas[familyRow][0]:memoryRow!==undefined?(memoryRow>=2?window.AdultAtlas[memoryRow-2]:window.MemoryAtlas[memoryRow])[0]:who==='boss'?window.SupervisorAtlas[0]:A.cast[0][col];
     box(c,0,0,size,size,'#c1cbb8');c.imageSmoothingEnabled=false;
-    c.drawImage(familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r[0],r[1],r[2],Math.round(r[3]*.48),3,1,size-6,size-2);
+    c.drawImage(youthRow!==undefined?youth:scoutRow!==undefined?scouts:familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r[0],r[1],r[2],Math.round(r[3]*.48),3,1,size-6,size-2);
   }
   function avatar(who){const c=document.createElement('canvas');c.width=64;c.height=64;c.setAttribute('aria-label',who+' portrait');face(c.getContext('2d'),who);return c;}
   function tree(c,x,y){
@@ -138,14 +142,14 @@
     const focus=E.Opening.current(s)?.kind!=='explore'&&E.Opening.current(s)?{x:7,y:5}:m,wx=Math.max(0,Math.min(w-vw,focus.x*T+12-vw/2)),wy=Math.max(0,Math.min(h-vh,m.y*T+12-vh*.55)),ease=1-Math.exp(-dt/85);
     if(!camera.ready){camera.x=wx;camera.y=wy;camera.ready=true;}else{camera.x+=(wx-camera.x)*ease;camera.y+=(wy-camera.y)*ease;}
     box(c,0,0,vw,vh,'#293b43');c.save();c.translate(-Math.round(camera.x),-Math.round(camera.y));box(c,0,0,w,h,'#69736c');box(c,T,T,w-2*T,h-2*T,r.color);
-    const domestic=['home','memory-shared-home','memory-scouts'].includes(s.room)||s.room.startsWith('memory-child-')||s.room==='memory-adult-bedroom';
+    const domestic=!r.outdoor&&(['home','memory-shared-home','memory-scouts'].includes(s.room)||s.room.startsWith('memory-child-')||s.room==='memory-adult-bedroom');
     for(let y=T;y<h-T;y+=domestic?12:24)for(let x=T;x<w-T;x+=24){
       if(domestic){box(c,x+1,y+1,23,11,(x/24+y/12)%3?'#b69a71':'#c6aa80');box(c,x+3,y+5,15,1,'#ab8f68');}
-      else{box(c,x+1,y+1,23,23,s.room==='venue'?((x+y)%48?'#827c80':'#898287'):r.color);box(c,x,y,24,1,s.room==='venue'?'#726e73':'#b0afa0');box(c,x,y,1,24,s.room==='venue'?'#726e73':'#b0afa0');}
+      else if(r.outdoor){box(c,x,y,24,24,r.color);if(['memory-camp','memory-other-camp'].includes(s.room)&&(x/24+y/24)%3===0){box(c,x+5,y+9,3,2,'#748756');box(c,x+12,y+16,4,1,'#a5ad77');}}else{box(c,x+1,y+1,23,23,s.room==='venue'?((x+y)%48?'#827c80':'#898287'):r.color);box(c,x,y,24,1,s.room==='venue'?'#726e73':'#b0afa0');box(c,x,y,1,24,s.room==='venue'?'#726e73':'#b0afa0');}
     }
     // Baseboards, wall tiles and lived-in objects give each room a particular use.
-    box(c,T,22,w-2*T,3,'#594f45');
-    for(let x=T;x<w-T;x+=24){box(c,x,2,22,20,s.room==='venue'?'#51465e':'#d9c9a7');box(c,x+1,4,1,17,'#b6a78c');}
+    if(!r.outdoor)box(c,T,22,w-2*T,3,'#594f45');
+    for(let x=T;!r.outdoor&&x<w-T;x+=24){box(c,x,2,22,20,s.room==='venue'?'#51465e':'#d9c9a7');box(c,x+1,4,1,17,'#b6a78c');}
     if(s.room==='home'){
       box(c,5*T,6*T,4*T,2*T,'#9a6855');for(let i=0;i<4;i++)box(c,5*T+3,6*T+4+i*10,4*T-6,2,'#c89975');
       for(const x of [2*T,11*T]){plant(c,x,26);box(c,x-8,7,16,11,'#785a4e');box(c,x-5,9,10,7,'#b9c8a0');}
@@ -165,7 +169,7 @@
     if(r.memory)memoryDecor(c,s,w,h,t);
     if(r.transit)stationDecor(c,s,w,h,t);
     // Wall windows and furniture are drawn on the same pixel grid.
-    for(const x of [3*T,10*T]){box(c,x,5,28,17,'#243c49');box(c,x+2,7,24,13,s.room==='venue'?'#6e6279':'#a6bfc0');box(c,x+13,7,2,13,'#e0d5b9');}
+    for(const x of r.outdoor?[]:[3*T,10*T]){box(c,x,5,28,17,'#243c49');box(c,x+2,7,24,13,s.room==='venue'?'#6e6279':'#a6bfc0');box(c,x+13,7,2,13,'#e0d5b9');}
     for(const o of r.objects){const prop={...o,...E.Memories.propState(s)};if(window.CityProps.draw(c,prop,T,s.room))continue;const x=o.x*T,y=o.y*T,ow=o.w*T,oh=o.h*T;box(c,x+2,y+4,ow,oh,'#777b6b');
       const colors={table:'#a78058',desk:'#a78058',bed:'#817c9d',kitchen:'#c6c6ac',counter:'#9c875f',shelf:'#8e805f',boxes:'#b59a71',produce:'#86916c',stage:'#796c7c',mixer:'#496374',speaker:'#34434b',bench:'#956e50','ticket-machine':'#547991',gates:'#9aa9a1','train-exterior':'#aaa88c','train-window':'#688b95','train-seat':'#567963','home-front':'#e1c59b','cafe-front':'#b27d65',bookstall:'#9e8056',planter:'#9e7854',sofa:'#aa7968',amp:'#435460'};
       box(c,x,y,ow,oh,'#35464a');box(c,x+2,y+2,ow-4,oh-4,colors[o.type]);
@@ -201,7 +205,7 @@
       else{box(c,x-2,y+17,5,9,'#d6bb8b');box(c,x+21,y+17,5,9,'#d6bb8b');box(c,x+3,y+20,18,4,'#213c44');}
     }
     const people=[...E.actors(s).map(a=>{const p=E.actorPose(s,a.id);return {who:p.who,x:p.x*T+12,y:p.y*T+19,facing:p.facing,frame:p.frame};}),{who:E.Memories.current(s)?.avatar||'aris',x:m.x*T+12,y:m.y*T+19,player:true}].sort((a,b)=>a.y-b.y);
-    for(const p of people)sprite(c,p.who,p.x,p.y,p.player?s.facing:p.facing,p.player?m.frame:p.frame,p.who==='family-brother'?23:p.who==='memory-child'?(p.player?30:23):40);
+    for(const p of people)sprite(c,p.who,p.x,p.y,p.player?s.facing:p.facing,p.player?m.frame:p.frame,p.who==='scout-gerasimos'?46:p.who==='scout-vaggelis'||p.who==='memory-scout'?38:p.who==='memory-teen'?36:p.who==='family-brother'?23:p.who==='memory-child'?(p.player?30:23):40);
     if(['inside-roll','after-dad-play'].includes(E.Opening.current(s)?.id)){const elapsed=s.memory.opening.elapsed,x=(5.5+Math.sin(elapsed/250)*.4)*T+12,y=5*T+18;box(c,x-3,y-3,7,7,'#f6edd2');box(c,x-1,y-1,3,3,'#40515b');}
     const near=E.nearest(s);if(near&&(!E.Opening.current(s)||E.Opening.current(s).kind==='explore')){if(near.who){const lift=near.who==='memory-child'?14:31;box(c,near.x*T+8,near.y*T-lift,9,10,'#f3dfae');label(c,'!',near.x*T+12,near.y*T-lift+8,7,'#5c5245','center');}else{c.strokeStyle='#e8c379';c.lineWidth=1;c.strokeRect(near.x*T+4,near.y*T+4,16,16);}}
     if(m.route.length){const end=m.route.at(-1);c.strokeStyle='#fff1c2';c.strokeRect(end[0]*T+5,end[1]*T+5,14,14);}

@@ -2,6 +2,8 @@ package gr.stereotypezero.game;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Insets;
 import android.os.Build;
@@ -16,6 +18,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -56,7 +59,18 @@ public final class MainActivity extends Activity {
         web.setWebChromeClient(new WebChromeClient());
         web.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return true; // All gameplay is in one document; never navigate away.
+                // Source citations open only after a user tap, in the phone's browser.
+                // The game document itself stays offline and never navigates away.
+                if (request.isForMainFrame() && request.hasGesture()
+                        && "https".equals(request.getUrl().getScheme())
+                        && !"appassets.androidplatform.net".equals(request.getUrl().getHost())) {
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, request.getUrl()));
+                    } catch (ActivityNotFoundException error) {
+                        Toast.makeText(MainActivity.this, "No browser is available to open the source.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                return true;
             }
             @Override public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 return new WebResourceResponse("text/plain", "UTF-8", new ByteArrayInputStream(new byte[0]));

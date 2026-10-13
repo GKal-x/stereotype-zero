@@ -2,6 +2,7 @@
 (function(root){
   'use strict';
   const Opening=typeof module!=='undefined'&&module.exports?require('./opening.js'):root.CityOpening;
+  const Life=typeof module!=='undefined'&&module.exports?require('./life-world.js'):root.CityLife;
   const scenes=[
     {id:'courtyard',room:'memory-courtyard',name:'Patisia · the whole street',age:'AGE 6',avatar:'memory-child',goal:'Play with the ball and spend a moment with Omiros. Then return to the doorway.',intro:'A small courtyard. A ball. Your younger brother wants to join you. For now, the neighbourhood is somewhere to play.',required:['ball','brother'],objects:[{x:1,y:1,w:5,h:2,type:'home-front'},{x:10,y:1,w:3,h:2,type:'planter'},{x:1,y:7,w:2,h:1,type:'bench'},{x:11,y:7,w:2,h:1,type:'planter'}],places:[{id:'ball',name:'Play with the ball',x:8,y:5},{id:'brother',name:'Spend a moment with Omiros',x:4,y:5,who:'memory-child'},{id:'continue-memory',name:'Return to the doorway',x:7,y:2}]},
     {id:'scouts',room:'memory-scouts',name:'22ο Άρεως · getting ready',age:'YEARS LATER',avatar:'memory-scout',goal:'Prepare the shared kit and check the route. Then gather by the door.',intro:'The scout centre is familiar now. This time, others are looking to you to help get the group ready. You can ask for help too.',required:['kit','route'],objects:[{x:1,y:1,w:3,h:3,type:'bookstall'},{x:6,y:2,w:4,h:2,type:'table'},{x:11,y:2,w:2,h:4,type:'shelf'},{x:1,y:7,w:3,h:1,type:'bench'}],places:[{id:'kit',name:'Prepare the shared kit',x:5,y:3},{id:'route',name:'Check the route together',x:8,y:4},{id:'scout-friend',name:'Talk to a fellow leader',x:4,y:6,who:'dimos'},{id:'continue-memory',name:'Gather by the door',x:7,y:10}]},
@@ -87,6 +88,7 @@
   };
   scouts.places.push({id:'scout-books',name:'Read the scout field guide',x:4,y:2});
   function propState(s){const c=s.memory?.choices||{},child=s.room?.startsWith('memory-child-');return {screenOn:child?c['courtyard:child-tv']!=='off'&&(c['courtyard:child-tv']==='on'||c['courtyard:playstation']==='play'):c['shared-home:adult-tv']==='on',closed:!!c['shared-home:laptop'],playing:child?c['courtyard:child-records']==='play'||!!c['courtyard:father']:c['shared-home:records']==='choose',packed:!!s.memory?.visited?.['courtyard:outing-bag']};}
+  Life.install({scenes,extraRooms,items,choices,texts});
   for(const [id,item]of Object.entries(items)){choices[id]=item.choices;item.choices.forEach((choice,i)=>texts[id+':'+choice]=item.texts[i]);}
   for(const q of scenes)q.rooms=[q.room,...Object.keys(extraRooms).filter(id=>extraRooms[id].scene===q.id)];
   function allPlaces(q){return [...q.places,...q.rooms.filter(id=>extraRooms[id]).flatMap(id=>extraRooms[id].places)];}
@@ -107,9 +109,9 @@
     {cue:'The ball comes back too quickly and bounces beside your foot.',hint:'Steady the ball before trying anything bigger.',answer:'steady',text:'You stop it under your shoe. Omiros copies you with an invisible ball.'},
     {cue:'Omiros steps aside. The low wall ahead is clear.',hint:'There is room for a gentle shot at the wall.',answer:'shot',text:'The ball taps the wall and rolls back between you. Omiros laughs. “Again! Again!”'}
   ];
-  function initial(){return {scene:null,visited:{},choices:{},completed:false,met:false,afternoon:{round:0,attempts:0,finished:false},opening:Opening.initial()};}
+  function initial(){return {scene:null,visited:{},choices:{},completed:false,met:false,afternoon:{round:0,attempts:0,finished:false},opening:Opening.initial(),life:Life.initial()};}
   function goal(s){const q=current(s);return q?.id==='courtyard'?Opening.current(s)?.goal||'Watch the afternoon unfold.':q?.goal||'';}
   function current(s){return scenes.find(q=>q.id===s.memory?.scene)||null;}
   function complete(s){const q=current(s);return q?.id==='courtyard'?s.memory.opening.beat==='done':!!q&&q.required.every(id=>s.memory.visited[q.id+':'+id])&&(q.id!=='shared-home'||['books','guitar','records'].some(id=>s.memory.visited[q.id+':'+id]));}
-  const api={Opening,scenes,extraRooms,items,family,playRounds,goal,propState,allPlaces,choices,texts,initial,current,complete};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.CityMemories=api;
+  const api={Life,Opening,scenes,extraRooms,items,family,playRounds,goal,propState,allPlaces,choices,texts,initial,current,complete};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.CityMemories=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

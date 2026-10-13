@@ -1,3 +1,13 @@
+## Life-world expansion 0.12.0
+
+77 automated tests pass. New coverage checks two seven-child patrols, notebook/kit idempotence, encounter prerequisites, ordinary-action bypass prevention, zero-focus agency, pauses, exact save recovery, stepping away without losing kit, all seven chapters through the Aris reset, old-save migration and malformed notebook/encounter state. All new destinations and existing interiors remain reachable with furniture/person collisions.
+
+Phone-size browser review at 412×915 verifies a saved Hyper-ego encounter resuming at concern 2/3, appropriate commands reaching completion, a compact two-column command layout, and opening the notebook with the collected kit and new page. Scout sprites use twelve measured views from the unchanged generated PNG, including Gerasimos’s taller proportions. School and student stages have eight additional age-specific views. Browser error logs are empty. Historic facts, personal testimony and composite dialogue are distinguished in the notebook and research ledger.
+
+The signed local APK contains eight embedded PNGs and the full offline game; v2/v3 signatures and packaged HTML are checked. Citation taps are routed to the Android browser without giving the game network access.
+
+The new school/campus layouts, unnamed patrol children and battle feedback are first-pass content. Focus is currently feedback rather than a command gate. Camp music is original and does not reproduce the requested commercial song. Full later-life chapters and physical-device touch/audio QA remain outstanding.
+
 ## Childhood shadow opening 0.11.0
 
 68 Node tests pass, including the complete opening route, blocked early exit, Dad's animated departure, cooperative play retries, return-home proximity, unexplained final exchange, automatic age transition, save recovery during the island timer, malformed timing rejection, schema 7 migration and score changes. Existing Aris encounters, railway journeys, doors, collisions and movement checks pass.

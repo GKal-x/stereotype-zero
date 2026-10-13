@@ -56,7 +56,7 @@ def export_source(folder=None):
     fresh = folder is None
     folder = folder or Path(tempfile.mkdtemp(prefix='stereotype-zero-github-'))
     files = ['.gitignore', 'README.md', 'DESIGN.md', 'QA.md', 'index.html', 'style.css',
-        'world.js', 'opening.js', 'cinematics.js', 'memories.js', 'memories.test.js', 'rooms.js', 'level.test.js', 'world.test.js', 'map-ui.js', 'engine.js', 'engine.test.js', 'motion.js', 'motion.test.js', 'props.js', 'art.js', 'game.js', 'audio.js', 'audio.test.js', 'physics.test.js', 'childhood.test.js', 'build.js', 'serve.js',
+        'world.js', 'opening.js', 'life-world.js', 'cinematics.js', 'memories.js', 'memories.test.js', 'rooms.js', 'level.test.js', 'world.test.js', 'map-ui.js', 'engine.js', 'engine.test.js', 'motion.js', 'motion.test.js', 'props.js', 'art.js', 'game.js', 'audio.js', 'audio.test.js', 'physics.test.js', 'childhood.test.js', 'life.test.js', 'build.js', 'serve.js',
         'setup-android.ps1', 'build-android.ps1', 'android/README.md']
     for directory in ['android/app/src', '.github', 'research', 'tools', 'assets']:
         base = ROOT / directory
@@ -75,7 +75,7 @@ def export_source(folder=None):
         raise RuntimeError('Export contains a generated file or secret; refusing to publish.')
     if staged:
         git(folder, '-c', 'user.name=GKal-x', '-c', 'user.email=231666646+GKal-x@users.noreply.github.com',
-            'commit', '-m', 'Build childhood shadow opening and saved cinematics' if not fresh else 'Add Stereotype Zero first chapter and Android APK workflow')
+            'commit', '-m', 'Build memory notebook, Deers camp and education chapters' if not fresh else 'Add Stereotype Zero first chapter and Android APK workflow')
     return folder, len(staged)
 
 

@@ -4,11 +4,11 @@ import re
 import zipfile
 
 root = Path(__file__).resolve().parents[1]
-apk = root / 'dist/stereotype-zero-0.11.0.apk'
+apk = root / 'dist/stereotype-zero-0.12.0.apk'
 with zipfile.ZipFile(apk) as archive:
     html = archive.read('assets/stereotype-zero.html')
     assert html == (root / 'android/build/assets/stereotype-zero.html').read_bytes()
-    assert html.count(b'data:image/png;base64,') == 6
+    assert html.count(b'data:image/png;base64,') == 8
     assert b'window.CityAtlas=' in html
     assert b'root.CityPixels=' in html
     assert b'root.CityRooms=' in html
@@ -16,6 +16,10 @@ with zipfile.ZipFile(apk) as archive:
     assert b'window.MemoryAtlas=' in html
     assert b'window.FamilyAtlas=' in html
     assert b'window.AdultAtlas=' in html
+    assert b'window.ScoutAtlas=' in html
+    assert b'window.YouthAtlas=' in html
+    assert b'root.CityLife=' in html
+    assert b'MEMORY NOTEBOOK' in html
     assert b'root.CityOpening=' in html
     assert b'window.CityCinematics=' in html
     assert b'Keep the ball in play' in html

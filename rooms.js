@@ -26,8 +26,8 @@
   rooms.victoria=transitRoom('Victoria · a corner of the square','#d1c3a0',[
     {x:1,y:1,w:4,h:3,type:'cafe-front'},{x:9,y:1,w:4,h:3,type:'bookstall'},{x:2,y:7,w:2,h:1,type:'bench'},{x:10,y:7,w:2,h:1,type:'planter'}
   ],[{id:'bookseller',name:'Talk to the bookseller',x:9,y:4,who:'eleni'},{id:'square-friend',name:'Talk to the student',x:4,y:5,who:'mina'},{id:'ticket-machine',name:'Buy a ticket for the return',x:3,y:4},{id:'staff',name:'Ask for travel help',x:10,y:8,who:'boss'},{...exit,name:'Validate and return to the platform'}]);
-  for(const q of Memories.scenes)rooms[q.room]={name:q.name,width:14,height:12,color:q.id==='courtyard'?'#dfd0aa':q.id==='scouts'?'#c2b995':'#be9568',spawn:{x:7,y:9},objects:q.objects,places:q.places,memory:true};
-  for(const [id,r]of Object.entries(Memories.extraRooms))rooms[id]={...r,width:14,height:12,color:'#beaa88',spawn:{x:7,y:9},memory:true};
+  for(const q of Memories.scenes)rooms[q.room]={name:q.name,width:14,height:12,outdoor:!!q.outdoor,color:q.color|| (q.id==='courtyard'?'#dfd0aa':q.id==='scouts'?'#c2b995':'#be9568'),spawn:{x:7,y:9},objects:q.objects,places:q.places,memory:true};
+  for(const [id,r]of Object.entries(Memories.extraRooms))rooms[id]={...r,width:14,height:12,color:r.color||'#beaa88',spawn:{x:7,y:9},memory:true};
   const topics={
     eleni:[{id:'exam',label:'“How did the exam go?”',text:'“I knew the answer on the bus. Then I sat down and forgot it.” Eleni laughs once. “I’m going back next term. Even if it takes longer.”'},{id:'dream',label:'“Do you still want to leave Athens?”',text:'“Sometimes. Sometimes I just want a room where the window opens.” She looks at your bag. “Leaving shouldn’t be the only dream we’re allowed.”'}],
     mina:[{id:'hours',label:'“What happens with your next shift?”',text:'“No idea. That’s the point, isn’t it? You can’t plan a week if they only give you tomorrow.” Mina saves your number beside the rota.'},{id:'together',label:'“We could keep our hours together.”',text:'“A shared record. Dates, hours, transfers.” She puts her phone away. “Yes. But don’t volunteer me for a fight without asking.”'}],

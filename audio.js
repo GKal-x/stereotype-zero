@@ -15,10 +15,13 @@
     omen:{bpm:58,bass:[33,33,38,33],lead:[69,null,null,null,null,null,70,null,null,null,null,null,64,null,null,null],sparse:true},
     silence:{bpm:60,bass:[33,33,33,33],lead:[null]}
   });
+  scenes.camp={bpm:112,bass:[43,48,41,45],lead:[67,null,71,74,72,null,69,null,67,64,null,67,69,null,71,null],pluck:true};
+  scenes.school={bpm:78,bass:[45,41,43,40],lead:[69,null,null,72,null,71,null,null,67,null,64,null,67,null,null,null],sparse:true};
   const roomScenes={home:'home','memory-shared-home':'home','memory-courtyard':'childhood','memory-scouts':'scouts',shop:'shop',employer:'work',venue:'venue',metro:'station',platform:'station','victoria-platform':'station',train:'train',victoria:'victoria'};
   for(const id of ['memory-child-living','memory-child-bedroom','memory-child-kitchen'])roomScenes[id]='childhood';
   roomScenes['memory-scout-store']='scouts';roomScenes['memory-adult-kitchen']='home';roomScenes['memory-adult-bedroom']='home';
-  function sceneFor(s){if(s.memory?.scene==='courtyard'&&Opening){const theme=Opening.music(s);if(theme)return theme;}if(s.mode==='battle'&&!s.battle?.result)return 'battle';if(s.mode==='ending')return s.ending?.where==='gig'?'venue':'home';return roomScenes[s.room]||(!s.room&&Math.hypot(s.x-27,s.y-43)<6?'venue':'street');}
+  for(const id of ['memory-camp','memory-other-camp'])roomScenes[id]='camp';for(const id of ['memory-school','memory-classroom','memory-university','memory-lab'])roomScenes[id]='school';for(const id of ['memory-december','memory-march'])roomScenes[id]='omen';roomScenes['memory-station']='silence';roomScenes['memory-aftercare']='home';
+  function sceneFor(s){if(s.memory?.scene==='courtyard'&&Opening){const theme=Opening.music(s);if(theme)return theme;}if(s.mode==='memory-battle')return 'battle';if(s.mode==='battle'&&!s.battle?.result)return 'battle';if(s.mode==='ending')return s.ending?.where==='gig'?'venue':'home';return roomScenes[s.room]||(!s.room&&Math.hypot(s.x-27,s.y-43)<6?'venue':'street');}
   function events(mode,i){const s=scenes[mode]||scenes.street,beat=30/s.bpm,bar=Math.floor(i/8)%16,chord=Math.floor(bar/4),out=[];
     if(mode==='silence')return out;
     const add=(note,duration,type,volume)=>{if(note!==null)out.push({note,duration,type,volume});};

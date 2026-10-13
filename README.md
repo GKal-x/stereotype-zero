@@ -1,3 +1,21 @@
+## A life before Aris — 0.12.0
+
+Seven playable periods now lead to Aris: the childhood opening, Deers scout preparation, a two-patrol summer camp, the Plaka school assembly, December 2008 news and a station recollection, TEI Chalkidas/Psachna, and the shared adult home. These are first-pass authored chapters and compact layouts, not a finished biography or a surveyed city. Erasmus, ISAP and the longer adult years still need expansion.
+
+The memory analogue is a notebook. Exploring books, computers, people and places unlocks pages with source labels; a later margin reflection is saved. Harry Potter and The Lord of the Rings are reading interests, with original prose and adventure-map activities. The kit records gathered water, compass, cord, school handout and lab notes. Gathering is idempotent, and shared equipment is retained when leaving an encounter.
+
+Three nonviolent command encounters introduce Hyper-ego, a school assembly and a campus discussion. Read the concern, then choose Listen, Check, Share or Ask for help; Pause recovers local focus and Step away permits a retry. Insisting alone leaves the concern unresolved. Three appropriate responses complete each encounter and open a notebook page. Focus is a feedback meter and never removes commands or forces an outcome. Local memory encounters never spend Aris money or change his stress/energy. Hyper-ego is a fictional inner voice of self-certainty, not a diagnosis. Existing Aris wages combat remains intact.
+
+The Deers wear ochre T-shirts, green shorts and blue-white scarves. Gerasimos has taller proportions and blond hair; Vaggelis is the protagonist’s height with darker colouring. The camp has seven Deers including the player and seven composite neighbours, tents, visible supplies, conversations and an original camp chiptune. The remembered Tsopana Rave song is named, but its recording, lyrics and melody are not included. Unnamed children reuse the new scout atlas as placeholders. Artwork and final built-in generation prompt: assets/scouts-v2-art-brief.md. Separate teen and student sprites mark the later ages; their prompt is in assets/youth-art-brief.md.
+
+School scenes use Ηπίτου 15, with a classroom, PC and reading corner. Notebook history separates the 2006–07 mobilisation, 6 December 2008 and Law 4009/2011. The independent-student challenge against DAP is placed around 2012–13 from the narrator’s account; no election result or tally is fabricated. The government context and sourced law are separate pages. Tapping a source on Android opens the phone browser; the game stays offline. Composite political dialogue conveys disagreement over party priorities and study needs.
+
+The police-station episode preserves the narrator’s account of being dragged there and hit as a child. It uses an empty bench and optional brief fade; recording the account can avoid the fade. There is no police battle or reward for suffering. Aftermath offers a friend, water, writing and a call home. No officer, station or precise detention date is invented. Research ledger and sources: research/life-chapters-2026-10.md.
+
+Save schema 9 adds notebook pages, margins, gathered kit and resumable encounters. Older saves preserve their period and Aris progress. A new story is needed to experience newly inserted chapters already passed in a later save. All 77 automated tests pass, including connected-room reachability, the complete seven-chapter handover, mode/proximity guards, command retries, kit and notebook persistence, migration, and the existing railway/wages systems. Phone-size browser review and a signed APK accompany delivery; physical-phone touch/audio review remains needed.
+
+Earlier notes follow as release history.
+
 ## A shadow overhead — 0.11.0
 
 Begin as a child at home with Omiros. Explore the connected rooms, then roll the ball to start the story. Dad leaves for work; after a little more play Mum sends the children outside. Complete the cooperative ball game and look up. A brief tropical island cut shows only a descending helicopter-like shadow and smoke, then an original bird silhouette crosses above the children. Return through the ordinary doorway and tell Mum. Dad comes home early: “You’re early.” / “Something happened.” Silence and a fade lead automatically to the scout age.

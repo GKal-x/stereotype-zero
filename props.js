@@ -3,13 +3,20 @@
 (function(root){
   'use strict';
   function draw(c,o,T,room){
-    const handled=['table','desk','bed','kitchen','counter','shelf','boxes','produce','stage','mixer','speaker','bench','sofa','amp','bookstall','guitars','record-player','tv-console','fridge','wardrobe','tent','backpacks','map-table'];
+    const handled=['camp-water','camp-cord','camp-compass','campfire','notice','school-front','workbench','table','desk','bed','kitchen','counter','shelf','boxes','produce','stage','mixer','speaker','bench','sofa','amp','bookstall','guitars','record-player','tv-console','fridge','wardrobe','tent','backpacks','map-table'];
     if(!handled.includes(o.type))return false;
     const x=o.x*T,y=o.y*T,w=o.w*T,h=o.h*T;
     const b=(a,d,e,f,col)=>{c.fillStyle=col;c.fillRect(Math.round(x+a),Math.round(y+d),Math.round(e),Math.round(f));};
     const oval=(a,d,rx,ry,col)=>{c.fillStyle=col;c.beginPath();c.ellipse(Math.round(x+a),Math.round(y+d),rx,ry,0,0,Math.PI*2);c.fill();};
     const poly=(points,col)=>{c.fillStyle=col;c.beginPath();points.forEach(([a,d],i)=>i?c.lineTo(x+a,y+d):c.moveTo(x+a,y+d));c.closePath();c.fill();};
     const wood='#79533e',rim='#d1aa75',dark='#34434a',light='#eadcc0';
+    if(o.type==='camp-water'){b(7,0,10,3,dark);b(6,3,12,18,'#4e8a9b');b(8,5,3,12,'#a3c6c8');b(6,13,12,6,'#ddd4af');return true;}
+    if(o.type==='camp-cord'){for(let i=0;i<3;i++){b(3+i*2,3+i*2,17-i*4,2,'#d7c595');b(3+i*2,17-i*2,17-i*4,2,'#d7c595');b(3+i*2,3+i*2,2,14-i*4,'#aa8a59');b(18-i*2,3+i*2,2,14-i*4,'#aa8a59');}return true;}
+    if(o.type==='camp-compass'){b(4,3,16,17,dark);b(6,5,12,13,light);b(11,6,2,7,'#bd6850');b(11,13,2,5,'#476b7f');b(5,11,3,2,'#8c9e8d');b(16,11,3,2,'#8c9e8d');return true;}
+    if(o.type==='campfire'){b(3,17,19,4,wood);b(7,13,13,4,'#9a7253');b(7,7,11,9,'#c77b44');b(11,2,4,13,'#e2b964');return true;}
+    if(o.type==='notice'){b(0,0,w,h,wood);b(3,3,w-6,h-6,'#d1bb8d');for(let i=6;i<w-10;i+=14){b(i,6,11,h-12,light);b(i+2,9,7,1,'#6a7b7b');b(i+2,12,6,1,'#6a7b7b');}return true;}
+    if(o.type==='school-front'){b(0,-12,w,h+12,'#b9a584');b(0,-14,w,5,'#ebdfc1');b(3,-8,w-6,7,'#d4c3a1');b(0,h-5,w,5,'#8f8370');for(let i=9;i<w-15;i+=27){b(i,-1,17,h-12,dark);b(i+3,2,11,h-18,'#88a9ab');b(i+8,0,2,h-12,light);b(i-2,-4,21,3,'#efe1bd');b(i-2,h-11,21,3,'#e9dab6');}b(0,h-2,w,2,'#e1d3b5');return true;}
+    if(o.type==='workbench'){b(0,0,w,h-8,wood);b(2,2,w-4,4,rim);b(5,h-8,5,8,dark);b(w-10,h-8,5,8,dark);b(10,10,24,14,dark);b(14,7,15,20,'#96a4a3');b(35,15,24,3,light);b(53,10,4,15,'#b27b55');b(w-25,9,18,17,'#d5d0ad');return true;}
     const leg=(a,d)=>{b(a,d,4,9,dark);b(a+1,d,2,7,wood);};
     const book=(a,d,k)=>{b(a,d,4,13-k%3,['#a85f50','#d5b66f','#517782','#65795b'][k%4]);b(a+1,d+3,2,1,light);};
     // Restrained offset shadow, with transparent floor around legs and corners.
