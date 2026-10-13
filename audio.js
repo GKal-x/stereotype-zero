@@ -13,6 +13,8 @@
     victoria:{bpm:86,bass:[45,43,41,40],lead:[69,null,72,null,76,null,null,74,72,null,67,null,69,null,null,null],pluck:true}
   });
   const roomScenes={home:'home','memory-shared-home':'home','memory-courtyard':'childhood','memory-scouts':'scouts',shop:'shop',employer:'work',venue:'venue',metro:'station',platform:'station','victoria-platform':'station',train:'train',victoria:'victoria'};
+  for(const id of ['memory-child-living','memory-child-bedroom','memory-child-kitchen'])roomScenes[id]='childhood';
+  roomScenes['memory-scout-store']='scouts';roomScenes['memory-adult-kitchen']='home';roomScenes['memory-adult-bedroom']='home';
   function sceneFor(s){if(s.mode==='battle'&&!s.battle?.result)return 'battle';if(s.mode==='ending')return s.ending?.where==='gig'?'venue':'home';return roomScenes[s.room]||(!s.room&&Math.hypot(s.x-27,s.y-43)<6?'venue':'street');}
   function events(mode,i){const s=scenes[mode]||scenes.street,beat=30/s.bpm,bar=Math.floor(i/8)%16,chord=Math.floor(bar/4),out=[];
     const add=(note,duration,type,volume)=>{if(note!==null)out.push({note,duration,type,volume});};
@@ -38,6 +40,7 @@
     drum(t,volume){const s=this.context.createBufferSource(),g=this.context.createGain(),filter=this.context.createBiquadFilter();s.buffer=this.noise;filter.type='highpass';filter.frequency.value=2500;g.gain.setValueAtTime(volume,t);g.gain.exponentialRampToValueAtTime(.0001,t+.065);s.connect(filter);filter.connect(g);g.connect(this.bus||this.master);s.onended=()=>{s.disconnect();filter.disconnect();g.disconnect();};s.start(t);s.stop(t+.08);}
     schedule(){if(!this.enabled)return;if(document.hidden){this.next=this.context.currentTime+.05;return;}if(this.next<this.context.currentTime-.25)this.next=this.context.currentTime+.04;while(this.next<this.context.currentTime+.12){for(const e of events(this.mode,this.step++)){if(e.noise)this.drum(this.next,e.volume);else this.tone(e.note,this.next,e.duration,e.type,e.volume);}this.next+=30/scenes[this.mode].bpm;}}
     effect(kind='step'){if(!this.enabled||kind==='step')return;this.tone(kind==='choice'?69:kind==='win'?74:kind==='blocked'?38:50,this.context.currentTime,.08,'triangle',.10);}
+    phrase(){if(!this.enabled)return;[62,69,65,64,62].forEach((note,i)=>this.tone(note,this.context.currentTime+i*.18,.35,'triangle',.22));}
   }
   if(typeof module!=='undefined'&&module.exports)module.exports={scenes,events,sceneFor,roomScenes};else{root.CityAudio=CityAudio;root.CityScore={scenes,events,sceneFor,roomScenes};}
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -26,8 +26,55 @@
     'records:choose':'You set a record beside the player. It can be the soundtrack to the next small job.',
     'records:remember':'A record brings a gig and a friend to mind. Some stories live in ordinary things.'
   };
+  // Connected rooms are authored adaptations, not surveyed floor plans.
+  const door=(id,name,x,y,to,arrival,facing)=>({id,name,x,y,to,arrival,facing,door:true});
+  scenes[0].places.find(p=>p.id==='continue-memory').x=12;scenes[0].places.find(p=>p.id==='continue-memory').y=9;
+  scenes[0].places.find(p=>p.id==='continue-memory').name='Leave this childhood moment';
+  scenes[0].goal='Play with the ball and spend a moment with Omiros. Explore the family home if you like, then meet at the courtyard gate.';
+  scenes[0].places.push(door('child-home','Enter the family home',7,2,'memory-child-living',{x:7,y:9},'up'));
+  scenes[0].places.find(p=>p.id==='brother').speaker='Omiros';
+  scenes[0].places.find(p=>p.id==='brother').patrol=[[4,5],[5,5],[5,6],[4,6]];
+  const extraRooms={
+    'memory-child-living':{name:'Childhood home · living room',scene:'courtyard',objects:[{x:1,y:1,w:3,h:2,type:'tv-console',console:true},{x:7,y:2,w:5,h:2,type:'sofa'},{x:1,y:5,w:2,h:2,type:'record-player'},{x:11,y:6,w:2,h:3,type:'bookstall'},{x:5,y:6,w:3,h:2,type:'table'}],places:[{id:'mother',name:'Talk to Mum',speaker:'Mum',x:4,y:4,who:'eleni'},{id:'father',name:'Talk to Dad',speaker:'Dad',x:9,y:5,who:'boss'},{id:'child-tv',name:'Watch television',x:4,y:2},{id:'playstation',name:'Play the PlayStation',x:3,y:3},{id:'child-records',name:'Choose a record',x:3,y:6},{id:'child-books',name:'Read a book',x:10,y:7},door('courtyard-door','Go out to the courtyard',7,10,'memory-courtyard',{x:7,y:3},'down'),door('child-bedroom-door','Go to your bedroom',12,5,'memory-child-bedroom',{x:7,y:9},'right'),door('child-kitchen-door','Go to the kitchen',1,8,'memory-child-kitchen',{x:7,y:9},'left')]},
+    'memory-child-bedroom':{name:'Childhood home · bedroom',scene:'courtyard',objects:[{x:1,y:1,w:4,h:2,type:'desk'},{x:10,y:2,w:2,h:4,type:'bed'},{x:1,y:5,w:2,h:3,type:'bookstall'},{x:6,y:1,w:2,h:2,type:'wardrobe'}],places:[{id:'child-pc',name:'Use the family PC',x:3,y:3},{id:'child-bedroom-books',name:'Read before going out',x:3,y:6},door('child-living-door','Back to the living room',7,10,'memory-child-living',{x:11,y:5},'down')]},
+    'memory-child-kitchen':{name:'Childhood home · kitchen',scene:'courtyard',objects:[{x:1,y:1,w:8,h:2,type:'kitchen'},{x:10,y:1,w:2,h:3,type:'fridge'},{x:5,y:5,w:4,h:2,type:'table'}],places:[{id:'child-water',name:'Get a glass of water',x:4,y:3},door('child-kitchen-return','Back to the living room',7,10,'memory-child-living',{x:2,y:8},'down')]},
+    'memory-scout-store':{name:'22ο Άρεως · the kit room',scene:'scouts',objects:[{x:2,y:2,w:4,h:3,type:'tent'},{x:9,y:1,w:3,h:4,type:'shelf'},{x:1,y:7,w:2,h:2,type:'backpacks'},{x:6,y:6,w:3,h:2,type:'map-table'}],places:[{id:'tent',name:'Check the tent',x:4,y:5},{id:'compass',name:'Try the compass',x:7,y:8},{id:'packs',name:'Pack the shared equipment',x:3,y:7},door('scout-hall-door','Back to the scout hall',7,10,'memory-scouts',{x:11,y:8},'down')]},
+    'memory-adult-kitchen':{name:'Shared home · kitchen',scene:'shared-home',objects:[{x:1,y:1,w:8,h:2,type:'kitchen'},{x:10,y:1,w:2,h:3,type:'fridge'},{x:5,y:5,w:4,h:2,type:'table'}],places:[{id:'kettle',name:'Make tea for two',x:4,y:3},door('adult-kitchen-return','Back to the living room',7,10,'memory-shared-home',{x:11,y:4},'down')]},
+    'memory-adult-bedroom':{name:'Shared home · bedroom',scene:'shared-home',objects:[{x:9,y:2,w:3,h:4,type:'bed'},{x:1,y:1,w:3,h:3,type:'wardrobe'},{x:1,y:6,w:2,h:3,type:'bookstall'}],places:[{id:'adult-reading',name:'Read a few pages',x:3,y:7},door('adult-bedroom-return','Back to the living room',7,10,'memory-shared-home',{x:7,y:9},'down')]}
+  };
+  const scouts=scenes[1];scouts.places=scouts.places.filter(p=>p.id!=='scout-friend');
+  scouts.places.push({id:'gerasimos',name:'Talk to Gerasimos',speaker:'Gerasimos',x:4,y:6,who:'memory-scout',patrol:[[4,6],[5,6],[5,7],[4,7]]},{id:'vaggelis',name:'Talk to Vaggelis',speaker:'Vaggelis',x:9,y:7,who:'memory-scout',patrol:[[9,7],[9,8],[8,8],[8,7]]},door('scout-store-door','Enter the kit room',12,8,'memory-scout-store',{x:7,y:9},'right'));
+  scouts.objects.find(o=>o.type==='table').type='map-table';
+  const home=scenes[2];home.objects=[{x:1,y:1,w:3,h:2,type:'tv-console'},{x:8,y:1,w:5,h:2,type:'sofa'},{x:1,y:5,w:2,h:3,type:'bookstall'},{x:9,y:6,w:4,h:2,type:'desk',laptop:true},{x:1,y:8,w:2,h:1,type:'amp'},{x:4,y:6,w:2,h:2,type:'guitars'},{x:8,y:4,w:3,h:1,type:'record-player'}];
+  home.places.find(p=>p.id==='books').x=3;home.places.find(p=>p.id==='books').y=6;
+  home.places.find(p=>p.id==='records').x=9;home.places.find(p=>p.id==='records').y=5;
+  home.places.find(p=>p.id==='partner').speaker='Eleftheria';
+  home.places.push({id:'adult-tv',name:'Watch something together',x:4,y:2},{id:'laptop',name:'Close the laptop for tonight',x:10,y:8},door('adult-kitchen-door','Go to the kitchen',12,4,'memory-adult-kitchen',{x:7,y:9},'right'),door('adult-bedroom-door','Go to the bedroom',7,10,'memory-adult-bedroom',{x:7,y:9},'down'));
+  const items={
+    mother:{speaker:'Mum',body:'“Are you going back outside?”',options:['“After a little game.”','“Yes, Omiros is waiting.”'],choices:['game','outside'],texts:['“All right. Leave a turn for your brother.”','“Stay where we can find you. Have fun.”']},
+    father:{speaker:'Dad',body:'“Which record shall we put on?”',options:['“You choose one.”','“Let me look through them.”'],choices:['choose','browse'],texts:['“Come and listen to this one with me.”','“Hold it by the edges. We can play it together.”']},
+    'child-tv':{body:'The television sits on a heavy wooden cabinet.',options:['Turn it on','Turn it off'],choices:['on','off'],texts:['The screen lights up. You watch for a while.','The screen goes dark. You can hear the courtyard again.']},
+    playstation:{body:'A grey PlayStation and two wired controllers sit beneath the television.',options:['Play a short game','Leave it for later'],choices:['play','leave'],texts:['You sit down for a short game, then put the controller back within reach.','The controller stays beside the console. The afternoon is still outside.']},
+    'child-records':{body:'Records stand upright beside the turntable.',options:['Put a record on','Look through the sleeves'],choices:['play','browse'],texts:['You carefully lower the needle. Music fills the room.','The sleeves have their own colours and stories. You leave them in order.']},
+    'child-books':{body:'A low shelf keeps a few books within reach.',options:['Read a few pages'],choices:['read'],texts:['You find a familiar book and settle with it for a moment.']},
+    'child-bedroom-books':{body:'Books share a shelf with a few little treasures.',options:['Choose a book'],choices:['read'],texts:['You read a few pages before returning to the afternoon.']},
+    'child-pc':{body:'A monitor, keyboard and mouse fill the family desk.',options:['Try the computer'],choices:['use'],texts:['The monitor wakes up. You explore a little, then leave the desk clear.']},
+    'child-water':{body:'The kitchen is quieter than the living room.',options:['Pour some water'],choices:['drink'],texts:['A glass of water, then back to whatever the afternoon brings.']},
+    gerasimos:{speaker:'Gerasimos',body:'“I can help with the kit. What still needs doing?”',options:['“Let’s check it together.”'],choices:['help'],texts:['“Good. I’ll take one side; you take the other.”']},
+    vaggelis:{speaker:'Vaggelis',body:'“Have we checked the map as well as the bags?”',options:['“Come and have a look.”'],choices:['map'],texts:['“Let’s find where we stop first. Then the rest of the route.”']},
+    tent:{body:'A canvas tent is spread out for checking.',options:['Check the poles and pegs'],choices:['check'],texts:['You match the poles and count the pegs. The tent is ready to be packed.']},
+    compass:{body:'A compass lies beside the route map.',options:['Find north on the map'],choices:['orient'],texts:['You line the map up with the needle and identify the first direction of travel.']},
+    packs:{body:'The shared bags are open on the low shelf.',options:['Distribute the kit'],choices:['pack'],texts:['You divide the equipment between the bags instead of leaving everything to one person.']},
+    kettle:{body:'There are two mugs beside the kettle.',options:['Make tea for two'],choices:['tea'],texts:['You put the kettle on and bring two mugs back to the living room.']},
+    'adult-tv':{body:'The television is off. The evening can still take several shapes.',options:['Turn it on','Keep it quiet'],choices:['on','off'],texts:['You put something on, leaving room for a conversation too.','You leave the screen off. There is enough happening in the room.']},
+    laptop:{body:'A few tabs and unfinished tasks are still open.',options:['Save and close it'],choices:['close'],texts:['You save the work and close the laptop. It can wait until tomorrow.']},
+    'adult-reading':{body:'A book waits beside the bed.',options:['Read a few pages'],choices:['read'],texts:['You settle into a few pages. The rest of the house can wait a moment.']}
+  };
+  for(const [id,item]of Object.entries(items)){choices[id]=item.choices;item.choices.forEach((choice,i)=>texts[id+':'+choice]=item.texts[i]);}
+  for(const q of scenes)q.rooms=[q.room,...Object.keys(extraRooms).filter(id=>extraRooms[id].scene===q.id)];
+  function allPlaces(q){return [...q.places,...q.rooms.filter(id=>extraRooms[id]).flatMap(id=>extraRooms[id].places)];}
   function initial(){return {scene:null,visited:{},choices:{},completed:false,met:false};}
   function current(s){return scenes.find(q=>q.id===s.memory?.scene)||null;}
   function complete(s){const q=current(s);return !!q&&q.required.every(id=>s.memory.visited[q.id+':'+id])&&(q.id!=='shared-home'||['books','guitar','records'].some(id=>s.memory.visited[q.id+':'+id]));}
-  const api={scenes,choices,texts,initial,current,complete};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.CityMemories=api;
+  const api={scenes,extraRooms,items,allPlaces,choices,texts,initial,current,complete};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.CityMemories=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -53,9 +53,9 @@
     {id:'home',x:27,y:22,name:'Home · Eleni',label:'HOME',icon:'H',area:'Skiathou · home block'},
     {id:'kiosk',x:38,y:33,name:'The kiosk',label:'KIOSK',icon:'K',area:'Near Koliatsou square'},
     {id:'employer',x:41,y:22,name:'Stockroom · unpaid shift',label:'SHIFT',icon:'!',area:'East of Agia Paraskevi'},
-    {id:'mina',x:37,y:23,name:'Mina · your coworker',label:'MINA',icon:'M',area:'The stockroom corner'},
+    {id:'mina',x:37,y:23,name:'Mina · your coworker',who:'mina',patrol:[[37,23],[36,23],[36,24],[37,24]],label:'MINA',icon:'M',area:'The stockroom corner'},
     {id:'shop',x:27,y:33,name:'Neighborhood market',label:'MARKET',icon:'€',area:'Sifnou · shopping street'},
-    {id:'dimos',x:33,y:37,name:'Dimos · soundcheck',label:'DIMOS',icon:'D',area:'The basement lane'},
+    {id:'dimos',x:33,y:37,name:'Dimos · soundcheck',who:'dimos',patrol:[[33,37],[33,38],[33,39],[33,38]],label:'DIMOS',icon:'D',area:'The basement lane'},
     {id:'bench',x:43,y:35,name:'Koliatsou square · shade',label:'SQUARE',icon:'·',area:'Koliatsou square'},
     {id:'metro',x:9,y:21,name:'Kato Patisia · Line 1',label:'LINE 1',icon:'1',area:'Acharnon · Spanoudi square'},
     {id:'venue',x:27,y:43,name:'The basement gig',label:'GIG',icon:'♪',area:'South of Sifnou'},
@@ -64,6 +64,7 @@
     {id:'south',x:47,y:46,name:'South · Amerikis / Victoria',label:'SOUTH',icon:'↓',area:'Patision · toward the centre'}
   ];
   const TREES=[{x:7,y:24},{x:10,y:24},{x:30,y:17},{x:32,y:18},{x:41,y:34},{x:46,y:34},{x:41,y:38},{x:46,y:38},{x:55,y:3},{x:60,y:3},{x:17,y:35},{x:31,y:35}];
+  const STREET_PROPS=[{x:43,y:35,w:2,h:1},{x:31,y:31,w:1,h:1},...BUILDINGS.map(b=>({x:b.x+b.w-1,y:b.y+b.h,w:1,h:1}))];
   const BARRIERS=[{x:3,y:0,w:2,h:18},{x:3,y:29,w:2,h:19}];
   // OSM marks the Line 1 station approach as a tunnel. Surface streets remain
   // traversable above it; exposed railway beyond the approach blocks walking.
@@ -93,6 +94,6 @@
     const next=near?PLACES.find(t=>t.id===near[2]):SPAWN;
     return {...p,version:2,x:next.x,y:next.y};
   }
-  const api={WIDTH,HEIGHT,SPAWN,STREETS,SQUARES,BUILDINGS,PLACES,TREES,BARRIERS,RAIL,LINE1,DISTRICTS,contains,area,migrate};
+  const api={WIDTH,HEIGHT,SPAWN,STREETS,SQUARES,BUILDINGS,PLACES,TREES,STREET_PROPS,BARRIERS,RAIL,LINE1,DISTRICTS,contains,area,migrate};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.CityWorld=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -42,3 +42,6 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch
 body[data-memory=true] .vitals{visibility:hidden}body[data-memory=true] #phone{display:none}body[data-memory=true] .district b{font-size:14px;letter-spacing:0}body[data-memory=true] .pocket b{color:#dce5cc}
 
 .world.scene-arrival>canvas{animation:scene-arrival .55s ease-out}@keyframes scene-arrival{from{opacity:.15}to{opacity:1}}
+/* Compact, bottom-aligned conversations leave the characters visible. */
+.speech-panel{max-width:620px;max-height:64%;border-radius:3px;border:3px solid #263e49;box-shadow:inset 0 0 0 2px #ccb991,0 3px 0 #152b37;padding:12px 14px}
+.speech-panel .dialogue-head{margin-bottom:4px;gap:8px}.speech-panel .dialogue-head canvas{width:32px;height:32px;border-radius:2px}.speech-panel .eyebrow:empty{display:none}.speech-panel h2{font-size:15px;margin:0;letter-spacing:0}.speech-panel p{font-family:ui-monospace,monospace;font-size:14px;line-height:1.5;min-height:42px;margin:6px 0 8px}.speech-panel .choice-list{gap:4px;margin-top:5px}.speech-panel .choice{min-height:38px;border:0;border-radius:0;background:transparent;padding:6px;font-size:12px}.speech-panel .choice:focus-visible,.speech-panel .choice:active{background:#ead8ad}.speech-panel .choice:before{content:'▸';color:#476778}.speech-panel .choice>span{flex:1}

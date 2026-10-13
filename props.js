@@ -3,22 +3,56 @@
 (function(root){
   'use strict';
   function draw(c,o,T,room){
-    const handled=['table','desk','bed','kitchen','counter','shelf','boxes','produce','stage','mixer','speaker','bench','sofa','amp','bookstall'];
+    const handled=['table','desk','bed','kitchen','counter','shelf','boxes','produce','stage','mixer','speaker','bench','sofa','amp','bookstall','guitars','record-player','tv-console','fridge','wardrobe','tent','backpacks','map-table'];
     if(!handled.includes(o.type))return false;
     const x=o.x*T,y=o.y*T,w=o.w*T,h=o.h*T;
     const b=(a,d,e,f,col)=>{c.fillStyle=col;c.fillRect(Math.round(x+a),Math.round(y+d),Math.round(e),Math.round(f));};
     const oval=(a,d,rx,ry,col)=>{c.fillStyle=col;c.beginPath();c.ellipse(Math.round(x+a),Math.round(y+d),rx,ry,0,0,Math.PI*2);c.fill();};
+    const poly=(points,col)=>{c.fillStyle=col;c.beginPath();points.forEach(([a,d],i)=>i?c.lineTo(x+a,y+d):c.moveTo(x+a,y+d));c.closePath();c.fill();};
     const wood='#79533e',rim='#d1aa75',dark='#34434a',light='#eadcc0';
     const leg=(a,d)=>{b(a,d,4,9,dark);b(a+1,d,2,7,wood);};
     const book=(a,d,k)=>{b(a,d,4,13-k%3,['#a85f50','#d5b66f','#517782','#65795b'][k%4]);b(a+1,d+3,2,1,light);};
     // Restrained offset shadow, with transparent floor around legs and corners.
     b(4,h-4,w-6,7,'#535c5345');
+    if(o.type==='guitars'){
+      for(const [a,electric]of [[12,false],[w-10,true]]){
+        b(a-1,-1,2,h-4,dark);b(a-8,h-3,16,2,dark);
+        // Waist, shoulders and lower bout form an instrument, not a rectangular icon.
+        if(electric)poly([[a-6,17],[a-7,25],[a-10,30],[a-9,40],[a-5,44],[a+6,44],[a+10,39],[a+9,29],[a+5,23],[a+6,16],[a+3,22],[a,22]],'#ab6145');
+        else{oval(a,35,10,11,'#6e4533');oval(a,26,7,8,'#6e4533');oval(a,35,8,9,'#c69c59');oval(a,26,5,6,'#c69c59');}
+        b(a-2,1,5,27,'#674c38');b(a-3,-6,7,10,'#8f7049');for(let k=0;k<3;k++){b(a-5,-5+k*3,2,2,'#c7c9b7');b(a+4,-5+k*3,2,2,'#c7c9b7');}
+        if(electric){poly([[a+2,25],[a+7,29],[a+6,39],[a+1,40],[a-1,32]],'#ded6b9');b(a-3,29,7,2,dark);b(a-3,35,7,2,dark);}else oval(a,28,3,3,'#352f2b');
+        b(a-4,39,9,2,'#634430');for(let k=0;k<3;k++)b(a-1+k,3,1,37,k===1?'#f0d7a0':'#b6a47b');for(let k=6;k<23;k+=4)b(a-2,k,5,1,'#baa87e');
+      }return true;
+    }
+    if(['tv-console','record-player','wardrobe','fridge'].includes(o.type)){
+      b(2,1,w-4,h-3,dark);b(4,2,w-8,h-7,o.type==='fridge'?'#d8d9c6':wood);b(4,2,w-8,3,o.type==='fridge'?'#f0edd7':rim);
+      if(o.type==='tv-console'){
+        b(10,-14,w-20,29,dark);b(13,-11,w-26,22,o.screenOn?'#4e7686':'#20343e');if(o.screenOn){b(15,-9,w-30,2,'#93afb1');b(18,-3,10,7,'#a5b48b');b(w-30,0,12,8,'#b59d75');}b(w/2-7,15,14,3,dark);b(6,23,w-12,2,wood);
+        if(o.console){b(10,26,24,11,'#bdc2b8');oval(22,31,6,4,'#e1dfcd');b(12,35,5,1,dark);b(39,29,13,5,'#c5c9bd');b(41,27,3,9,'#c5c9bd');b(48,27,3,9,'#c5c9bd');b(42,29,3,1,dark);b(49,28,1,1,'#ad6558');}
+      }else if(o.type==='record-player'){
+        b(6,-8,w-12,23,'#a58e65');b(8,-6,w-16,18,'#3a4c51');oval(w*.36,3,10,7,'#1e333b');oval(w*.36,3,3,2,'#d5b775');b(w-17,-4,2,11,'#d6d2bc');b(w-24,6,8,2,'#d6d2bc');b(w-13,9,2,2,o.playing?'#9ecb85':'#ad7656');for(let j=8;j<w-9;j+=5)book(j,Math.max(17,h-19),j);b(5,h-7,w-10,2,rim);
+      }else if(o.type==='fridge'){b(5,h*.34,w-10,2,'#8a9c99');b(w-10,10,2,9,dark);b(w-10,h*.34+8,2,12,dark);b(8,8,8,6,'#b5ba93');}
+      else{b(w/2,5,1,h-12,'#d7b27d');b(w/2-5,h*.5,2,6,'#e3cb91');b(w/2+4,h*.5,2,6,'#e3cb91');}
+      return true;
+    }
+    if(o.type==='tent'){
+      poly([[3,h-5],[w*.33,-3],[w-3,h-5]],dark);poly([[7,h-7],[w*.33,1],[w-7,h-7]],'#b7995d');poly([[w*.33,1],[w*.33,h-7],[w-7,h-7]],'#8b8857');poly([[10,h-7],[w*.33,9],[w*.33+10,h-7]],'#3d554c');b(w*.33-1,5,2,h-13,'#e0c792');b(2,h-4,w-4,2,'#d0b47d');return true;
+    }
+    if(o.type==='backpacks'){
+      for(let j=4;j<w-12;j+=19){b(j+3,2,9,3,dark);b(j,6,15,h-12,'#55776a');b(j+2,8,11,5,'#a1b18a');b(j+2,h-20,11,11,'#809679');b(j+3,17,2,9,'#c1b781');b(j+10,17,2,9,'#c1b781');}return true;
+    }
+    if(o.type==='map-table'){
+      draw(c,{...o,type:'table'},T,'memory-scouts');oval(w-17,12,7,7,dark);oval(w-17,12,5,5,'#e4dec2');poly([[w-17,7],[w-20,14],[w-17,12]],'#ba624c');poly([[w-17,17],[w-14,10],[w-17,12]],'#557b85');return true;
+    }
     if(['table','desk','bench','counter'].includes(o.type)){
       const front=Math.min(9,h*.25),top=h-front-5;
       leg(5,h-9);leg(w-9,h-9);b(1,-3,w-2,top+5,dark);b(3,-2,w-6,top+2,wood);b(4,-2,w-8,top-1,'#b68c60');b(4,-2,w-8,2,rim);b(3,top,w-6,front,'#79583f');b(4,top,w-8,2,'#9c734f');
       if(o.type==='bench'){for(let j=4;j<top;j+=5)b(5,j,w-10,1,wood);return true;}
       if(o.type==='counter'){for(let j=5;j<w-8;j+=28){b(j,top+3,24,front-4,'#aa8860');b(j+10,top+3,5,1,dark);}b(w-43,-12,28,17,dark);b(w-40,-10,22,10,'#abc0ac');b(w-37,1,16,2,'#c9c5a6');b(w-50,8,36,9,'#c7c9b8');for(let j=0;j<4;j++)b(w-47+j*6,10,3,2,dark);return true;}
       if(o.type==='desk'){
+        if(o.laptop&&o.closed){b(w*.24,18,w*.58,11,'#b5c2bc');b(w*.24,27,w*.58,2,dark);b(w*.52,21,5,3,'#dce0cc');b(7,4,10,14,light);return true;}
+        if(o.laptop){b(w*.30,1,w*.48,16,dark);b(w*.30+2,3,w*.48-4,12,'#749ba3');poly([[w*.30,18],[w*.78,18],[w*.86,28],[w*.22,28]],'#c9cbbd');for(let j=0;j<5;j++)b(w*.30+j*7,21,4,1,'#546969');b(w*.48,24,10,2,'#929f9a');b(7,4,10,14,light);return true;}
         // A monitor with bezel, neck and foot; keyboard and mouse lie on the top.
         b(w*.37,-12,Math.min(35,w*.43),21,dark);b(w*.37+2,-10,Math.min(31,w*.43-4),16,'#638b9b');b(w*.37+4,-8,15,1,'#c5d9ca');b(w*.37+4,-4,22,1,'#b3c9b5');b(w*.54,9,3,5,dark);b(w*.45,13,17,2,dark);
         b(w*.32,17,w*.43,7,'#d2cbb4');for(let j=0;j<6;j++)b(w*.34+j*5,19,3,1,'#697977');oval(w*.83,20,3,4,'#d5d0be');b(7,3,12,16,light);b(9,6,8,1,'#76928d');b(9,10,7,1,'#76928d');return true;
@@ -44,6 +78,7 @@
       b(1,-3,w-2,h+1,dark);b(3,14,w-6,h-18,'#d7d2b4');b(2,-2,w-4,17,'#c9cec2');b(4,-1,w-8,2,'#f2ebcf');
       b(7,2,21,10,'#5a757d');b(9,3,17,7,'#96acac');b(14,-7,3,11,dark);b(16,-7,6,2,dark);
       b(w-28,1,22,12,'#46535b');for(const a of [w-22,w-12])for(const d of [4,9])oval(a,d,3,2,'#9ba6a0');
+      oval(w*.55,7,6,5,'#65858a');b(w*.55-2,0,5,3,'#b9c7b9');b(w*.55+5,5,3,3,light);for(const a of [w*.68,w*.76]){b(a,5,4,6,'#eadfbd');b(a+4,6,2,3,'#a18d67');}
       for(let a=5;a<w-9;a+=22){b(a,18,19,h-24,'#b0b7a1');b(a+2,20,15,h-29,'#d5d1b2');b(a+13,22,2,4,wood);}return true;
     }
     if(o.type==='boxes'){

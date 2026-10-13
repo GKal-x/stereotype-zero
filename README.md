@@ -1,3 +1,17 @@
+## Connected memories and solid movement 0.9.0
+
+New players start as the child. Existing saves remain available; beginning a new story follows childhood, scouting and adult memories before the explicit handover to Aris. This remains three short adapted periods, not the full autobiography or a completed childhood battle chapter.
+
+The courtyard connects to a childhood living room, bedroom and kitchen. The living room has a television, grey PlayStation with controller, records, books, heavy seating and a dining table; the PC is in the bedroom. Optional Mum and Dad conversations use provisional reused cast appearances and newly authored dialogue, not verified likenesses or remembered quotations. The scout hall includes Gerasimos and Vaggelis, maps and books; its kit room has a canvas tent, compass and equipment bags. The adult home has acoustic/electric guitars, books, records, TV and laptop, with a separate kitchen and bedroom. Layouts are compact adaptations rather than surveyed family floor plans. No personal photographs are exported.
+
+Ordinary doors have visible frames/thresholds. Walking onto a threshold in its crossing direction changes rooms without a confirmation panel. Tapping a door or pressing A nearby walks to it. Holding a direction stops at the doorway before transitioning; arrival is inside the next room to prevent bouncing. Ticket gates still require validation, and scene/time jumps and the Aris handover remain explicit choices.
+
+Tree trunks, street furniture, pots, people, walls and room furniture block movement/pathfinding. Tree canopies can overhang walkable pavement. Omiros, scout friends, Mina and Dimos have short authored patrols, pausing near the player and during dialogue. Both source and destination tiles are reserved during NPC steps. Runtime patrol positions reset on room entry/load; they are not a persistent city simulation. Memory sprites use pixel-grid leg rigging and torso bob to walk; bespoke multi-frame animation sheets remain future artwork.
+
+Conversations and item interactions use compact bottom dialogue boxes with speaker labels and choices. Menus, encounters and chapter cards retain their dedicated panels. Object choices are saved: the television responds on/off, the laptop visibly closes, and record/guitar interactions play an original phrase when music is enabled. Books, computer, kitchen, tent and compass have small contextual actions. They are not full minigames or inventory systems.
+
+57 automated tests cover the existing chapter and score plus solid actors/trees, connected-room routes, doorway arrivals, held-input transitions, ticket checks, NPC reservations, item save recovery and schema 5 migration. Schema 6 moves legacy saves clear of newly occupied tiles while preserving story/resources. Physical-phone review remains needed for the new doors and walking feel.
+
 ## Interiors, place scores and movement 0.8.0
 
 Furniture uses code-native pixel art with transparent silhouettes, visible table legs, cabinet fronts, a monitor and keyboard, bedding, upholstered seating, stocked bookshelves, produce crates, labelled cartons, a drum kit, microphone, speaker cones and mixer controls. Existing room footprints and reachable interactions are preserved. Home and scout interiors use warm wooden floors; the basement uses darker tiles. Street buildings and character atlases are preserved.

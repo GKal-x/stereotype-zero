@@ -25,6 +25,8 @@
         const a=this.active;a.elapsed+=dt;this.walkTime+=dt;
         const p=Math.min(1,a.elapsed/a.duration);this.x=a.x+(s.x-a.x)*p;this.y=a.y+(s.y-a.y)*p;
         if(p<1)return null;carry=a.elapsed-a.duration;this.active=null;this.x=s.x;this.y=s.y;
+        const door=this.engine.doors?.(s).find(d=>d.x===s.x&&d.y===s.y&&d.facing===s.facing);
+        if(door){this.stop();return {doorCross:door};}
       }
       let dir=this.held||this.pending;this.pending=null;
       if(!dir&&this.route.length){const next=this.route.shift(),dx=next[0]-s.x,dy=next[1]-s.y;dir=dx<0?'left':dx>0?'right':dy<0?'up':'down';}
