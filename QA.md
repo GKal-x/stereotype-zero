@@ -105,4 +105,4 @@ No native Android APK or physical Android-device test in this pass. Screen-reade
 
 0.9.0: 58 tests pass. Connected memory rooms, solid NPCs/trees, doorway crossings, gate validation and legacy furniture relocation covered. Browser review checks named bottom dialogue and entering a bedroom by movement only. Memory appearances and parent dialogue are provisional adaptations. Full autobiographical chapters and new childhood encounters remain future work.
 
-0.10.0: 64 automated tests cover the family outing, three-rally cooperative encounter, partial save recovery, schema 6 migration and existing rules. New family atlas has 12 measured frames, full alpha range 0–254, unchanged source pixels. Younger appearances and family-afternoon dialogue remain adapted proposals.
+0.10.0: 65 automated tests cover the family outing, three-rally cooperative encounter, partial save recovery, schema 6 migration and existing rules. New family atlas has 12 measured frames, full alpha range 0–254, unchanged source pixels. Younger appearances and family-afternoon dialogue remain adapted proposals.

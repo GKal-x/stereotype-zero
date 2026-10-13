@@ -49,8 +49,8 @@
   };
   const living=extraRooms['memory-child-living'];living.places.find(p=>p.id==='mother').who='family-mother';living.places.find(p=>p.id==='father').who='family-father';
   living.objects.find(o=>o.type==='table').album=true;
-  living.objects.push({x:8,y:7,w:1,h:1,type:'backpacks'});
-  living.places.push({id:'outing-bag',name:'Pack the outing bag',x:8,y:8},{id:'family-album',name:'Look at the family album',x:4,y:7});
+  living.objects.push({x:7,y:7,w:1,h:1,type:'backpacks'});
+  living.places.push({id:'outing-bag',name:'Pack the outing bag',x:8,y:7},{id:'family-album',name:'Look at the family album',x:4,y:7});
   extraRooms['memory-child-bedroom'].places.push({id:'outing-book',name:'Choose a book for the outing',x:3,y:5});
   const scouts=scenes[1];scouts.places=scouts.places.filter(p=>p.id!=='scout-friend');
   scouts.places.push({id:'gerasimos',name:'Talk to Gerasimos',speaker:'Gerasimos',x:4,y:6,who:'memory-scout',patrol:[[4,6],[5,6],[5,7],[4,7]]},{id:'vaggelis',name:'Talk to Vaggelis',speaker:'Vaggelis',x:9,y:7,who:'memory-scout',patrol:[[9,7],[9,8],[8,8],[8,7]]},door('scout-store-door','Enter the kit room',12,8,'memory-scout-store',{x:7,y:9},'right'));

@@ -8,7 +8,7 @@ Mum and Dad have new original sprites inspired by the supplied later-life photo,
 
 Built-in image generation produced the new atlas; see assets/family-art-brief.md for the final prompt and limits. Only stylised sprites are included; the supplied photographs and raw biography remain outside publisher exports. Existing street artwork and other cast are preserved.
 
-Save schema 7 retains outing choices and rally state. Schema 6 saves preserve previously completed ball play, later memories and Aris progress. 64 automated tests cover the chapter, earlier gameplay, interactions, collisions and audio. Phone-size browser checks and signed Android packaging are part of delivery; physical-phone feedback remains needed.
+Save schema 7 retains outing choices and rally state. Schema 6 saves preserve previously completed ball play, later memories and Aris progress. 65 automated tests cover the chapter, earlier gameplay, interactions, collisions and audio. Phone-size browser checks and signed Android packaging are part of delivery; physical-phone feedback remains needed.
 
 ## Connected memories and solid movement 0.9.0
 
