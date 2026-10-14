@@ -150,3 +150,7 @@ No native Android APK or physical Android-device test in this pass. Screen-reade
 
 Local Android 0.15.0 compiles and signs with version code 1030. Package verification confirms all fourteen PNG atlases and the combat module are in the offline APK. Instrumentation additionally exercises Fight, defence and attack via native touches, asserts their actual effects, reloads the battle, and captures camp, guard, battle and cordon views. Publication is gated on that Android run. Physical-phone touch feel and the final audio mix still benefit from playtesting.
 
+## Narrator sprite correction — 0.15.1
+
+Inspected all four edited PNG sheets and measured the five narrator variants without rewriting image pixels. Only those five IDs use the new override atlas; the other actors continue using the existing source sheets. The patch retains the movement rig, combat rules, rooms, save schema and storage origin. The offline bundle includes all eighteen PNGs. Android publication retains the startup, movement, command visibility, combat/save and screenshot gate.
+

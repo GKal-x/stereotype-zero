@@ -5,8 +5,9 @@
   const cast=new Image(),buildings=new Image(),supervisor=new Image(),memories=new Image(),family=new Image(),adults=new Image(),scouts=new Image(),youth=new Image(),A=window.CityAtlas;
   function load(image,src){return new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('Artwork could not load: '+src));image.src=src;});}
   const baseReady=Promise.all([load(cast,'assets/cast-refined.png'),load(buildings,'assets/buildings-source.png'),load(supervisor,'assets/supervisor-v1.png'),load(memories,'assets/memories-v1.png'),load(family,'assets/family-v1.png'),load(adults,'assets/adults-refined-v1.png'),load(scouts,'assets/scouts-v2.png'),load(youth,'assets/youth-v1.png')]);
-  const ensemble=Object.fromEntries([...new Set(Object.values(window.EnsembleAtlas).map(a=>a.file))].map(file=>[file,new Image()]));
- const ensembleReady=Promise.all(Object.entries(ensemble).map(([file,img])=>load(img,({'camp-deers-v1.png':'assets/camp-deers-v1.png','camp-neighbours-a-v1.png':'assets/camp-neighbours-a-v1.png','camp-neighbours-b-v1.png':'assets/camp-neighbours-b-v1.png','city-ensemble-v1.png':'assets/city-ensemble-v1.png','officials-ensemble-v1.png':'assets/officials-ensemble-v1.png','town-ensemble-v1.png':'assets/town-ensemble-v1.png'})[file])));
+  const ensembleDefinitions={...window.EnsembleAtlas,...window.PersonalAtlas};
+  const ensemble=Object.fromEntries([...new Set(Object.values(ensembleDefinitions).map(a=>a.file))].map(file=>[file,new Image()]));
+ const ensembleReady=Promise.all(Object.entries(ensemble).map(([file,img])=>load(img,({'personal-child-v1.png':'assets/personal-child-v1.png','personal-scout-v1.png':'assets/personal-scout-v1.png','personal-youth-v1.png':'assets/personal-youth-v1.png','personal-adult-v1.png':'assets/personal-adult-v1.png','camp-deers-v1.png':'assets/camp-deers-v1.png','camp-neighbours-a-v1.png':'assets/camp-neighbours-a-v1.png','camp-neighbours-b-v1.png':'assets/camp-neighbours-b-v1.png','city-ensemble-v1.png':'assets/city-ensemble-v1.png','officials-ensemble-v1.png':'assets/officials-ensemble-v1.png','town-ensemble-v1.png':'assets/town-ensemble-v1.png'})[file])));
  const ready=Promise.all([baseReady,ensembleReady]);
  const spriteCache=new Map();
   // Cache crisp samples at the intended pixel size; never blur the pixel clusters.
@@ -18,7 +19,7 @@
   const directionRow={down:0,left:1,right:2,up:3};
   function sprite(c,who,x,y,facing='down',frame=0,height=40){
 
-    const extra=window.EnsembleAtlas[who];
+    const extra=ensembleDefinitions[who];
     const youthRow={'memory-teen':0,'memory-student':1}[who];
     const scoutRow={'memory-scout':0,'scout-gerasimos':1,'scout-vaggelis':2}[who];
     const familyRow={'family-mother':0,'family-father':1,'family-brother':2}[who];
@@ -34,7 +35,7 @@
   }
   function face(c,who='aris',size=64){
 
-    const extra=window.EnsembleAtlas[who];
+    const extra=ensembleDefinitions[who];
     const youthRow={'memory-teen':0,'memory-student':1}[who];
     const scoutRow={'memory-scout':0,'scout-gerasimos':1,'scout-vaggelis':2}[who];
     const familyRow={'family-mother':0,'family-father':1,'family-brother':2}[who];

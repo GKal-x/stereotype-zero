@@ -207,3 +207,7 @@ The camp encounter is a friendly tag bout after preparing the kit. School/campus
 
 The seven life chapters remain compact sketches. This release establishes the tactical rules and visual vocabulary; it does not add the full adulthood biography or an entire simulated Athens. Four-arrow controls, restrained attached-foot animation and the original location-specific 8-bit soundtrack from 0.14.0 are retained.
 
+## Narrator sprite correction — 0.15.1
+
+The narrator’s childhood, scout, teenage, student and adult variants have slightly curlier brown hair. Only his scout shirt changes to muted grey-beige based on the supplied reference; the blue-white scarf and green shorts remain. Faces, other outfits and proportions are preserved. Other cast members—including Gerasimos, Vaggelis, Eleftheria and Aris—keep their original source sprites. The separate override atlas also applies to portraits and battle views. Existing saves show the corrected art immediately. [Saved assets and exact edit prompts](assets/personal-sprite-edit-brief.md).
+
