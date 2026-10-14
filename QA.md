@@ -144,3 +144,9 @@ No native Android APK or physical Android-device test in this pass. Screen-reade
 0.9.0: 58 tests pass. Connected memory rooms, solid NPCs/trees, doorway crossings, gate validation and legacy furniture relocation covered. Browser review checks named bottom dialogue and entering a bedroom by movement only. Memory appearances and parent dialogue are provisional adaptations. Full autobiographical chapters and new childhood encounters remain future work.
 
 0.10.0: 65 automated tests cover the family outing, three-rally cooperative encounter, partial save recovery, schema 6 migration and existing rules. New family atlas has 12 measured frames, full alpha range 0–254, unchanged source pixels. Younger appearances and family-afternoon dialogue remain adapted proposals.
+## Tactical encounters and individual cast — 0.15.0
+
+94 automated checks pass locally. New coverage checks guard damage reduction, telegraphed heavy replies, guard-breaking feints, limited strong moves, insufficient effort, ally/item prerequisites, one-time food consumption, withdrawal, exact battle save recovery, legacy encounter migration, once-only wage payment and traversal of all seven chapters using the new battles. Existing controls, collisions, doors, music and history/testimony checks remain passing.
+
+Local Android 0.15.0 compiles and signs with version code 1030. Package verification confirms all fourteen PNG atlases and the combat module are in the offline APK. Instrumentation additionally exercises Fight, defence and attack via native touches, asserts their actual effects, reloads the battle, and captures camp, guard, battle and cordon views. Publication is gated on that Android run. Physical-phone touch feel and the final audio mix still benefit from playtesting.
+

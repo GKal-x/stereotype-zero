@@ -5,11 +5,11 @@ import zipfile
 import wave
 
 root = Path(__file__).resolve().parents[1]
-apk = root / 'dist/stereotype-zero-0.14.0.apk'
+apk = root / 'dist/stereotype-zero-0.15.0.apk'
 with zipfile.ZipFile(apk) as archive:
     html = archive.read('assets/stereotype-zero.html')
     assert html == (root / 'android/build/assets/stereotype-zero.html').read_bytes()
-    assert html.count(b'data:image/png;base64,') == 8
+    assert html.count(b'data:image/png;base64,') == 14
     assert b'window.CityAtlas=' in html
     assert b'root.CityPixels=' in html
     assert b'root.CityRooms=' in html
@@ -27,7 +27,9 @@ with zipfile.ZipFile(apk) as archive:
     assert b'root.CityMemories=' in html
     assert b'Take control of Aris' in html
     assert b'Validate and pass the gates' in html
-    assert b'Read the next reply' in html
+    assert b'tactical-arena' in html
+    assert b'root.CityCombat=' in html
+    assert b'window.EnsembleAtlas=' in html
     assert b'Walking pace: Extra slow' in html
     assert b'cast-source.png' not in html
     assert b'buildings-source.png' not in html

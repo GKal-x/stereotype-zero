@@ -180,3 +180,9 @@ Twenty-four automated tests cover location-to-location reachability, geographica
 Browser visual/input and physical Android checks are recorded separately; automated engine tests do not establish their success. Small-screen panels are scrollable. Full screen-reader map navigation, controller API input, localized Greek dialogue, in-app interiors and the wider district network remain future work. Signed APKs are available from the standalone game repository's releases.
 
 Review questions: Does Aris feel specific? Does the battle feel expressive rather than bureaucratic? Can players find Mina without hints? Are the time costs worth their narrative consequences? Does the gig feel like a reward? Which parts of the art feel convincingly Athens, and which need local correction?
+## Current combat design — 0.15.0
+
+The familiar command rhythm is attack, defend, tactic, support and withdrawal. Each turn shows the next opposing action; no correct-answer quiz advances a task automatically. A guard protects one counter, a feint creates a temporary opening, strong moves spend effort and limited uses, and allies support recovery. Basic attacks, defence and rest have no use limit, so exhausting special moves never removes all commands. The opponent acts on recovery turns. Finishing a bout skips the counterattack.
+
+The same rules receive different meanings: friendly tag uses stamina, debates and wages use composure, and a cordon encounter measures the obstruction of an escape route. There is no universal morality score. Historical killing and narrated abuse remain separate cutscenes, outside these tactical rules. Hyper-ego is the urge to rush and control a situation; Gerasimos is a real friend in a friendly practice bout, not an inner-monster clone.
+

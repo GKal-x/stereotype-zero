@@ -28,7 +28,7 @@ jobs:
       - name: Check game rules and scripts
         shell: pwsh
         run: |
-          node --test engine.test.js motion.test.js world.test.js level.test.js memories.test.js audio.test.js physics.test.js childhood.test.js life.test.js
+          node --test engine.test.js motion.test.js world.test.js level.test.js memories.test.js audio.test.js physics.test.js childhood.test.js life.test.js combat.test.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --check game.js
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -76,10 +76,10 @@ jobs:
         with:
           name: stereotype-zero-android-${{ github.run_number }}
           path: |
-            dist/stereotype-zero-0.14.0.apk
-            dist/stereotype-zero-0.14.0.apk.sha256
+            dist/stereotype-zero-0.15.0.apk
+            dist/stereotype-zero-0.15.0.apk.sha256
             dist/startup-tests.apk
-            dist/stereotype-zero-chip-score-0.14.0.zip
+            dist/stereotype-zero-chip-score-0.15.0.zip
           if-no-files-found: error
           retention-days: 30
 
@@ -106,12 +106,16 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           script: |
-            adb install -r dist/stereotype-zero-0.14.0.apk
+            adb install -r dist/stereotype-zero-0.15.0.apk
             adb install -r dist/startup-tests.apk
             adb shell am instrument -w gr.stereotypezero.smoke/gr.stereotypezero.smoke.StartupSmoke | tee dist/android-startup.txt
             adb logcat -d > dist/android-logcat.txt
             adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-startup.png dist/android-startup.png
             adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-walk.png dist/android-walk.png
+            adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-cast.png dist/android-cast.png
+            adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-guard.png dist/android-guard.png
+            adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-battle.png dist/android-battle.png
+            adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-cordon.png dist/android-cordon.png
             grep -q 'INSTRUMENTATION_RESULT: result=PASS' dist/android-startup.txt
       - name: Keep Android startup evidence
         if: always()
@@ -123,6 +127,10 @@ jobs:
             dist/android-logcat.txt
             dist/android-startup.png
             dist/android-walk.png
+            dist/android-cast.png
+            dist/android-guard.png
+            dist/android-battle.png
+            dist/android-cordon.png
           if-no-files-found: warn
 
   release:
@@ -137,4 +145,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "android-preview-$GITHUB_RUN_NUMBER" dist/stereotype-zero-0.14.0.apk dist/stereotype-zero-0.14.0.apk.sha256 dist/stereotype-zero-chip-score-0.14.0.zip --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Stereotype Zero Android preview $GITHUB_RUN_NUMBER" --prerelease --notes "Four direction arrows replace the analog stick. Slower fixed walking pace, first-repeat delay and bounded input queue; attached-foot walking animation. Sixteen original four-voice chiptunes and intentional silence: rock and garage riffs, warm home/book themes, doom and dungeon-synth moods. Shared unsigned 8-bit PCM renderer for live music and WAV soundtrack. Release gated by Android startup, save/relaunch, actual arrow-touch and music-enable checks. Android 8.0+. Built from $GITHUB_SHA."
+          gh release create "android-preview-$GITHUB_RUN_NUMBER" dist/stereotype-zero-0.15.0.apk dist/stereotype-zero-0.15.0.apk.sha256 dist/stereotype-zero-chip-score-0.15.0.zip --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Stereotype Zero Android preview $GITHUB_RUN_NUMBER" --prerelease --notes "Individual camp, school, campus, train and police characters. Original rear-player/front-opponent battle view with FIGHT/BAG/ALLY/LEAVE, attack, defence, feints, effort and limited strong moves. Contextual friendly tag, debates, wage dispute and optional cordon escape. Existing saves supported. Release gated by Android startup, native arrow and combat touches, save/resume and music checks. Android 8.0+. Built from $GITHUB_SHA."

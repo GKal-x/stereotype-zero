@@ -70,6 +70,19 @@ public final class StartupSmoke extends Instrumentation {
         check(getUiAutomation().injectInputEvent(release, true), "Touch up failed"); release.recycle();
     }
     private void screenshot() throws Exception { screenshot("android-startup.png"); }
+    private void fixture(Activity activity, String name) throws Exception {
+        java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
+        try (java.io.InputStream input = getContext().getAssets().open(name + ".json")) {
+            byte[] buffer = new byte[4096]; int count;
+            while ((count = input.read(buffer)) != -1) bytes.write(buffer, 0, count);
+        }
+        String saved = new String(bytes.toByteArray(), java.nio.charset.StandardCharsets.UTF_8);
+        // Load through the same production save reader, without a reload/pagehide race.
+        js(activity, "window.dispatchEvent(new Event('stereotype-zero-pause'))");
+        check("true".equals(js(activity, "Boolean(SZ.restore(" + org.json.JSONObject.quote(saved) + "))")), "Invalid test save");
+        js(activity, "localStorage.setItem('stereotype-zero-save'," + org.json.JSONObject.quote(saved) + ");document.getElementById('load').click();window.dispatchEvent(new Event('stereotype-zero-resume'))");
+        Thread.sleep(1000);
+    }
     private void screenshot(String name) throws Exception {
         Bitmap image = getUiAutomation().takeScreenshot();
         check(image != null, "Screenshot unavailable");
@@ -127,8 +140,30 @@ public final class StartupSmoke extends Instrumentation {
             Thread.sleep(1200);
             check("true".equals(js(restored, "document.getElementById('sound').getAttribute('aria-pressed')==='true'")), "Chip music did not enable after touch");
             screenshot();
+            fixture(restored, "camp");
+            screenshot("android-cast.png");
+            tap(restored, "#action");
+            waitForUi(restored, "Boolean(document.querySelector('.tactical-arena'))", "Camp battle view absent");
+            tap(restored, ".choice[data-choice='0']");
+            check("true".equals(js(restored, "document.querySelector('.choice[data-choice=\"1\"]').textContent.includes('Brace')")), "Defence move absent");
+            tap(restored, ".choice[data-choice='1']");
+            Thread.sleep(190);
+            screenshot("android-guard.png");
+            Thread.sleep(850);
+            check("true".equals(js(restored, "(()=>{const d=JSON.parse(localStorage.getItem('stereotype-zero-save')).memory.life.active.duel;return d.hp===97&&d.effort===78&&d.turn===1;})()")), "Guard did not block the reply and restore effort");
+            tap(restored, ".choice[data-choice='0']");
+            tap(restored, ".choice[data-choice='0']");
+            Thread.sleep(900);
+            check("true".equals(js(restored, "JSON.parse(localStorage.getItem('stereotype-zero-save')).memory.life.active.duel.foe===54")), "Attack did not reduce opponent stamina");
+            js(restored, "document.getElementById('load').click()");
+            check("true".equals(js(restored, "Boolean(document.querySelector('.tactical-arena'))")), "Battle save did not resume");
+            screenshot("android-battle.png");
+            fixture(restored, "cordon");
+            tap(restored, "#action");
+            waitForUi(restored, "Boolean(document.querySelector('.tactical-arena'))", "Cordon battle view absent");
+            screenshot("android-cordon.png");
             result.putString("result", "PASS");
-            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notes accessible; automatic bedroom door; native arrow tap moves one tile; two rapid taps move two tiles; chip music enables");
+            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notes; automatic door; native arrow taps; chip music; distinct camp cast; native FIGHT/defence/attack; exact combat effects; battle save resume; police battle view");
             finish(Activity.RESULT_OK, result);
         } catch (Throwable error) {
             try { screenshot(); } catch (Exception ignored) { }

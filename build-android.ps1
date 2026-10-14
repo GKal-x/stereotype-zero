@@ -25,7 +25,7 @@ function Run-Tool($Executable, [string[]]$Arguments) {
 Run-Tool 'node' @("$PSScriptRoot/build.js")
 $scoreFiles = @(Get-ChildItem -LiteralPath $outputRoot -Filter 'score-*.wav' -File | Select-Object -ExpandProperty FullName)
 $scoreFiles += Join-Path $outputRoot 'soundtrack-notes.md'
-Compress-Archive -LiteralPath $scoreFiles -DestinationPath (Join-Path $outputRoot 'stereotype-zero-chip-score-0.14.0.zip') -Force
+Compress-Archive -LiteralPath $scoreFiles -DestinationPath (Join-Path $outputRoot 'stereotype-zero-chip-score-0.15.0.zip') -Force
 $mobileHtml = [IO.File]::ReadAllText("$outputRoot/stereotype-zero.html").Replace('<head>', '<head><script>window.STEREOTYPE_ZERO_ANDROID=true;document.documentElement.classList.add("android-game");</script>')
 [IO.File]::WriteAllText("$buildRoot/assets/stereotype-zero.html", $mobileHtml, [Text.UTF8Encoding]::new($false))
 Run-Tool "$buildTools/aapt2.exe" @('compile', '--dir', "$mainRoot/res", '-o', "$buildRoot/resources.zip")
@@ -49,20 +49,21 @@ if ($SigningKeystore -and -not (Test-Path $SigningKeystore)) { throw 'The suppli
 if (-not (Test-Path $keystore)) {
     Run-Tool "$jdkRoot/bin/keytool.exe" @('-genkeypair', '-keystore', $keystore, '-storepass', 'android', '-keypass', 'android', '-alias', 'prototype', '-keyalg', 'RSA', '-keysize', '2048', '-validity', '10000', '-dname', 'CN=Stereotype Zero Prototype')
 }
-$apkPath = "$outputRoot/stereotype-zero-0.14.0.apk"
+$apkPath = "$outputRoot/stereotype-zero-0.15.0.apk"
 Run-Tool "$jdkRoot/bin/java.exe" @('-jar', "$buildTools/lib/apksigner.jar", 'sign', '--ks', $keystore, '--ks-key-alias', 'prototype', '--ks-pass', 'pass:android', '--key-pass', 'pass:android', '--out', $apkPath, "$buildRoot/aligned.apk")
 Run-Tool "$jdkRoot/bin/java.exe" @('-jar', "$buildTools/lib/apksigner.jar", 'verify', '--verbose', $apkPath)
 Run-Tool "$buildTools/zipalign.exe" @('-c', '-p', '4', $apkPath)
 Run-Tool "$buildTools/aapt2.exe" @('dump', 'badging', $apkPath)
 $hash = (Get-FileHash $apkPath -Algorithm SHA256).Hash.ToLower()
-"$hash  stereotype-zero-0.14.0.apk" | Set-Content "$apkPath.sha256" -Encoding ascii
+"$hash  stereotype-zero-0.15.0.apk" | Set-Content "$apkPath.sha256" -Encoding ascii
 Write-Host "Ready: $apkPath"
 
 # Separate instrumentation APK, signed by the same prototype key. Never released.
 $smokeRoot = Join-Path $PSScriptRoot 'android/app/src/androidTest'
 $smokeBuild = Join-Path $buildRoot 'smoke'
+Run-Tool 'node' @("$PSScriptRoot/tools/build-smoke-fixtures.js")
 foreach ($folder in @($smokeBuild, "$smokeBuild/classes", "$smokeBuild/dex")) { New-Item -ItemType Directory -Force $folder | Out-Null }
-Run-Tool "$buildTools/aapt2.exe" @('link', '-o', "$smokeBuild/unsigned.apk", '-I', "$sdkPlatform/android.jar", '--manifest', "$smokeRoot/AndroidManifest.xml")
+Run-Tool "$buildTools/aapt2.exe" @('link', '-o', "$smokeBuild/unsigned.apk", '-I', "$sdkPlatform/android.jar", '--manifest', "$smokeRoot/AndroidManifest.xml", '-A', "$smokeBuild/assets")
 $smokeSources = @(Get-ChildItem "$smokeRoot/java" -Filter '*.java' -Recurse | ForEach-Object { $_.FullName })
 Run-Tool "$jdkRoot/bin/javac.exe" (@('-encoding', 'UTF-8', '--release', '8', '-classpath', "$sdkPlatform/android.jar", '-d', "$smokeBuild/classes") + $smokeSources)
 Run-Tool "$jdkRoot/bin/jar.exe" @('cf', "$smokeBuild/classes.jar", '-C', "$smokeBuild/classes", '.')

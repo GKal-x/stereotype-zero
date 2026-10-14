@@ -4,8 +4,11 @@
   const E=window.SZ,D=window.CityWorld,T=24,W=E.WIDTH*T,H=E.HEIGHT*T,P=window.CityPixels;
   const cast=new Image(),buildings=new Image(),supervisor=new Image(),memories=new Image(),family=new Image(),adults=new Image(),scouts=new Image(),youth=new Image(),A=window.CityAtlas;
   function load(image,src){return new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('Artwork could not load: '+src));image.src=src;});}
-  const ready=Promise.all([load(cast,'assets/cast-refined.png'),load(buildings,'assets/buildings-source.png'),load(supervisor,'assets/supervisor-v1.png'),load(memories,'assets/memories-v1.png'),load(family,'assets/family-v1.png'),load(adults,'assets/adults-refined-v1.png'),load(scouts,'assets/scouts-v2.png'),load(youth,'assets/youth-v1.png')]);
-  const spriteCache=new Map();
+  const baseReady=Promise.all([load(cast,'assets/cast-refined.png'),load(buildings,'assets/buildings-source.png'),load(supervisor,'assets/supervisor-v1.png'),load(memories,'assets/memories-v1.png'),load(family,'assets/family-v1.png'),load(adults,'assets/adults-refined-v1.png'),load(scouts,'assets/scouts-v2.png'),load(youth,'assets/youth-v1.png')]);
+  const ensemble=Object.fromEntries([...new Set(Object.values(window.EnsembleAtlas).map(a=>a.file))].map(file=>[file,new Image()]));
+ const ensembleReady=Promise.all(Object.entries(ensemble).map(([file,img])=>load(img,({'camp-deers-v1.png':'assets/camp-deers-v1.png','camp-neighbours-a-v1.png':'assets/camp-neighbours-a-v1.png','camp-neighbours-b-v1.png':'assets/camp-neighbours-b-v1.png','city-ensemble-v1.png':'assets/city-ensemble-v1.png','officials-ensemble-v1.png':'assets/officials-ensemble-v1.png','town-ensemble-v1.png':'assets/town-ensemble-v1.png'})[file])));
+ const ready=Promise.all([baseReady,ensembleReady]);
+ const spriteCache=new Map();
   // Cache crisp samples at the intended pixel size; never blur the pixel clusters.
   function reduced(image,r,width,height){const tile=document.createElement('canvas');tile.width=width;tile.height=height;const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(image,...r,0,0,width,height);return tile;}
   const map=document.createElement('canvas');map.width=W;map.height=H;const g=map.getContext('2d');
@@ -15,28 +18,30 @@
   const directionRow={down:0,left:1,right:2,up:3};
   function sprite(c,who,x,y,facing='down',frame=0,height=40){
 
+    const extra=window.EnsembleAtlas[who];
     const youthRow={'memory-teen':0,'memory-student':1}[who];
     const scoutRow={'memory-scout':0,'scout-gerasimos':1,'scout-vaggelis':2}[who];
     const familyRow={'family-mother':0,'family-father':1,'family-brother':2}[who];
     const memoryRow={'memory-child':0,'memory-scout':1,'memory-adult':2,'memory-partner':3}[who];
-    const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5}[who]??0),r=youthRow!==undefined?window.YouthAtlas[youthRow][directionRow[facing]??0]:scoutRow!==undefined?window.ScoutAtlas[scoutRow][directionRow[facing]??0]:familyRow!==undefined?window.FamilyAtlas[familyRow][directionRow[facing]??0]:memoryRow!==undefined?(memoryRow>=2?window.AdultAtlas[memoryRow-2]:window.MemoryAtlas[memoryRow])[directionRow[facing]??0]:who==='boss'?window.SupervisorAtlas[directionRow[facing]??0]:A.cast[directionRow[facing]??0][column];
+    const column=who==='aris'?frame:({mina:3,eleni:4,dimos:5}[who]??0),r=extra?extra.frames[directionRow[facing]??0]:youthRow!==undefined?window.YouthAtlas[youthRow][directionRow[facing]??0]:scoutRow!==undefined?window.ScoutAtlas[scoutRow][directionRow[facing]??0]:familyRow!==undefined?window.FamilyAtlas[familyRow][directionRow[facing]??0]:memoryRow!==undefined?(memoryRow>=2?window.AdultAtlas[memoryRow-2]:window.MemoryAtlas[memoryRow])[directionRow[facing]??0]:who==='boss'?window.SupervisorAtlas[directionRow[facing]??0]:A.cast[directionRow[facing]??0][column];
     const width=Math.round((youthRow!==undefined?Math.max(.58,r[2]/r[3]):r[2]/r[3])*height);c.imageSmoothingEnabled=false;
     const key=[who,facing,frame,height].join(':');
-    if(!spriteCache.has(key))spriteCache.set(key,reduced(youthRow!==undefined?youth:scoutRow!==undefined?scouts:familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r,width,height));
+    if(!spriteCache.has(key))spriteCache.set(key,reduced(extra?ensemble[extra.file]:youthRow!==undefined?youth:scoutRow!==undefined?scouts:familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r,width,height));
     const tile=spriteCache.get(key),left=Math.round(x-width/2),top=Math.round(y-height);
-    if((youthRow!==undefined||scoutRow!==undefined||memoryRow!==undefined||familyRow!==undefined)&&frame){
+    if((extra||youthRow!==undefined||scoutRow!==undefined||memoryRow!==undefined||familyRow!==undefined)&&frame){
       for(const pose of window.CityMotion.walkPose(width,height,frame)){const [x,y,w,h]=pose.target;c.drawImage(tile,...pose.source,left+x,top+y,w,h);}
     }else c.drawImage(tile,left,top);
   }
   function face(c,who='aris',size=64){
 
+    const extra=window.EnsembleAtlas[who];
     const youthRow={'memory-teen':0,'memory-student':1}[who];
     const scoutRow={'memory-scout':0,'scout-gerasimos':1,'scout-vaggelis':2}[who];
     const familyRow={'family-mother':0,'family-father':1,'family-brother':2}[who];
     const memoryRow={'memory-child':0,'memory-scout':1,'memory-adult':2,'memory-partner':3}[who];
-    const col={aris:0,mina:3,eleni:4,dimos:5}[who]??0,r=youthRow!==undefined?window.YouthAtlas[youthRow][0]:scoutRow!==undefined?window.ScoutAtlas[scoutRow][0]:familyRow!==undefined?window.FamilyAtlas[familyRow][0]:memoryRow!==undefined?(memoryRow>=2?window.AdultAtlas[memoryRow-2]:window.MemoryAtlas[memoryRow])[0]:who==='boss'?window.SupervisorAtlas[0]:A.cast[0][col];
+    const col={aris:0,mina:3,eleni:4,dimos:5}[who]??0,r=extra?extra.frames[0]:youthRow!==undefined?window.YouthAtlas[youthRow][0]:scoutRow!==undefined?window.ScoutAtlas[scoutRow][0]:familyRow!==undefined?window.FamilyAtlas[familyRow][0]:memoryRow!==undefined?(memoryRow>=2?window.AdultAtlas[memoryRow-2]:window.MemoryAtlas[memoryRow])[0]:who==='boss'?window.SupervisorAtlas[0]:A.cast[0][col];
     box(c,0,0,size,size,'#c1cbb8');c.imageSmoothingEnabled=false;
-    c.drawImage(youthRow!==undefined?youth:scoutRow!==undefined?scouts:familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r[0],r[1],r[2],Math.round(r[3]*.48),3,1,size-6,size-2);
+    c.drawImage(extra?ensemble[extra.file]:youthRow!==undefined?youth:scoutRow!==undefined?scouts:familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r[0],r[1],r[2],Math.round(r[3]*.48),3,1,size-6,size-2);
   }
   function avatar(who){const c=document.createElement('canvas');c.width=64;c.height=64;c.setAttribute('aria-label',who+' portrait');face(c.getContext('2d'),who);return c;}
   function tree(c,x,y){

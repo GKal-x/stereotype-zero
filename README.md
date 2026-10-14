@@ -197,3 +197,13 @@ node --check audio.js
 Read [DESIGN.md](DESIGN.md) for the character, map, dialogue, economy, encounter math, music and scope. The [artwork source and historical concept notes](assets/README.md) describe the new assets. Research context remains in [the Athens dossier](research/research-dossier.md).
 
 This prototype uses placeholder prices and fictional people/places. Its browser game is also packaged in an offline Android APK. It lives separately from Waxlog and uses no Waxlog data, credentials or code.
+## Individual cast and tactical encounters — 0.15.0
+
+Camp now has thirteen distinct NPC identities across the two patrols. School organiser Iris, friend Yannis, campus spokesperson Leon, independent student Nefeli, train musician Panos, station attendant Nikitas, passengers and shopkeepers have their own directional sprites. Patrol and riot police, plus the supervisor, use the same outlined character style. The protagonist, family and the existing Gerasimos/Vaggelis designs remain. [Art brief and exact generation prompts](assets/ensemble-art-brief.md).
+
+Battles use an original rear-player/front-opponent view, status bars, animated impacts and a four-command menu: **FIGHT / BAG / ALLY / LEAVE**. Attack costs 6 effort; defence blocks 80% of the current reply and restores 8 effort; feint breaks a guard, boosts the next attack and interrupts a heavy move; strong moves cost 18 effort and have three uses. Opponent intent is visible before choosing. Recovery consumes a turn. Friends must be met before their support is available; consumable food is deducted once.
+
+The camp encounter is a friendly tag bout after preparing the kit. School/campus encounters challenge arguments through composure and evidence. Aris can challenge the supervisor for his €24. The optional December cordon encounter opens an escape route; it does not kill an officer or replace the separate station testimony. Defeat permits withdrawal and retry, with gathered equipment retained. Existing chapter and battle saves remain supported. Already completed chapters stay completed; use Begin the memories to replay them.
+
+The seven life chapters remain compact sketches. This release establishes the tactical rules and visual vocabulary; it does not add the full adulthood biography or an entire simulated Athens. Four-arrow controls, restrained attached-foot animation and the original location-specific 8-bit soundtrack from 0.14.0 are retained.
+

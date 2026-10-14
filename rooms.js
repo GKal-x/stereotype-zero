@@ -5,7 +5,7 @@
   const exit={id:'exit',name:'Back to the street',x:7,y:10};
   const rooms={
     home:{name:'Home · the kitchen light',width:14,height:12,color:'#c6bba0',spawn:{x:7,y:9},objects:[{x:2,y:3,w:4,h:2,type:'table'},{x:10,y:2,w:2,h:4,type:'bed'},{x:2,y:1,w:4,h:1,type:'desk'},{x:1,y:7,w:3,h:2,type:'kitchen'}],places:[{id:'eleni',name:'Talk to Eleni',x:4,y:5,who:'eleni'},{id:'bed',name:'Rest on your bed',x:9,y:4},{id:'notebook',name:'Eleni’s notes',x:3,y:2},{id:'dinner',name:'Sit at the kitchen table',x:6,y:4},exit]},
-    shop:{name:'Market · the last few things',width:14,height:12,color:'#c5c5ac',spawn:{x:7,y:9},objects:[{x:2,y:2,w:10,h:1,type:'shelf'},{x:2,y:4,w:10,h:1,type:'counter'},{x:1,y:7,w:2,h:2,type:'produce'},{x:11,y:7,w:2,h:2,type:'produce'}],places:[{id:'grocer',name:'Shop at the counter',x:7,y:5},{id:'market-board',name:'Read the community board',x:4,y:3},exit]},
+    shop:{name:'Market · the last few things',width:14,height:12,color:'#c5c5ac',spawn:{x:7,y:9},objects:[{x:2,y:2,w:10,h:1,type:'shelf'},{x:2,y:4,w:10,h:1,type:'counter'},{x:1,y:7,w:2,h:2,type:'produce'},{x:11,y:7,w:2,h:2,type:'produce'}],places:[{id:'grocer',name:'Shop with Manos',x:7,y:5,who:'town-manos'},{id:'market-board',name:'Read the community board',x:4,y:3},exit]},
     employer:{name:'Stockroom · Thursday’s wages',width:14,height:12,color:'#a9b1ac',spawn:{x:7,y:9},objects:[{x:6,y:2,w:3,h:2,type:'desk'},{x:1,y:2,w:3,h:2,type:'boxes'},{x:10,y:2,w:3,h:2,type:'boxes'},{x:1,y:6,w:3,h:2,type:'boxes'}],places:[{id:'supervisor',name:'Speak to the supervisor',x:7,y:4,who:'boss'},{id:'shift-board',name:'Check the shift board',x:3,y:4},exit]},
     venue:{name:'Basement · before the set',width:14,height:12,color:'#a49d9f',spawn:{x:7,y:9},objects:[{x:5,y:1,w:6,h:2,type:'stage'},{x:10,y:5,w:2,h:2,type:'mixer'},{x:1,y:2,w:2,h:2,type:'speaker'},{x:1,y:7,w:3,h:1,type:'bench'}],places:[{id:'dimos-inside',name:'Talk to Dimos',x:4,y:5,who:'dimos'},{id:'soundcheck',name:'Try your demo on the mixer',x:9,y:5},{id:'set',name:'Stay for the set',x:7,y:3},exit]}
   };
@@ -16,16 +16,16 @@
   const transitRoom=(name,color,objects,places)=>({name,width:14,height:12,color,spawn:{x:7,y:9},objects,places,transit:true});
   rooms.metro=transitRoom('Kato Patisia · ticket hall','#c6c6b5',[
     {x:2,y:1,w:2,h:2,type:'ticket-machine'},{x:5,y:1,w:5,h:2,type:'gates'},{x:10,y:5,w:2,h:2,type:'bench'}
-  ],[{id:'ticket-machine',name:'Buy a ticket',x:3,y:3},{id:'gate',name:'Validate at the gates',x:7,y:3},{id:'staff',name:'Ask the station attendant',x:10,y:8,who:'boss'},exit]);
+  ],[{id:'ticket-machine',name:'Buy a ticket',x:3,y:3},{id:'gate',name:'Validate at the gates',x:7,y:3},{id:'staff',name:'Ask the station attendant',x:10,y:8,who:'station-nikitas'},exit]);
   for(const [id,name]of [['platform','Kato Patisia'],['victoria-platform','Victoria']])rooms[id]=transitRoom(name+' · Line 1 platform','#c9c7ad',[
     {x:1,y:1,w:12,h:3,type:'train-exterior'},{x:2,y:6,w:2,h:1,type:'bench'},{x:10,y:6,w:2,h:1,type:'bench'}
-  ],[{id:'board',name:'Board the train',x:7,y:4},{id:'commuter',name:'Talk to the waiting passenger',x:4,y:5,who:'mina'},{id:'line-diagram',name:'Read the Line 1 diagram',x:10,y:4},{...exit,name:id==='platform'?'Back through the gates':'Exit to Victoria square'}]);
+  ],[{id:'board',name:'Board the train',x:7,y:4},{id:'commuter',name:'Talk to the waiting passenger',x:4,y:5,who:'town-niki'},{id:'line-diagram',name:'Read the Line 1 diagram',x:10,y:4},{...exit,name:id==='platform'?'Back through the gates':'Exit to Victoria square'}]);
   rooms.train=transitRoom('Line 1 · on the train','#b8c3b9',[
     {x:1,y:2,w:3,h:1,type:'train-window'},{x:10,y:2,w:3,h:1,type:'train-window'},{x:1,y:4,w:2,h:4,type:'train-seat'},{x:11,y:4,w:2,h:4,type:'train-seat'}
-  ],[{id:'arrival',name:'Continue to your stop',x:7,y:4},{id:'rider',name:'Talk to a fellow passenger',x:4,y:6,who:'dimos'},{id:'line-diagram',name:'Read the Line 1 diagram',x:10,y:3},{...exit,name:'Get off at your destination'}]);
+  ],[{id:'arrival',name:'Continue to your stop',x:7,y:4},{id:'rider',name:'Talk to a fellow passenger',x:4,y:6,who:'town-panos'},{id:'line-diagram',name:'Read the Line 1 diagram',x:10,y:3},{...exit,name:'Get off at your destination'}]);
   rooms.victoria=transitRoom('Victoria · a corner of the square','#d1c3a0',[
     {x:1,y:1,w:4,h:3,type:'cafe-front'},{x:9,y:1,w:4,h:3,type:'bookstall'},{x:2,y:7,w:2,h:1,type:'bench'},{x:10,y:7,w:2,h:1,type:'planter'}
-  ],[{id:'bookseller',name:'Talk to the bookseller',x:9,y:4,who:'eleni'},{id:'square-friend',name:'Talk to the student',x:4,y:5,who:'mina'},{id:'ticket-machine',name:'Buy a ticket for the return',x:3,y:4},{id:'staff',name:'Ask for travel help',x:10,y:8,who:'boss'},{...exit,name:'Validate and return to the platform'}]);
+  ],[{id:'bookseller',name:'Talk to the bookseller',x:9,y:4,who:'town-sofia'},{id:'square-friend',name:'Talk to the student',x:4,y:5,who:'town-lea'},{id:'ticket-machine',name:'Buy a ticket for the return',x:3,y:4},{id:'staff',name:'Ask for travel help',x:10,y:8,who:'station-nikitas'},{...exit,name:'Validate and return to the platform'}]);
   for(const q of Memories.scenes)rooms[q.room]={name:q.name,width:14,height:12,outdoor:!!q.outdoor,color:q.color|| (q.id==='courtyard'?'#dfd0aa':q.id==='scouts'?'#c2b995':'#be9568'),spawn:{x:7,y:9},objects:q.objects,places:q.places,memory:true};
   for(const [id,r]of Object.entries(Memories.extraRooms))rooms[id]={...r,width:14,height:12,color:r.color||'#beaa88',spawn:{x:7,y:9},memory:true};
   const topics={

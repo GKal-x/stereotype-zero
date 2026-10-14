@@ -38,7 +38,7 @@
       c.save();c.translate(victimX,victimY);if(fallen)c.rotate(-Math.PI/2);rect(c,-7,-35,14,13,'#293239');rect(c,-8,-23,17,18,'#434e55');rect(c,-6,-5,5,8,'#28353f');rect(c,3,-5,5,8,'#28353f');c.restore();
     }else if(fallen){c.save();c.translate(victimX,victimY-12);c.rotate(-Math.PI/2);sprite(c,id==='family'?'memory-child':'memory-teen',0,0,'left',0,id==='family'?33:40);c.restore();}else sprite(c,id==='family'?'memory-child':'memory-teen',victimX,victimY,'left',t<2200?1:0,id==='family'?33:40);
     if(id==='family'){sprite(c,'family-father',125,158,'right',0,42);if(hit&&t<3400)rect(c,137,128,26,4,'#ba936f');sprite(c,'family-mother',58,151,'right',0,40);}
-    else {const x=id==='december'?98:143;rect(c,x-8,119,17,28,'#273b4b');rect(c,x-7,109,15,12,'#ac9171');rect(c,x-9,106,19,5,'#233546');rect(c,x-6,147,5,13,'#233546');rect(c,x+3,147,5,13,'#233546');if(id==='december'){rect(c,x+6,126,25,4,'#ac9171');rect(c,x+26,122,10,4,'#202a30');if(t>=2800&&t<2920)poly(c,[[x+36,121],[x+44,124],[x+36,128]],'#d5ba7a');}else {const rise=hit&&t<3400;poly(c,[[x+5,126],[x+18,rise?111:136],[x+22,rise?113:139],[x+10,132]],'#263b4a');rect(c,x+20,rise?102:135,3,22,'#273239');}}
+    else {const x=id==='december'?98:143;sprite(c,id==='december'?'police-patrol':'police-riot',x,160,'right',0,46);if(id==='december'){rect(c,x+6,126,25,4,'#ac9171');rect(c,x+26,122,10,4,'#202a30');if(t>=2800&&t<2920)poly(c,[[x+36,121],[x+44,124],[x+36,128]],'#d5ba7a');}else {const rise=hit&&t<3400;poly(c,[[x+5,126],[x+18,rise?111:136],[x+22,rise?113:139],[x+10,132]],'#263b4a');rect(c,x+20,rise?102:135,3,22,'#273239');}}
     if(t>5500){c.fillStyle='rgba(15,24,31,'+Math.min(.88,(t-5500)/4000)+')';c.fillRect(0,0,w,h);}
   }
   window.CityCinematics={scene,overlay,film,caption};
