@@ -81,7 +81,9 @@ public final class StartupSmoke extends Instrumentation {
         js(activity, "window.dispatchEvent(new Event('stereotype-zero-pause'))");
         check("true".equals(js(activity, "Boolean(SZ.restore(" + org.json.JSONObject.quote(saved) + "))")), "Invalid test save");
         js(activity, "localStorage.setItem('stereotype-zero-save'," + org.json.JSONObject.quote(saved) + ");document.getElementById('load').click();window.dispatchEvent(new Event('stereotype-zero-resume'))");
-        Thread.sleep(1000);
+        String room = new org.json.JSONObject(saved).getString("room");
+        waitForUi(activity, "document.getElementById('game').getAttribute('aria-label').startsWith(CityRooms.rooms[" + org.json.JSONObject.quote(room) + "].name+'.') && document.body.dataset.mode==='explore'", "Fixture did not reach its visible room: " + name);
+        Thread.sleep(800);
     }
     private void screenshot(String name) throws Exception {
         Bitmap image = getUiAutomation().takeScreenshot();
@@ -147,6 +149,7 @@ public final class StartupSmoke extends Instrumentation {
             waitForUi(restored, "Boolean(document.querySelector('.overlay.open .tactical-arena'))", "Camp battle view absent");
             tap(restored, ".choice[data-choice='0']");
             check("true".equals(js(restored, "document.querySelector('.choice[data-choice=\"1\"]').textContent.includes('Brace')")), "Defence move absent");
+            check("true".equals(js(restored, "(()=>{const p=document.querySelector('.tactical-panel'),last=p.querySelector('.choice-list').lastElementChild;return last.getBoundingClientRect().bottom<=p.getBoundingClientRect().bottom-2;})()")), "Fight moves require scrolling");
             tap(restored, ".choice[data-choice='1']");
             Thread.sleep(190);
             screenshot("android-guard.png");
