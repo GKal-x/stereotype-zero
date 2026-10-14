@@ -51,6 +51,10 @@ public final class StartupSmoke extends Instrumentation {
     }
     private void check(boolean value, String message) { if (!value) throw new AssertionError(message); }
     private void tap(Activity activity, String selector) throws Exception {
+        // A freshly created modal exists before WebView has presented its first frame.
+        // Wait for paint and the short entrance animation before injecting a real touch.
+        js(activity, "window.__smokeTouchReady=false;requestAnimationFrame(()=>requestAnimationFrame(()=>window.__smokeTouchReady=true))");
+        waitForUi(activity, "window.__smokeTouchReady && !Array.from(document.querySelectorAll('.overlay.open .scene-panel')).some(p=>p.getAnimations().some(a=>a.playState==='running'))", "Touch target did not settle");
         JSONArray box = new JSONArray(js(activity, "(()=>{const r=document.querySelector(" + org.json.JSONObject.quote(selector) + ").getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2,innerWidth];})()"));
         final float[] point = new float[2];
         runOnMainSync(() -> {
@@ -148,7 +152,7 @@ public final class StartupSmoke extends Instrumentation {
             tap(restored, "#action");
             waitForUi(restored, "Boolean(document.querySelector('.overlay.open .tactical-arena'))", "Camp battle view absent");
             tap(restored, ".choice[data-choice='0']");
-            check("true".equals(js(restored, "document.querySelector('.choice[data-choice=\"1\"]').textContent.includes('Brace')")), "Defence move absent");
+            waitForUi(restored, "document.querySelector('.choice[data-choice=\"1\"]').textContent.includes('Brace')", "Defence move absent");
             check("true".equals(js(restored, "(()=>{const p=document.querySelector('.tactical-panel'),last=p.querySelector('.choice-list').lastElementChild;return last.getBoundingClientRect().bottom<=p.getBoundingClientRect().bottom-2;})()")), "Fight moves require scrolling");
             tap(restored, ".choice[data-choice='1']");
             Thread.sleep(190);
@@ -156,6 +160,7 @@ public final class StartupSmoke extends Instrumentation {
             Thread.sleep(850);
             check("true".equals(js(restored, "(()=>{const d=JSON.parse(localStorage.getItem('stereotype-zero-save')).memory.life.active.duel;return d.hp===97&&d.effort===78&&d.turn===1;})()")), "Guard did not block the reply and restore effort");
             tap(restored, ".choice[data-choice='0']");
+            waitForUi(restored, "document.querySelector('.choice[data-choice=\"1\"]').textContent.includes('Brace')", "Attack command menu did not appear");
             tap(restored, ".choice[data-choice='0']");
             Thread.sleep(900);
             check("true".equals(js(restored, "JSON.parse(localStorage.getItem('stereotype-zero-save')).memory.life.active.duel.foe===54")), "Attack did not reduce opponent stamina");
