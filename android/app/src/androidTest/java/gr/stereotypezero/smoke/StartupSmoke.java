@@ -36,10 +36,18 @@ public final class StartupSmoke extends Instrumentation {
     private void ready(Activity activity) throws Exception {
         long until = SystemClock.uptimeMillis() + 90000;
         while (SystemClock.uptimeMillis() < until) {
-            if ("true".equals(js(activity, "Boolean(document.getElementById('boot') && document.getElementById('boot').hidden && document.querySelector('#overlay [role=dialog]') && window.CityMemories && CityMemories.scenes.length===7 && window.CityLife && window.YouthAtlas && Array.from(document.querySelectorAll('#overlay button')).some(b=>b.textContent.includes('Begin the memories')))"))) return;
+            if ("true".equals(js(activity, "Boolean(document.getElementById('boot') && document.getElementById('boot').hidden && document.querySelector('#overlay [role=dialog]') && window.CityMemories && CityMemories.scenes.length===7 && window.CityLife && window.YouthAtlas)"))) return;
             Thread.sleep(400);
         }
         throw new AssertionError("Game did not reach a playable dialog: " + js(activity, "document.body && document.body.innerText.slice(0,500)"));
+    }
+    private void waitForUi(Activity activity, String condition, String message) throws Exception {
+        long until = SystemClock.uptimeMillis() + 90000;
+        while (SystemClock.uptimeMillis() < until) {
+            if ("true".equals(js(activity, condition))) return;
+            Thread.sleep(400);
+        }
+        throw new AssertionError(message);
     }
     private void check(boolean value, String message) { if (!value) throw new AssertionError(message); }
     private void tap(Activity activity, String selector) throws Exception {
@@ -91,6 +99,7 @@ public final class StartupSmoke extends Instrumentation {
             js(restored, "(()=>{const s=SZ.fresh();SZ.startMemories(s);s.memory.opening={beat:'explore-home',elapsed:0};s.room='memory-child-bedroom';s.x=7;s.y=8;s.facing='down';const fixture=SZ.snapshot(s);window.addEventListener('pagehide',()=>localStorage.setItem('stereotype-zero-save',fixture),{once:true});location.reload();})()");
             Thread.sleep(800);
             ready(restored);
+            waitForUi(restored, "Array.from(document.querySelectorAll('#overlay button')).some(b=>b.textContent.includes('Continue a saved evening'))", "Fixture reload did not reach the saved-game menu");
             js(restored, "Array.from(document.querySelectorAll('#overlay button')).find(b=>b.textContent.includes('Continue a saved evening')).click()");
             Thread.sleep(800);
             check("true".equals(js(restored, "Boolean(document.getElementById('direction-pad') && !document.getElementById('stick-knob') && document.querySelectorAll('[data-move]').length===4)")), "Direction pad absent");

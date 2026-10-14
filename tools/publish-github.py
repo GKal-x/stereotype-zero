@@ -75,7 +75,7 @@ def export_source(folder=None):
         raise RuntimeError('Export contains a generated file or secret; refusing to publish.')
     if staged:
         git(folder, '-c', 'user.name=GKal-x', '-c', 'user.email=231666646+GKal-x@users.noreply.github.com',
-            'commit', '-m', 'Add deliberate arrow controls and original four-voice chip soundtrack' if not fresh else 'Add Stereotype Zero first chapter and Android APK workflow')
+            'commit', '-m', 'Verify first-run chapter and native arrow touch' if not fresh else 'Add Stereotype Zero first chapter and Android APK workflow')
     return folder, len(staged)
 
 
