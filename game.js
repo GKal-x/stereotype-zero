@@ -180,12 +180,13 @@
   function back(){if(E.Opening.current(state)?.kind==='timed')return;if(E.Opening.current(state)?.kind==='dialogue'){confirm();return;}finishTyping();if(state.mode==='memory-battle'){if(state.memory.life.active?.result==='won'){E.finishMemoryEncounter(state);close();}else line('ENCOUNTER','Choose Step away to leave this moment.');}else if(state.mode==='battle'){if(state.battle.result)overlay.querySelector('button')?.click();else line('ARIS','Choose Walk away to leave this encounter.');}else if(state.mode==='explore'&&E.Memories.current(state)){journal();}else if(state.mode==='explore'&&state.room){const exit=E.places(state).find(p=>p.id==='exit');motion.go(E.path(state,exit),exit);}else close();}
   function directionInput(dir){if(state.mode!=='explore')return;pendingInteraction=null;motion.hold(dir);}
   for(const button of directionPad.querySelectorAll('[data-move]')){
-    button.addEventListener('pointerdown',e=>{if(state.mode!=='explore'||padPress||e.button!==0)return;e.preventDefault();padPress={id:e.pointerId,button};button.setPointerCapture(e.pointerId);button.dataset.held='true';directionInput(button.dataset.move);});
-    const release=(e,cancel=false)=>{if(!padPress||e.pointerId!==padPress.id||padPress.button!==button)return;padPress=null;button.dataset.held='false';motion.release(cancel);};
+    let lastPointer=-Infinity;
+    button.addEventListener('pointerdown',e=>{lastPointer=performance.now();if(state.mode!=='explore'||padPress||e.button!==0)return;e.preventDefault();padPress={id:e.pointerId,button};button.setPointerCapture(e.pointerId);button.dataset.held='true';directionInput(button.dataset.move);});
+    const release=(e,cancel=false)=>{lastPointer=performance.now();if(!padPress||e.pointerId!==padPress.id||padPress.button!==button)return;padPress=null;button.dataset.held='false';motion.release(cancel);};
     button.addEventListener('pointerup',e=>release(e));
     for(const type of ['pointercancel','lostpointercapture'])button.addEventListener(type,e=>release(e,true));
     button.addEventListener('pointermove',e=>{if(!padPress||padPress.id!==e.pointerId)return;const r=button.getBoundingClientRect();if(e.clientX<r.left-8||e.clientX>r.right+8||e.clientY<r.top-8||e.clientY>r.bottom+8)release(e,true);});
-    button.addEventListener('click',e=>{if(e.detail===0&&state.mode==='explore'){pendingInteraction=null;motion.tap(button.dataset.move);}});
+    button.addEventListener('click',e=>{e.preventDefault();if(performance.now()-lastPointer<750)return;if(e.detail===0&&state.mode==='explore'){pendingInteraction=null;motion.tap(button.dataset.move);}});
   }
   const directions={arrowup:'up',arrowdown:'down',arrowleft:'left',arrowright:'right',w:'up',s:'down',a:'left',d:'right'};
   document.addEventListener('keydown',e=>{

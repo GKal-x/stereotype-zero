@@ -116,12 +116,19 @@ public final class StartupSmoke extends Instrumentation {
                 && "memory-child-bedroom".equals(after.getString(2)) && "explore".equals(after.getString(3)),
                 "One arrow tap did not move exactly one tile: " + before + " -> " + after);
             js(restored, "window.dispatchEvent(new Event('stereotype-zero-resume'))");
+            tap(restored, "[data-move=left]");
+            tap(restored, "[data-move=left]");
+            Thread.sleep(1800);
+            js(restored, "window.dispatchEvent(new Event('stereotype-zero-pause'))");
+            JSONArray quick = new JSONArray(js(restored, "(()=>{const s=JSON.parse(localStorage.getItem('stereotype-zero-save'));return [s.x,s.y];})()"));
+            check(quick.getInt(0) == after.getInt(0)-2 && quick.getInt(1) == after.getInt(1), "Two deliberate arrow taps did not move two tiles: " + after + " -> " + quick);
+            js(restored, "window.dispatchEvent(new Event('stereotype-zero-resume'))");
             tap(restored, "#sound");
             Thread.sleep(1200);
             check("true".equals(js(restored, "document.getElementById('sound').getAttribute('aria-pressed')==='true'")), "Chip music did not enable after touch");
             screenshot();
             result.putString("result", "PASS");
-            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notes accessible; automatic bedroom door; native arrow tap moves one tile; chip music enables");
+            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notes accessible; automatic bedroom door; native arrow tap moves one tile; two rapid taps move two tiles; chip music enables");
             finish(Activity.RESULT_OK, result);
         } catch (Throwable error) {
             try { screenshot(); } catch (Exception ignored) { }

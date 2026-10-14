@@ -1,6 +1,6 @@
 ## Arrow controls and original chip score — 0.14.0
 
-Four separate direction arrows replace the analog stick. A short press requests one tile; a new short press during a step can queue one additional step. Holding starts repeating after a 180 ms first delay, with 90 ms between subsequent held steps. Walking takes 640 ms per outdoor tile and 680 ms indoors; the existing Extra slow option adds 180 ms. Keyboard input uses the same movement logic. Cancelling a pointer or losing focus releases held input. Doors still cross automatically and stop further walking.
+Four separate direction arrows replace the analog stick. A short press requests one tile; a new short press during a step can queue one additional step. Holding starts repeating after a 180 ms first delay, with 90 ms between subsequent held steps. Walking takes 640 ms per outdoor tile and 680 ms indoors; the existing Extra slow option adds 180 ms. Keyboard input uses the same movement logic. Cancelling a pointer or losing focus releases held input. Recent-pointer compatibility clicks are suppressed, preventing the duplicate step found in Android runtime testing. Doors still cross automatically and stop further walking.
 
 The memory character rig no longer lifts the torso away from independently translated legs. A one-pixel foot lift keeps the ankle join fixed. Directional source art and Aris’s existing walk frames remain unchanged. This is a restrained rig improvement, not a new hand-drawn walk atlas.
 

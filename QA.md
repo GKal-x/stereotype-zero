@@ -1,3 +1,5 @@
+Android runtime testing caught a duplicate activation: touch pointer input was followed by a compatibility click with detail=0, which the keyboard fallback treated as a second press. Direction buttons now suppress recent-pointer compatibility clicks, while a separate pointer press remains an independent input. The native release test checks both one short tap (one tile) and two deliberate rapid taps (two tiles).
+
 ## Controls and sound — 0.14.0
 
 85 automated tests pass. New coverage checks one-step taps, the delayed first repeat, queued short presses, pointer cancellation, attached ankle geometry, slower door completion, four monophonic chip channels, sixteen-bar development, deterministic 8-bit PCM, headroom/DC offset, individual room cues and silence.
