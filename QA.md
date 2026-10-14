@@ -2,7 +2,7 @@
 
 85 automated tests pass. New coverage checks one-step taps, the delayed first repeat, queued short presses, pointer cancellation, attached ankle geometry, slower door completion, four monophonic chip channels, sixteen-bar development, deterministic 8-bit PCM, headroom/DC offset, individual room cues and silence.
 
-Android instrumentation has been extended with native touchscreen injection: one short left-arrow tap must move exactly one tile in a disposable bedroom fixture, followed by a real music-button tap. Release remains gated on that emulator result. Audio sample/format checks do not substitute for listening on the physical phone; user review of mix and touch feel remains valuable.
+Android instrumentation has been extended with native touchscreen injection: one short left-arrow tap must move exactly one tile after navigating into the bedroom through its real door, followed by a real music-button tap. Release remains gated on that emulator result. Audio sample/format checks do not substitute for listening on the physical phone; user review of mix and touch feel remains valuable.
 
 ## Life redesign — 0.13.0
 

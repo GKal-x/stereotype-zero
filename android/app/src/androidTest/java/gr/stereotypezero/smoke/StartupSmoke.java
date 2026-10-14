@@ -95,27 +95,33 @@ public final class StartupSmoke extends Instrumentation {
             js(restored, "document.getElementById('journal').click()");
             check("true".equals(js(restored, "Array.from(document.querySelectorAll('#overlay button')).some(b=>b.textContent.includes('Notes · next step and past moments'))")), "Notebook command absent");
             js(restored, "Array.from(document.querySelectorAll('#overlay button')).find(b=>b.textContent.includes('Notes · next step and past moments')).click()");
-            // A disposable test scene exercises real touch events, not only JS clicks.
-            js(restored, "(()=>{const s=SZ.fresh();SZ.startMemories(s);s.memory.opening={beat:'explore-home',elapsed:0};s.room='memory-child-bedroom';s.x=7;s.y=8;s.facing='down';const fixture=SZ.snapshot(s);window.addEventListener('pagehide',()=>localStorage.setItem('stereotype-zero-save',fixture),{once:true});location.reload();})()");
+            // Reach the bedroom through the real journal route and automatic door.
+            js(restored, "Array.from(document.querySelectorAll('#overlay button')).find(b=>b.textContent.includes('Return to the scene')).click()");
+            js(restored, "document.getElementById('journal').click()");
+            check("true".equals(js(restored, "Array.from(document.querySelectorAll('#overlay button')).some(b=>b.textContent.includes('Go to your bedroom'))")), "Bedroom route absent");
+            js(restored, "Array.from(document.querySelectorAll('#overlay button')).find(b=>b.textContent.includes('Go to your bedroom')).click()");
+            waitForUi(restored, "document.getElementById('game').getAttribute('aria-label').startsWith('Childhood home · bedroom.')", "Automatic bedroom door did not complete");
             Thread.sleep(800);
-            ready(restored);
-            waitForUi(restored, "Array.from(document.querySelectorAll('#overlay button')).some(b=>b.textContent.includes('Continue a saved evening'))", "Fixture reload did not reach the saved-game menu");
-            js(restored, "Array.from(document.querySelectorAll('#overlay button')).find(b=>b.textContent.includes('Continue a saved evening')).click()");
-            Thread.sleep(800);
+            js(restored, "window.dispatchEvent(new Event('stereotype-zero-pause'))");
+            JSONArray before = new JSONArray(js(restored, "(()=>{const s=JSON.parse(localStorage.getItem('stereotype-zero-save'));return [s.x,s.y];})()"));
+            js(restored, "window.dispatchEvent(new Event('stereotype-zero-resume'))");
             check("true".equals(js(restored, "Boolean(document.getElementById('direction-pad') && !document.getElementById('stick-knob') && document.querySelectorAll('[data-move]').length===4)")), "Direction pad absent");
             tap(restored, "[data-move=left]");
             Thread.sleep(190);
             screenshot("android-walk.png");
             Thread.sleep(1060);
             js(restored, "window.dispatchEvent(new Event('stereotype-zero-pause'))");
-            check("true".equals(js(restored, "(()=>{const s=JSON.parse(localStorage.getItem('stereotype-zero-save'));return s.x===6&&s.y===8&&s.mode==='explore';})()")), "One arrow tap did not move exactly one tile");
+            JSONArray after = new JSONArray(js(restored, "(()=>{const s=JSON.parse(localStorage.getItem('stereotype-zero-save'));return [s.x,s.y,s.room,s.mode];})()"));
+            check(after.getInt(0) == before.getInt(0)-1 && after.getInt(1) == before.getInt(1)
+                && "memory-child-bedroom".equals(after.getString(2)) && "explore".equals(after.getString(3)),
+                "One arrow tap did not move exactly one tile: " + before + " -> " + after);
             js(restored, "window.dispatchEvent(new Event('stereotype-zero-resume'))");
             tap(restored, "#sound");
             Thread.sleep(1200);
             check("true".equals(js(restored, "document.getElementById('sound').getAttribute('aria-pressed')==='true'")), "Chip music did not enable after touch");
             screenshot();
             result.putString("result", "PASS");
-            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notes accessible; native arrow tap moves one tile; chip music enables");
+            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notes accessible; automatic bedroom door; native arrow tap moves one tile; chip music enables");
             finish(Activity.RESULT_OK, result);
         } catch (Throwable error) {
             try { screenshot(); } catch (Exception ignored) { }
