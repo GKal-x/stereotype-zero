@@ -211,3 +211,9 @@ The seven life chapters remain compact sketches. This release establishes the ta
 
 The narrator’s childhood, scout, teenage, student and adult variants have slightly curlier brown hair. Only his scout shirt changes to muted grey-beige based on the supplied reference; the blue-white scarf and green shorts remain. Faces, other outfits and proportions are preserved. Other cast members—including Gerasimos, Vaggelis, Eleftheria and Aris—keep their original source sprites. The separate override atlas also applies to portraits and battle views. Existing saves show the corrected art immediately. [Saved assets and exact edit prompts](assets/personal-sprite-edit-brief.md).
 
+## Continuous held walking — 0.15.2
+
+Holding an arrow now crosses tile boundaries without stopping. The old 180 ms first-repeat pause and 90 ms later pauses are removed. Steps take 720 ms outdoors and 760 ms indoors, preserving a measured pace through a longer continuous animation. Extra slow still adds 180 ms. Short taps keep their one-tile behaviour, a second deliberate tap can queue one step, release finishes only the active step, and doors stop walking normally.
+
+Unchanged nearby prompts and quest entries are no longer rewritten during normal walking. Coverage includes ten continuous steps with uneven frame times, the existing tap/cancellation/collision/door tests, and a sustained native Android arrow hold recorded from the actual controller. Existing saves, character art and music remain compatible.
+

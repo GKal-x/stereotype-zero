@@ -51,6 +51,9 @@ public final class StartupSmoke extends Instrumentation {
     }
     private void check(boolean value, String message) { if (!value) throw new AssertionError(message); }
     private void tap(Activity activity, String selector) throws Exception {
+        touch(activity, selector, 80);
+    }
+    private void touch(Activity activity, String selector, long duration) throws Exception {
         // A freshly created modal exists before WebView has presented its first frame.
         // Wait for paint and the short entrance animation before injecting a real touch.
         js(activity, "window.__smokeTouchReady=false;requestAnimationFrame(()=>requestAnimationFrame(()=>window.__smokeTouchReady=true))");
@@ -68,7 +71,7 @@ public final class StartupSmoke extends Instrumentation {
         MotionEvent press = MotionEvent.obtain(down, down, MotionEvent.ACTION_DOWN, point[0], point[1], 0);
         press.setSource(InputDevice.SOURCE_TOUCHSCREEN);
         check(getUiAutomation().injectInputEvent(press, true), "Touch down failed"); press.recycle();
-        Thread.sleep(80);
+        Thread.sleep(duration);
         MotionEvent release = MotionEvent.obtain(down, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, point[0], point[1], 0);
         release.setSource(InputDevice.SOURCE_TOUCHSCREEN);
         check(getUiAutomation().injectInputEvent(release, true), "Touch up failed"); release.recycle();
@@ -146,6 +149,13 @@ public final class StartupSmoke extends Instrumentation {
             Thread.sleep(1200);
             check("true".equals(js(restored, "document.getElementById('sound').getAttribute('aria-pressed')==='true'")), "Chip music did not enable after touch");
             screenshot();
+            // Observe the actual controller during a sustained native arrow press.
+            // This hook lives only in instrumentation; the release has no frame-logging work.
+            js(restored, "window.__heldWalk=[];window.__walkUpdate=CityMotion.Motion.prototype.update;CityMotion.Motion.prototype.update=function(dt){const result=window.__walkUpdate.call(this,dt);if(this.held==='right'&&this.getState().room==='memory-child-bedroom')window.__heldWalk.push([this.x,this.y,!!this.active]);return result;}");
+            touch(restored, "[data-move=right]", 3300);
+            Thread.sleep(850);
+            check("true".equals(js(restored, "(()=>{const a=window.__heldWalk;return a.length>30&&a.at(-1)[0]-a[0][0]>=3&&a.every(p=>p[2])&&a.every((p,i)=>!i||p[0]>a[i-1][0]);})()")), "Sustained walking paused between tiles");
+            js(restored, "CityMotion.Motion.prototype.update=window.__walkUpdate;delete window.__walkUpdate");
             fixture(restored, "cast");
             screenshot("android-cast.png");
             fixture(restored, "camp");
@@ -175,7 +185,7 @@ public final class StartupSmoke extends Instrumentation {
             Thread.sleep(600);
             screenshot("android-cordon.png");
             result.putString("result", "PASS");
-            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notes; automatic door; native arrow taps; chip music; distinct camp cast; native FIGHT/defence/attack; exact combat effects; battle save resume; police battle view");
+            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notes; automatic door; native arrow taps; sustained native held walking without idle frames; chip music; distinct camp cast; native FIGHT/defence/attack; exact combat effects; battle save resume; police battle view");
             finish(Activity.RESULT_OK, result);
         } catch (Throwable error) {
             try { screenshot(); } catch (Exception ignored) { }

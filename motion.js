@@ -3,10 +3,10 @@
   'use strict';
   const DIRS={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
   class Motion{
-    constructor(engine,getState,onStep=()=>{}){this.engine=engine;this.getState=getState;this.onStep=onStep;this.duration=640;this.sync();}
-    sync(){const s=this.getState();this.x=s.x;this.y=s.y;this.active=null;this.held=null;this.pending=null;this.route=[];this.target=null;this.walkTime=0;this.repeatWait=0;this.heldSteps=0;}
-    hold(dir){if(!DIRS[dir]||this.held===dir)return;const newPress=this.held===null;this.route=[];this.target=null;this.held=dir;if(newPress){this.pending=dir;this.heldSteps=0;this.repeatWait=0;}}
-    release(cancel=false){this.held=null;this.repeatWait=0;this.heldSteps=0;if(cancel)this.pending=null;}
+    constructor(engine,getState,onStep=()=>{}){this.engine=engine;this.getState=getState;this.onStep=onStep;this.duration=720;this.sync();}
+    sync(){const s=this.getState();this.x=s.x;this.y=s.y;this.active=null;this.held=null;this.pending=null;this.route=[];this.target=null;this.walkTime=0;}
+    hold(dir){if(!DIRS[dir]||this.held===dir)return;const newPress=this.held===null;this.route=[];this.target=null;this.held=dir;if(newPress)this.pending=dir;}
+    release(cancel=false){this.held=null;if(cancel)this.pending=null;}
     tap(dir){if(!DIRS[dir])return;this.route=[];this.target=null;this.pending=dir;}
     stop(){this.release(true);this.route=[];this.target=null;}
     go(route,target=null){this.stop();this.route=route.slice();this.target=target;}
@@ -20,14 +20,12 @@
         if(p<1)return null;carry=a.elapsed-a.duration;this.active=null;this.x=s.x;this.y=s.y;
         const door=this.engine.doors?.(s).find(d=>d.x===s.x&&d.y===s.y&&d.facing===s.facing);
         if(door){this.stop();return {doorCross:door};}
-        if(this.held&&!this.pending){this.repeatWait=this.heldSteps<=1?180:90;return null;}
       }
-      if(this.repeatWait>0&&!this.pending){this.repeatWait=Math.max(0,this.repeatWait-dt);if(this.repeatWait>0)return null;}
       let dir=this.pending||this.held;this.pending=null;
       if(!dir&&this.route.length){const next=this.route.shift(),dx=next[0]-s.x,dy=next[1]-s.y;dir=dx<0?'left':dx>0?'right':dy<0?'up':'down';}
       if(!dir){const target=this.target;this.target=null;return target;}
       const x=s.x,y=s.y;
-      if(this.engine.move(s,...DIRS[dir])){if(this.held)this.heldSteps++;this.active={x,y,elapsed:carry,duration:this.duration};const p=carry/this.duration;this.x=x+(s.x-x)*p;this.y=y+(s.y-y)*p;this.onStep();}
+      if(this.engine.move(s,...DIRS[dir])){this.active={x,y,elapsed:carry,duration:this.duration};const p=carry/this.duration;this.x=x+(s.x-x)*p;this.y=y+(s.y-y)*p;this.onStep();}
       else{this.route=[];this.target=null;}
       return null;
     }

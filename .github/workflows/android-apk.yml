@@ -76,10 +76,10 @@ jobs:
         with:
           name: stereotype-zero-android-${{ github.run_number }}
           path: |
-            dist/stereotype-zero-0.15.1.apk
-            dist/stereotype-zero-0.15.1.apk.sha256
+            dist/stereotype-zero-0.15.2.apk
+            dist/stereotype-zero-0.15.2.apk.sha256
             dist/startup-tests.apk
-            dist/stereotype-zero-chip-score-0.15.1.zip
+            dist/stereotype-zero-chip-score-0.15.2.zip
           if-no-files-found: error
           retention-days: 30
 
@@ -106,7 +106,7 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           script: |
-            adb install -r dist/stereotype-zero-0.15.1.apk
+            adb install -r dist/stereotype-zero-0.15.2.apk
             adb install -r dist/startup-tests.apk
             adb shell am instrument -w gr.stereotypezero.smoke/gr.stereotypezero.smoke.StartupSmoke | tee dist/android-startup.txt
             adb logcat -d > dist/android-logcat.txt
@@ -145,4 +145,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "android-preview-$GITHUB_RUN_NUMBER" dist/stereotype-zero-0.15.1.apk dist/stereotype-zero-0.15.1.apk.sha256 dist/stereotype-zero-chip-score-0.15.1.zip --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Stereotype Zero Android preview $GITHUB_RUN_NUMBER" --prerelease --notes "Narrator-only sprite correction: subtly curlier brown hair across childhood, scout, teenage, student and adult variants; muted grey-beige scout shirt matching the supplied reference. Other characters and Aris retain their original art. Existing saves supported. Android startup, movement, combat visibility and save/resume checks gate publication. Android 8.0+. Built from $GITHUB_SHA."
+          gh release create "android-preview-$GITHUB_RUN_NUMBER" dist/stereotype-zero-0.15.2.apk dist/stereotype-zero-0.15.2.apk.sha256 dist/stereotype-zero-chip-score-0.15.2.zip --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Stereotype Zero Android preview $GITHUB_RUN_NUMBER" --prerelease --notes "Continuous held-arrow walking: removes the 180/90 ms stops at tile boundaries while keeping a measured 720 ms outdoor and 760 ms indoor step. Single taps, bounded tap queue, collisions and automatic doors remain. Avoids rewriting unchanged prompts and quest DOM. Adds ten-step continuity tests and sustained native Android arrow-hold coverage. Narrator curls and scout shirt from 0.15.1 retained. Saves supported. Android 8.0+. Built from $GITHUB_SHA."

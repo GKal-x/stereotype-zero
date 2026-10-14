@@ -154,3 +154,7 @@ Local Android 0.15.0 compiles and signs with version code 1030. Package verifica
 
 Inspected all four edited PNG sheets and measured the five narrator variants without rewriting image pixels. Only those five IDs use the new override atlas; the other actors continue using the existing source sheets. The patch retains the movement rig, combat rules, rooms, save schema and storage origin. The offline bundle includes all eighteen PNGs. Android publication retains the startup, movement, command visibility, combat/save and screenshot gate.
 
+## Walking stutter — 0.15.2
+
+Inspection found explicit 180/90 ms repeat waits at tile boundaries. Held movement now carries elapsed time directly into the next step; overall pace is set through step duration rather than idle time. A ten-step test checks strictly increasing positions, constant speed and no idle frames with varied frame intervals. The Android gate records actual controller samples during a 3.3-second native arrow hold, alongside existing short tap, save, door, audio and combat checks. It requires at least three tiles of continuous progress without idle samples. Physical-phone performance remains subject to device load; this fixes the reproducible controller pause and reduces unnecessary DOM work.
+
