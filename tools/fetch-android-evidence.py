@@ -34,7 +34,7 @@ except urllib.error.HTTPError as error:
 with zipfile.ZipFile(io.BytesIO(raw)) as archive:
     for entry in archive.namelist():
         name = Path(entry).name
-        if name not in ['android-startup.txt', 'android-startup.png', 'android-walk.png', 'android-logcat.txt', 'android-cast.png', 'android-guard.png', 'android-battle.png', 'android-cordon.png']:
+        if name not in ['android-startup.txt', 'android-startup.png', 'android-walk.png', 'android-logcat.txt', 'android-cast.png', 'android-guard.png', 'android-battle.png', 'android-cordon.png', 'android-pad.png']:
             continue
         target = root / 'dist' / f'run{args.number}-{name}'
         target.write_bytes(archive.read(entry))

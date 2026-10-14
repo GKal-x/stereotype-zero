@@ -77,6 +77,35 @@ public final class StartupSmoke extends Instrumentation {
         check(getUiAutomation().injectInputEvent(release, true), "Touch up failed"); release.recycle();
     }
     private void screenshot() throws Exception { screenshot("android-startup.png"); }
+    private void dragPad(Activity activity) throws Exception {
+        JSONArray box = new JSONArray(js(activity, "(()=>{const r=document.getElementById('direction-pad').getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2,r.width,innerWidth];})()"));
+        final float[] point = new float[3];
+        runOnMainSync(() -> {
+            WebView web = activity.getWindow().getDecorView().findViewWithTag("game-web");
+            int[] location = new int[2]; web.getLocationOnScreen(location);
+            float scale = (float)web.getWidth() / (float)box.optDouble(3);
+            point[0]=location[0]+(float)box.optDouble(0)*scale;
+            point[1]=location[1]+(float)box.optDouble(1)*scale;
+            point[2]=(float)box.optDouble(2)*scale/124f;
+        });
+        long down=SystemClock.uptimeMillis();
+        js(activity, "window.__padPhase='centre-start'");
+        padEvent(down, MotionEvent.ACTION_DOWN, point, 0, 0); Thread.sleep(160);
+        js(activity, "window.__padPhase='right'");
+        padEvent(down, MotionEvent.ACTION_MOVE, point, 40, 0); Thread.sleep(450);
+        js(activity, "window.__padPhase='outside'");
+        padEvent(down, MotionEvent.ACTION_MOVE, point, 90, 0); Thread.sleep(450);
+        js(activity, "window.__padPhase='up'");
+        padEvent(down, MotionEvent.ACTION_MOVE, point, 0, -40); Thread.sleep(900);
+        js(activity, "window.__padPhase='centre-stop'");
+        padEvent(down, MotionEvent.ACTION_MOVE, point, 0, 0); Thread.sleep(950);
+        padEvent(down, MotionEvent.ACTION_UP, point, 0, 0); Thread.sleep(160);
+    }
+    private void padEvent(long down, int action, float[] point, float x, float y) {
+        MotionEvent event=MotionEvent.obtain(down,SystemClock.uptimeMillis(),action,point[0]+x*point[2],point[1]+y*point[2],0);
+        event.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+        check(getUiAutomation().injectInputEvent(event,true),"Pad gesture injection failed");event.recycle();
+    }
     private void fixture(Activity activity, String name) throws Exception {
         java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
         try (java.io.InputStream input = getContext().getAssets().open(name + ".json")) {
@@ -127,7 +156,7 @@ public final class StartupSmoke extends Instrumentation {
             js(restored, "window.dispatchEvent(new Event('stereotype-zero-pause'))");
             JSONArray before = new JSONArray(js(restored, "(()=>{const s=JSON.parse(localStorage.getItem('stereotype-zero-save'));return [s.x,s.y];})()"));
             js(restored, "window.dispatchEvent(new Event('stereotype-zero-resume'))");
-            check("true".equals(js(restored, "Boolean(document.getElementById('direction-pad') && !document.getElementById('stick-knob') && document.querySelectorAll('[data-move]').length===4)")), "Direction pad absent");
+            check("true".equals(js(restored, "Boolean(document.getElementById('direction-pad') && document.getElementById('stick-knob') && document.querySelectorAll('[data-move]').length===4)")), "Thumb pad absent");
             tap(restored, "[data-move=left]");
             Thread.sleep(190);
             screenshot("android-walk.png");
@@ -156,6 +185,11 @@ public final class StartupSmoke extends Instrumentation {
             Thread.sleep(850);
             check("true".equals(js(restored, "(()=>{const a=window.__heldWalk;return a.length>30&&a.at(-1)[0]-a[0][0]>=3&&a.every(p=>p[2])&&a.every((p,i)=>!i||p[0]>a[i-1][0]);})()")), "Sustained walking paused between tiles");
             js(restored, "CityMotion.Motion.prototype.update=window.__walkUpdate;delete window.__walkUpdate");
+            js(restored, "window.__padSamples=[];window.__padUpdate=CityMotion.Motion.prototype.update;CityMotion.Motion.prototype.update=function(dt){const result=window.__padUpdate.call(this,dt);window.__padSamples.push([window.__padPhase,this.x,this.y,this.held,!!this.active]);return result;}");
+            dragPad(restored);
+            check("true".equals(js(restored, "(()=>{const a=window.__padSamples,c=a.filter(p=>p[0]==='centre-start'),outside=a.filter(p=>p[0]==='outside'),up=a.filter(p=>p[0]==='up'),stop=a.filter(p=>p[0]==='centre-stop').slice(-5);return c.length>2&&c.every(p=>p[1]===c[0][1]&&p[2]===c[0][2])&&outside.length>3&&outside.every(p=>p[3]==='right')&&up.some(p=>p[3]==='up'&&p[2]<c[0][2])&&stop.length===5&&stop.every(p=>p[3]===null&&!p[4]&&p[1]===stop[0][1]&&p[2]===stop[0][2]);})()")), "Pad drag, outside capture, turn or recenter failed");
+            js(restored, "CityMotion.Motion.prototype.update=window.__padUpdate;delete window.__padUpdate");
+            screenshot("android-pad.png");
             fixture(restored, "cast");
             screenshot("android-cast.png");
             fixture(restored, "camp");
@@ -185,7 +219,7 @@ public final class StartupSmoke extends Instrumentation {
             Thread.sleep(600);
             screenshot("android-cordon.png");
             result.putString("result", "PASS");
-            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notes; automatic door; native arrow taps; sustained native held walking without idle frames; chip music; distinct camp cast; native FIGHT/defence/attack; exact combat effects; battle save resume; police battle view");
+            result.putString("checks", "actual WebView startup; seven chapters; same storage origin; saved game relaunch; notes; automatic door; native pad taps; sustained held walking; centre dead zone; drag outside capture; pad turn and recenter stop; chip music; distinct camp cast; native FIGHT/defence/attack; exact combat effects; battle save resume; police battle view");
             finish(Activity.RESULT_OK, result);
         } catch (Throwable error) {
             try { screenshot(); } catch (Exception ignored) { }

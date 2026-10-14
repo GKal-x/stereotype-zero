@@ -158,3 +158,7 @@ Inspected all four edited PNG sheets and measured the five narrator variants wit
 
 Inspection found explicit 180/90 ms repeat waits at tile boundaries. Held movement now carries elapsed time directly into the next step; overall pace is set through step duration rather than idle time. A ten-step test checks strictly increasing positions, constant speed and no idle frames with varied frame intervals. The Android gate records actual controller samples during a 3.3-second native arrow hold, alongside existing short tap, save, door, audio and combat checks. It requires at least three tiles of continuous progress without idle samples. Physical-phone performance remains subject to device load; this fixes the reproducible controller pause and reduces unnecessary DOM work.
 
+## Thumb pad and camera — 0.15.3
+
+Regression coverage adds dead-zone entry/release, stable diagonals, deliberate direction changes, replacing stale first-step intent, recentering without an extra step, continuous stride phase, pixel camera centring and small-room bounds. Existing one-tile taps, queued deliberate taps, cancellation, ten held steps, collisions and doors remain covered. Android tests use the restored pad's accessible cardinal targets for actual native taps and a sustained hold; drag/turn/recentre coverage is added to the native test below.
+

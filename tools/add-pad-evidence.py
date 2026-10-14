@@ -1,0 +1,4 @@
+from pathlib import Path
+r=Path(__file__).resolve().parents[1]
+p=r/'.github/workflows/android-apk.yml';s=p.read_text(encoding='utf-8');s=s.replace('            adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-walk.png dist/android-walk.png','            adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-walk.png dist/android-walk.png\n            adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-pad.png dist/android-pad.png').replace('            dist/android-walk.png','            dist/android-walk.png\n            dist/android-pad.png');p.write_text(s,encoding='utf-8')
+p=r/'tools/fetch-android-evidence.py';s=p.read_text(encoding='utf-8').replace("'android-cordon.png']","'android-cordon.png', 'android-pad.png']");p.write_text(s,encoding='utf-8')

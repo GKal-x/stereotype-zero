@@ -180,7 +180,10 @@
   let extraSlow=false;try{extraSlow=localStorage.getItem('stereotype-zero-slow')==='true';}catch{}
   const keys=new Map();let padPress=null,typing=null,pendingInteraction=null,lastTime=0,toastTimer=null,tapStart=null,lastDoor='';
   const directionPad=$('direction-pad');
-  function releaseInput(){keys.clear();if(padPress){padPress.button.dataset.held='false';padPress=null;}motion.stop();}
+  const thumb=new window.CityMotion.ThumbPad(),knob=$('stick-knob');let lastPadPointer=-Infinity;
+  function paintPad(x=0,y=0){const radius=Math.hypot(x,y),scale=radius?Math.min(22,radius)/radius:0;knob.style.transform=`translate(${Math.round(x*scale)}px,${Math.round(y*scale)}px)`;for(const b of directionPad.querySelectorAll('[data-move]')){const held=String(thumb.direction===b.dataset.move);if(b.dataset.held!==held)b.dataset.held=held;}}
+  function releasePad(cancel=true){const id=padPress?.id;padPress=null;thumb.reset();paintPad();motion.release(cancel);if(id!==undefined&&directionPad.hasPointerCapture(id))directionPad.releasePointerCapture(id);}
+  function releaseInput(){keys.clear();releasePad(true);motion.stop();}
   function finishTyping(){if(typing){typing.node.textContent=typing.text;typing=null;return true;}return false;}
   function toast(text){$('save-toast').textContent=text;$('save-toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('save-toast').classList.remove('show'),1700);}
   function nearby(){const p=E.nearest(state);const prompt=$('nearby-prompt');const hide=!p||state.mode!=='explore';if(prompt.hidden!==hide)prompt.hidden=hide;if(p){const label=({home:'Enter home',mina:'Talk to Mina',dimos:'Talk to Dimos',employer:'Enter the stockroom',kiosk:'Visit the kiosk',shop:'Enter the market',bench:'Rest in the shade',metro:'Kato Patisia station',venue:'Enter the basement venue',bus:'Patision bus stop',north:'Toward Ano Patisia',south:'Toward the centre'})[p.id]||p.name;const text=prompt.querySelector('b');if(text.textContent!==label)text.textContent=label;}const id=p?.id||'';if(id!==lastNearby){lastNearby=id;line(p?p.name.toUpperCase():E.Memories.current(state)?'YOU':'ARIS',p?'A to interact · tap to approach':E.Memories.goal(state)||'An evening in Kato Patisia.');}}
@@ -188,15 +191,12 @@
   function confirm(){if(E.Opening.current(state)?.kind==='timed')return;if(finishTyping())return;if(state.mode==='explore')interact();else if(overlay.contains(document.activeElement)&&document.activeElement.matches('button'))document.activeElement.click();else overlay.querySelector('button:not(:disabled)')?.click();}
   function back(){if(E.Opening.current(state)?.kind==='timed')return;if(E.Opening.current(state)?.kind==='dialogue'){confirm();return;}finishTyping();if(['memory-battle','battle'].includes(state.mode)&&duelMenu!=='root'){duelMenu='root';tacticalView();return;}if(state.mode==='memory-battle'){if(['won','lost'].includes(state.memory.life.active?.result)){E.finishMemoryEncounter(state);close();}else line('ENCOUNTER','Choose LEAVE to step away.');}else if(state.mode==='battle'){if(state.battle.result)overlay.querySelector('button')?.click();else line('ARIS','Choose LEAVE to step away.');}else if(state.mode==='explore'&&E.Memories.current(state)){journal();}else if(state.mode==='explore'&&state.room){const exit=E.places(state).find(p=>p.id==='exit');motion.go(E.path(state,exit),exit);}else close();}
   function directionInput(dir){if(state.mode!=='explore')return;pendingInteraction=null;motion.hold(dir);}
-  for(const button of directionPad.querySelectorAll('[data-move]')){
-    let lastPointer=-Infinity;
-    button.addEventListener('pointerdown',e=>{lastPointer=performance.now();if(state.mode!=='explore'||padPress||e.button!==0)return;e.preventDefault();padPress={id:e.pointerId,button};button.setPointerCapture(e.pointerId);button.dataset.held='true';directionInput(button.dataset.move);});
-    const release=(e,cancel=false)=>{lastPointer=performance.now();if(!padPress||e.pointerId!==padPress.id||padPress.button!==button)return;padPress=null;button.dataset.held='false';motion.release(cancel);};
-    button.addEventListener('pointerup',e=>release(e));
-    for(const type of ['pointercancel','lostpointercapture'])button.addEventListener(type,e=>release(e,true));
-    button.addEventListener('pointermove',e=>{if(!padPress||padPress.id!==e.pointerId)return;const r=button.getBoundingClientRect();if(e.clientX<r.left-8||e.clientX>r.right+8||e.clientY<r.top-8||e.clientY>r.bottom+8)release(e,true);});
-    button.addEventListener('click',e=>{e.preventDefault();if(performance.now()-lastPointer<750)return;if(e.detail===0&&state.mode==='explore'){pendingInteraction=null;motion.tap(button.dataset.move);}});
-  }
+  function padPoint(e,initial=false){const r=directionPad.getBoundingClientRect(),x=(e.clientX-r.left-r.width/2)*124/r.width,y=(e.clientY-r.top-r.height/2)*124/r.height,dir=thumb.update(x,y);paintPad(x,y);if(initial&&dir)directionInput(dir);else motion.steer(dir);}
+  directionPad.addEventListener('pointerdown',e=>{lastPadPointer=performance.now();if(state.mode!=='explore'||padPress||e.button!==0||!e.isPrimary)return;e.preventDefault();keys.clear();pendingInteraction=null;motion.stop();padPress={id:e.pointerId};thumb.reset();directionPad.setPointerCapture(e.pointerId);padPoint(e,true);});
+  directionPad.addEventListener('pointermove',e=>{if(!padPress||padPress.id!==e.pointerId)return;e.preventDefault();padPoint(e);});
+  directionPad.addEventListener('pointerup',e=>{lastPadPointer=performance.now();if(padPress?.id===e.pointerId)releasePad(false);});
+  for(const type of ['pointercancel','lostpointercapture'])directionPad.addEventListener(type,e=>{lastPadPointer=performance.now();if(padPress?.id===e.pointerId)releasePad(true);});
+  directionPad.addEventListener('click',e=>{e.preventDefault();const button=e.target.closest('[data-move]');if(button&&performance.now()-lastPadPointer>=750&&e.detail===0&&state.mode==='explore'){pendingInteraction=null;motion.tap(button.dataset.move);}});
   const directions={arrowup:'up',arrowdown:'down',arrowleft:'left',arrowright:'right',w:'up',s:'down',a:'left',d:'right'};
   document.addEventListener('keydown',e=>{
     if(e.ctrlKey||e.metaKey||e.altKey)return;const key=e.key.toLowerCase();

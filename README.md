@@ -217,3 +217,9 @@ Holding an arrow now crosses tile boundaries without stopping. The old 180 ms fi
 
 Unchanged nearby prompts and quest entries are no longer rewritten during normal walking. Coverage includes ten continuous steps with uneven frame times, the existing tap/cancellation/collision/door tests, and a sustained native Android arrow hold recorded from the actual controller. Existing saves, character art and music remain compatible.
 
+## Thumb pad and movement feel — 0.15.3
+
+The circular thumb pad returns. One pointer stays captured while the thumb slides between directions or outside the ring. The centre has an 18-pixel activation zone and a 10-pixel release threshold; a 1.35 axis margin keeps small diagonal wobbles from repeatedly flipping direction. Distance from centre never increases speed. The pad keeps four-way tile movement, continuous 720/760 ms walking, deliberate short taps, collision handling and automatic doors. Recentring stops further steps after the active tile. B and A work as before; keyboard and accessible directional commands remain.
+
+Steering before a step begins now uses the latest direction rather than a stale queued direction. Drag steering does not add extra buffered steps. The walking phase continues through turns instead of restarting per tile. Camera and player coordinates use a shared pixel grid, removing camera trailing and subpixel mismatch. Existing saves and sprite artwork are retained.
+

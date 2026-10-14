@@ -5,7 +5,7 @@ import zipfile
 import wave
 
 root = Path(__file__).resolve().parents[1]
-apk = root / 'dist/stereotype-zero-0.15.2.apk'
+apk = root / 'dist/stereotype-zero-0.15.3.apk'
 with zipfile.ZipFile(apk) as archive:
     html = archive.read('assets/stereotype-zero.html')
     assert html == (root / 'android/build/assets/stereotype-zero.html').read_bytes()

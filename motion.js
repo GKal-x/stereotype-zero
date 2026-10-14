@@ -2,10 +2,22 @@
 (function(root){
   'use strict';
   const DIRS={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+  // Fixed-speed, four-way thumb pad. Different enter/exit thresholds avoid chatter.
+  class ThumbPad{
+    constructor(){this.direction=null;}
+    reset(){this.direction=null;}
+    update(x,y){const radius=Math.hypot(x,y),threshold=this.direction?10:18;if(radius<threshold){this.direction=null;return null;}
+      const candidate=Math.abs(x)>=Math.abs(y)?(x<0?'left':'right'):(y<0?'up':'down');
+      if(this.direction&&candidate!==this.direction){const horizontal=['left','right'].includes(this.direction),sameAxis=horizontal===['left','right'].includes(candidate);if(!sameAxis){const current=horizontal?Math.abs(x):Math.abs(y),next=horizontal?Math.abs(y):Math.abs(x);if(next<current*1.35)return this.direction;}else if((horizontal?Math.abs(x):Math.abs(y))<18)return this.direction;}
+      this.direction=candidate;return candidate;
+    }
+  }
+  function cameraPosition(x,y,width,height,worldWidth,worldHeight){return {x:Math.max(0,Math.min(Math.max(0,worldWidth-width),Math.round(x)-Math.floor(width/2))),y:Math.max(0,Math.min(Math.max(0,worldHeight-height),Math.round(y)-Math.floor(height*.55)))};}
   class Motion{
     constructor(engine,getState,onStep=()=>{}){this.engine=engine;this.getState=getState;this.onStep=onStep;this.duration=720;this.sync();}
     sync(){const s=this.getState();this.x=s.x;this.y=s.y;this.active=null;this.held=null;this.pending=null;this.route=[];this.target=null;this.walkTime=0;}
-    hold(dir){if(!DIRS[dir]||this.held===dir)return;const newPress=this.held===null;this.route=[];this.target=null;this.held=dir;if(newPress)this.pending=dir;}
+    hold(dir){if(!DIRS[dir]||this.held===dir)return;const newPress=this.held===null;this.route=[];this.target=null;this.held=dir;if(newPress||this.pending)this.pending=dir;}
+    steer(dir){if(!DIRS[dir]){this.release(true);return;}this.route=[];this.target=null;this.held=dir;if(this.pending||!this.active)this.pending=dir;}
     release(cancel=false){this.held=null;if(cancel)this.pending=null;}
     tap(dir){if(!DIRS[dir])return;this.route=[];this.target=null;this.pending=dir;}
     stop(){this.release(true);this.route=[];this.target=null;}
@@ -29,7 +41,7 @@
       else{this.route=[];this.target=null;}
       return null;
     }
-    get frame(){return this.active?[0,1,0,2][Math.min(3,Math.floor(this.active.elapsed/this.active.duration*4))]:0;}
+    get frame(){return this.active?[0,1,0,2][Math.floor(this.walkTime/180)%4]:0;}
   }
   // Keep the ankle join fixed. A lifted foot shortens its lower slice by one pixel,
   // instead of translating a whole leg away from the hip. Shared by NPCs and player.
@@ -38,5 +50,5 @@
     return [{source:[0,0,width,split],target:[0,0,width,split]},
       {source:[0,split,half,foot],target:[0,split,half,foot-(frame===1?1:0)]},
       {source:[half,split,width-half,foot],target:[half,split,width-half,foot-(frame===2?1:0)]}];}
-  const api={Motion,DIRS,walkPose};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.CityMotion=api;
+  const api={Motion,ThumbPad,cameraPosition,DIRS,walkPose};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.CityMotion=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

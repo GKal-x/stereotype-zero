@@ -108,13 +108,12 @@
   function renderWorld(c,s,m,t,dt){
     if(s.room)return interior(c,s,m,dt,t);
     const vw=c.canvas.width,vh=c.canvas.height;
-    const wantX=Math.max(0,Math.min(W-vw,m.x*T+12-vw/2)),wantY=Math.max(0,Math.min(H-vh,m.y*T+12-vh*.55));
-    const ease=1-Math.exp(-dt/85);if(!camera.ready){camera.x=wantX;camera.y=wantY;camera.ready=true;}else{camera.x+=(wantX-camera.x)*ease;camera.y+=(wantY-camera.y)*ease;}
+    Object.assign(camera,window.CityMotion.cameraPosition(m.x*T+12,m.y*T+12,vw,vh,W,H),{ready:true});
     const cx=Math.round(camera.x),cy=Math.round(camera.y);c.imageSmoothingEnabled=false;box(c,0,0,vw,vh,'#e1d2ae');
     c.save();c.translate(-cx,-cy);c.drawImage(map,0,0);
     const still=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     car(c,13*T,still?350:(t*.024+300)%(H+70)-35,'#d58e65',true);car(c,49*T,still?660:H+35-(t*.016%(H+70)),'#99b7c6',true);car(c,51*T,still?80:(t*.012+30)%(H+70)-35,'#d6bd7d',true);
-    const people=[...E.actors(s).map(a=>{const p=E.actorPose(s,a.id);return {who:a.who,x:p.x*T+12,y:p.y*T+19,facing:p.facing,frame:p.frame};}),{who:'aris',x:m.x*T+12,y:m.y*T+19,player:true}];
+    const people=[...E.actors(s).map(a=>{const p=E.actorPose(s,a.id);return {who:a.who,x:p.x*T+12,y:p.y*T+19,facing:p.facing,frame:p.frame};}),{who:'aris',x:Math.round(m.x*T+12),y:Math.round(m.y*T+19),player:true}];
     const objects=[...people,...trees.map(tree=>({tree,y:tree.y}))].sort((a,b)=>a.y-b.y);
     for(const entity of objects){if(entity.tree){tree(c,entity.tree.x,entity.tree.y);continue;}
       const near=!entity.player&&Math.hypot(entity.x-(m.x*T+12),entity.y-(m.y*T+19))<T*2.6;
@@ -140,8 +139,8 @@
   }
   function interior(c,s,m,dt,t){
     const r=E.Rooms.rooms[s.room],w=r.width*T,h=r.height*T,vw=c.canvas.width,vh=c.canvas.height;
-    const focus=E.Opening.current(s)?.kind!=='explore'&&E.Opening.current(s)?{x:7,y:5}:m,wx=Math.max(0,Math.min(w-vw,focus.x*T+12-vw/2)),wy=Math.max(0,Math.min(h-vh,m.y*T+12-vh*.55)),ease=1-Math.exp(-dt/85);
-    if(!camera.ready){camera.x=wx;camera.y=wy;camera.ready=true;}else{camera.x+=(wx-camera.x)*ease;camera.y+=(wy-camera.y)*ease;}
+    const focus=E.Opening.current(s)?.kind!=='explore'&&E.Opening.current(s)?{x:7,y:5}:m;
+    Object.assign(camera,window.CityMotion.cameraPosition(focus.x*T+12,m.y*T+12,vw,vh,w,h),{ready:true});
     box(c,0,0,vw,vh,'#293b43');c.save();c.translate(-Math.round(camera.x),-Math.round(camera.y));box(c,0,0,w,h,'#69736c');box(c,T,T,w-2*T,h-2*T,r.color);
     const domestic=!r.outdoor&&(['home','memory-shared-home','memory-scouts'].includes(s.room)||s.room.startsWith('memory-child-')||s.room==='memory-adult-bedroom');
     for(let y=T;y<h-T;y+=domestic?12:24)for(let x=T;x<w-T;x+=24){
@@ -205,7 +204,7 @@
       else if(p.facing==='up'){box(c,x+2,y-17,20,32,'#634d3e');box(c,x+5,y-14,14,28,'#213c44');box(c,x+2,y-18,20,3,'#d8bb87');}
       else{box(c,x-2,y+17,5,9,'#d6bb8b');box(c,x+21,y+17,5,9,'#d6bb8b');box(c,x+3,y+20,18,4,'#213c44');}
     }
-    const people=[...E.actors(s).map(a=>{const p=E.actorPose(s,a.id);return {who:p.who,x:p.x*T+12,y:p.y*T+19,facing:p.facing,frame:p.frame};}),{who:E.Memories.current(s)?.avatar||'aris',x:m.x*T+12,y:m.y*T+19,player:true}].sort((a,b)=>a.y-b.y);
+    const people=[...E.actors(s).map(a=>{const p=E.actorPose(s,a.id);return {who:p.who,x:p.x*T+12,y:p.y*T+19,facing:p.facing,frame:p.frame};}),{who:E.Memories.current(s)?.avatar||'aris',x:Math.round(m.x*T+12),y:Math.round(m.y*T+19),player:true}].sort((a,b)=>a.y-b.y);
     for(const p of people)sprite(c,p.who,p.x,p.y,p.player?s.facing:p.facing,p.player?m.frame:p.frame,p.who==='scout-gerasimos'?46:p.who==='scout-vaggelis'||p.who==='memory-scout'?38:p.who==='memory-teen'?40:p.who==='family-brother'?23:p.who==='memory-child'?(p.player?30:23):40);
     if(['inside-roll','after-dad-play'].includes(E.Opening.current(s)?.id)){const elapsed=s.memory.opening.elapsed,x=(5.5+Math.sin(elapsed/250)*.4)*T+12,y=5*T+18;box(c,x-3,y-3,7,7,'#f6edd2');box(c,x-1,y-1,3,3,'#40515b');}
     const near=E.nearest(s);if(near&&(!E.Opening.current(s)||E.Opening.current(s).kind==='explore')){if(near.who){const lift=near.who==='memory-child'?14:31;box(c,near.x*T+8,near.y*T-lift,9,10,'#f3dfae');label(c,'!',near.x*T+12,near.y*T-lift+8,7,'#5c5245','center');}else{c.strokeStyle='#e8c379';c.lineWidth=1;c.strokeRect(near.x*T+4,near.y*T+4,16,16);}}

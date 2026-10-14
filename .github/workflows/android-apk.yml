@@ -76,10 +76,10 @@ jobs:
         with:
           name: stereotype-zero-android-${{ github.run_number }}
           path: |
-            dist/stereotype-zero-0.15.2.apk
-            dist/stereotype-zero-0.15.2.apk.sha256
+            dist/stereotype-zero-0.15.3.apk
+            dist/stereotype-zero-0.15.3.apk.sha256
             dist/startup-tests.apk
-            dist/stereotype-zero-chip-score-0.15.2.zip
+            dist/stereotype-zero-chip-score-0.15.3.zip
           if-no-files-found: error
           retention-days: 30
 
@@ -106,12 +106,13 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           script: |
-            adb install -r dist/stereotype-zero-0.15.2.apk
+            adb install -r dist/stereotype-zero-0.15.3.apk
             adb install -r dist/startup-tests.apk
             adb shell am instrument -w gr.stereotypezero.smoke/gr.stereotypezero.smoke.StartupSmoke | tee dist/android-startup.txt
             adb logcat -d > dist/android-logcat.txt
             adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-startup.png dist/android-startup.png
             adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-walk.png dist/android-walk.png
+            adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-pad.png dist/android-pad.png
             adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-cast.png dist/android-cast.png
             adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-guard.png dist/android-guard.png
             adb pull /sdcard/Android/data/gr.stereotypezero.game/files/android-battle.png dist/android-battle.png
@@ -127,6 +128,7 @@ jobs:
             dist/android-logcat.txt
             dist/android-startup.png
             dist/android-walk.png
+            dist/android-pad.png
             dist/android-cast.png
             dist/android-guard.png
             dist/android-battle.png
@@ -145,4 +147,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "android-preview-$GITHUB_RUN_NUMBER" dist/stereotype-zero-0.15.2.apk dist/stereotype-zero-0.15.2.apk.sha256 dist/stereotype-zero-chip-score-0.15.2.zip --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Stereotype Zero Android preview $GITHUB_RUN_NUMBER" --prerelease --notes "Continuous held-arrow walking: removes the 180/90 ms stops at tile boundaries while keeping a measured 720 ms outdoor and 760 ms indoor step. Single taps, bounded tap queue, collisions and automatic doors remain. Avoids rewriting unchanged prompts and quest DOM. Adds ten-step continuity tests and sustained native Android arrow-hold coverage. Narrator curls and scout shirt from 0.15.1 retained. Saves supported. Android 8.0+. Built from $GITHUB_SHA."
+          gh release create "android-preview-$GITHUB_RUN_NUMBER" dist/stereotype-zero-0.15.3.apk dist/stereotype-zero-0.15.3.apk.sha256 dist/stereotype-zero-chip-score-0.15.3.zip --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Stereotype Zero Android preview $GITHUB_RUN_NUMBER" --prerelease --notes "Restored circular thumb pad with captured drag steering, centre dead zone, direction hysteresis and fixed speed. Keeps continuous slow walking, bounded deliberate taps and automatic doors. Latest steering intent replaces stale input. Pixel camera follows without trailing; stride phase continues across turns. Existing saves and character art retained. Native touch, held-walking, combat and save checks gate release. Android 8.0+. Built from $GITHUB_SHA."
