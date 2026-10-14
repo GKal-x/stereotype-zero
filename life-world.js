@@ -109,7 +109,7 @@
   encounters.cordon={name:'A route out',who:'police-riot',scene:'december',place:'cordon-escape',needs:[],rounds:encounters.assembly.rounds,plans:encounters.assembly.plans};
   extraRooms['memory-march'].places.push(point('cordon-escape','Look for a way through the cordon',9,8,'police-riot','Riot officer'));
   scenes.splice(2,0,camp,school,december,uni);
-  for(const [id,e] of Object.entries(encounters)){items[e.place]={body:Combat.definitions[id].intro,options:['Begin the encounter'],choices:['resolve'],texts:['You found a way forward together.'],encounter:id,page:e===encounters.hyper?'hyper':e===encounters.assembly?'education':'law2011'};}
+  for(const [id,e] of Object.entries(encounters)){items[e.place]={body:Combat.definitions[id].intro,options:['Begin the encounter'],choices:['resolve'],texts:['You found a way forward together.'],encounter:id,page:id==='cordon'?'december':e===encounters.hyper?'hyper':e===encounters.assembly?'education':'law2011'};}
  }
  function initial(){return {pages:{notebook:true},reflections:{},bag:{},encounters:{},active:null};}
  function learn(s,id){if(pages[id])s.memory.life.pages[id]=true;}
