@@ -33,7 +33,7 @@
 <button id="phone" class="hud-button phone-button" aria-label="Open phone">▣<i></i></button>
 </header>
 <main class="world" id="world" aria-label="Kato Patisia game">
-<canvas id="game" width="320" height="320" tabindex="0" aria-label="Neighborhood map. Use the movement joystick or arrow keys. Tap a person or doorway to walk there. Press A to talk."></canvas>
+<canvas id="game" width="320" height="320" tabindex="0" aria-label="Neighborhood map. Use the direction arrows or arrow keys. Tap a person or doorway to walk there. Press A to talk."></canvas>
 <div id="location-tag" class="location-tag">ΠΑΤΗΣΙΑ · BACKSTREETS</div>
 <button id="map" class="minimap-button" aria-label="Open neighborhood and Athens map"><canvas id="mini-map" width="128" height="96" aria-hidden="true"></canvas><span>MAP · N ↑</span></button>
 <div id="walk-target" class="walk-target" hidden></div>
@@ -42,8 +42,8 @@
 <div id="boot" class="boot"><b>STEREOTYPE ZERO</b><span>Opening the neighborhood…</span></div>
 </main>
 <footer class="control-deck">
-<div id="joystick" class="joystick" role="group" aria-label="Movement joystick">
-<div class="stick-base"></div><div id="stick-knob" class="stick-knob"></div>
+<div id="direction-pad" class="direction-pad" role="group" aria-label="Direction arrows">
+<span class="pad-centre" aria-hidden="true"></span>
 <button class="pad-hit up" data-move="up" aria-label="Move up">▲</button>
 <button class="pad-hit left" data-move="left" aria-label="Move left">◀</button>
 <button class="pad-hit right" data-move="right" aria-label="Move right">▶</button>

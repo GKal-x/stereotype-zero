@@ -25,12 +25,7 @@
     if(!spriteCache.has(key))spriteCache.set(key,reduced(youthRow!==undefined?youth:scoutRow!==undefined?scouts:familyRow!==undefined?family:memoryRow!==undefined?(memoryRow>=2?adults:memories):who==='boss'?supervisor:cast,r,width,height));
     const tile=spriteCache.get(key),left=Math.round(x-width/2),top=Math.round(y-height);
     if((youthRow!==undefined||scoutRow!==undefined||memoryRow!==undefined||familyRow!==undefined)&&frame){
-      // Rig the existing pose on the pixel grid: the torso stays coherent while
-      // each leg takes the opposite stride. No whole-sprite sliding animation.
-      const split=Math.floor(height*.72),half=Math.floor(width/2),stride=frame===1?1:-1;
-      c.drawImage(tile,0,0,width,split,left,top-1,width,split);
-      c.drawImage(tile,0,split,half,height-split,left,top+split+stride,half,height-split);
-      c.drawImage(tile,half,split,width-half,height-split,left+half,top+split-stride,width-half,height-split);
+      for(const pose of window.CityMotion.walkPose(width,height,frame)){const [x,y,w,h]=pose.target;c.drawImage(tile,...pose.source,left+x,top+y,w,h);}
     }else c.drawImage(tile,left,top);
   }
   function face(c,who='aris',size=64){

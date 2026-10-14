@@ -2,9 +2,10 @@
 from pathlib import Path
 import re
 import zipfile
+import wave
 
 root = Path(__file__).resolve().parents[1]
-apk = root / 'dist/stereotype-zero-0.13.0.apk'
+apk = root / 'dist/stereotype-zero-0.14.0.apk'
 with zipfile.ZipFile(apk) as archive:
     html = archive.read('assets/stereotype-zero.html')
     assert html == (root / 'android/build/assets/stereotype-zero.html').read_bytes()
@@ -35,3 +36,9 @@ with zipfile.ZipFile(apk) as archive:
     assert 'classes.dex' in archive.namelist()
 print('APK contains refined character atlas, restored textured building atlas, offline street reference, compiled Activity and exact bundled game HTML.')
 print('APK bytes:', apk.stat().st_size)
+
+for track in (root / 'dist').glob('score-*.wav'):
+    with wave.open(str(track), 'rb') as wav:
+        assert (wav.getnchannels(), wav.getsampwidth(), wav.getframerate()) == (1, 1, 22050)
+        assert wav.getnframes() > 0
+print('All exported score WAVs are mono unsigned 8-bit PCM at 22,050 Hz.')

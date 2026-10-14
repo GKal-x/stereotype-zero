@@ -1,53 +1,91 @@
-/* Original chapter score: one shared motif, arranged for four dramatic spaces.
-   Notes/events also feed build.js so downloadable WAVs match the game. */
+/* Original four-voice chiptunes. Pulse leads, pulse arpeggios, stepped triangle
+   bass and LFSR percussion; the live loops and 8-bit WAVs use the same renderer. */
 (function(root){
-  'use strict';
-  const Opening=typeof module!=='undefined'&&module.exports?require('./opening.js'):root.CityOpening;
-  const scenes={street:{bpm:84,bass:[38,34,41,36],lead:[62,null,null,69,null,null,65,null,64,null,null,null,62,null,null,null,60,null,null,65,null,null,64,null,62,null,null,null,null,null,null,null]},battle:{bpm:96,bass:[38,38,39,36],lead:[62,null,63,null,null,null,69,null,65,null,null,null,64,null,63,null]},venue:{bpm:108,bass:[38,34,41,36],lead:[62,null,65,69,null,67,65,null,64,null,62,null,null,60,62,null]},home:{bpm:72,bass:[38,34,41,36],lead:[62,null,null,null,65,null,null,null,64,null,null,null,62,null,null,null]}};
-  Object.assign(scenes,{
-    childhood:{bpm:92,bass:[48,43,45,41],lead:[72,null,76,79,null,76,74,null,72,null,67,null,69,null,72,null],pluck:true},
-    scouts:{bpm:88,bass:[43,48,40,45],lead:[67,null,71,null,74,null,71,null,69,null,67,null,64,null,67,null],pluck:true},
-    shop:{bpm:90,bass:[45,41,48,43],lead:[69,null,72,null,null,76,null,72,67,null,71,null,null,74,null,null],pluck:true},
-    work:{bpm:66,bass:[38,39,38,36],lead:[50,null,null,null,null,null,51,null,57,null,null,null,53,null,null,null],sparse:true},
-    station:{bpm:80,bass:[40,36,43,38],lead:[64,null,null,67,null,null,71,null,null,null,66,null,64,null,null,null],sparse:true},
-    train:{bpm:100,bass:[40,43,38,36],lead:[71,null,null,67,null,null,64,null,66,null,null,69,null,null,67,null],rolling:true},
-    victoria:{bpm:86,bass:[45,43,41,40],lead:[69,null,72,null,76,null,null,74,72,null,67,null,69,null,null,null],pluck:true},
-    omen:{bpm:58,bass:[33,33,38,33],lead:[69,null,null,null,null,null,70,null,null,null,null,null,64,null,null,null],sparse:true},
-    silence:{bpm:60,bass:[33,33,33,33],lead:[null]}
-  });
-  scenes.camp={bpm:112,bass:[43,48,41,45],lead:[67,null,71,74,72,null,69,null,67,64,null,67,69,null,71,null],pluck:true};
-  scenes.school={bpm:78,bass:[45,41,43,40],lead:[69,null,null,72,null,71,null,null,67,null,64,null,67,null,null,null],sparse:true};
-  const roomScenes={home:'home','memory-shared-home':'home','memory-courtyard':'childhood','memory-scouts':'scouts',shop:'shop',employer:'work',venue:'venue',metro:'station',platform:'station','victoria-platform':'station',train:'train',victoria:'victoria'};
-  for(const id of ['memory-child-living','memory-child-bedroom','memory-child-kitchen'])roomScenes[id]='childhood';
-  roomScenes['memory-scout-store']='scouts';roomScenes['memory-adult-kitchen']='home';roomScenes['memory-adult-bedroom']='home';
-  for(const id of ['memory-camp','memory-other-camp'])roomScenes[id]='camp';for(const id of ['memory-school','memory-classroom','memory-university','memory-lab'])roomScenes[id]='school';for(const id of ['memory-december','memory-march'])roomScenes[id]='omen';roomScenes['memory-station']='silence';roomScenes['memory-aftercare']='home';
-  function sceneFor(s){if(s.memory?.scene==='courtyard'&&Opening){const theme=Opening.music(s);if(theme)return theme;}if(s.mode==='memory-battle')return 'battle';if(s.mode==='battle'&&!s.battle?.result)return 'battle';if(s.mode==='ending')return s.ending?.where==='gig'?'venue':'home';return roomScenes[s.room]||(!s.room&&Math.hypot(s.x-27,s.y-43)<6?'venue':'street');}
-  function events(mode,i){const s=scenes[mode]||scenes.street,beat=30/s.bpm,bar=Math.floor(i/8)%16,chord=Math.floor(bar/4),out=[];
-    if(mode==='silence')return out;
-    const add=(note,duration,type,volume)=>{if(note!==null)out.push({note,duration,type,volume});};
-    // Street melody leaves every other two-bar phrase empty: space for the city.
-    const phrase=Math.floor(i/32)%4,lead=s.lead[i%s.lead.length];
-    if((mode!=='street'||phrase%2===0)&&(!s.sparse||bar%2===0))add(lead,beat*(s.pluck?.65:1.6),'triangle',s.sparse?.14:.26);
-    if(i%8===0||(!s.sparse&&(i%8===3||i%8===6)))add(s.bass[chord],beat*(i%8===6?1.5:2.6),'triangle',s.sparse?.22:.36);
-    if(s.pluck&&i%2===1)add(s.bass[chord]+[24,31,28,31][Math.floor(i/2)%4],beat*.6,'triangle',.10);
-    if(s.rolling&&i%2===0)out.push({noise:true,duration:.04,volume:i%4===0?.065:.035});
-    if(i%8===0&&bar%2===0){add(s.bass[chord]+19,beat*5,'triangle',.08);add(s.bass[chord]+24,beat*5,'triangle',.055);}
-    if(mode==='battle'&&i%4===2)add(50,beat*.55,'square',.10);
-    if(mode==='venue'&&i%2===1){add(s.bass[chord]+24,beat*.5,'square',.11);add(s.bass[chord]+31,beat*.5,'square',.06);}
-    if((mode==='venue'&&i%4===2)||(mode==='battle'&&i%8===6))out.push({noise:true,duration:.065,volume:.12});
-    return out;
-  }
-  class CityAudio{
-    constructor(){this.context=null;this.enabled=false;this.timer=null;this.step=0;this.next=0;this.mode='street';this.bus=null;}
-    newBus(){const bus=this.context.createGain(),now=this.context.currentTime;bus.gain.setValueAtTime(0,now);bus.gain.linearRampToValueAtTime(1,now+.45);bus.connect(this.master);return bus;}
-    setScene(mode){if(!scenes[mode])mode='street';if(this.mode===mode)return;this.mode=mode;this.step=0;if(this.context){const old=this.bus,now=this.context.currentTime;if(old){old.gain.cancelScheduledValues(now);old.gain.setValueAtTime(old.gain.value,now);old.gain.linearRampToValueAtTime(0,now+.35);setTimeout(()=>old.disconnect(),2500);}this.bus=this.newBus();this.next=now+.05;}}
-    async toggle(){if(!this.context){const AC=root.AudioContext||root.webkitAudioContext;if(!AC)return false;this.context=new AC();this.master=this.context.createGain();this.master.gain.value=0;this.master.connect(this.context.destination);const buffer=this.context.createBuffer(1,this.context.sampleRate*.08,this.context.sampleRate);const data=buffer.getChannelData(0);let seed=117;for(let i=0;i<data.length;i++){seed=(seed*16807)%2147483647;data[i]=(seed/2147483647*2-1)*(1-i/data.length);}this.noise=buffer;}
-      if(this.enabled){this.enabled=false;clearInterval(this.timer);this.master.gain.setTargetAtTime(0,this.context.currentTime,.08);return false;}await this.context.resume();if(!this.bus)this.bus=this.newBus();this.enabled=true;this.master.gain.setTargetAtTime(.14,this.context.currentTime,.12);this.next=this.context.currentTime+.04;this.timer=setInterval(()=>this.schedule(),30);this.schedule();return true;}
-    tone(note,t,d=.16,type='triangle',volume=.3){if(!this.context||note===null)return;const o=this.context.createOscillator(),g=this.context.createGain(),filter=this.context.createBiquadFilter();o.type=type;o.frequency.value=440*Math.pow(2,(note-69)/12);filter.type='lowpass';filter.frequency.value=type==='square'?1250:2400;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(volume,t+.018);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(filter);filter.connect(g);g.connect(this.bus||this.master);o.onended=()=>{o.disconnect();filter.disconnect();g.disconnect();};o.start(t);o.stop(t+d+.02);}
-    drum(t,volume){const s=this.context.createBufferSource(),g=this.context.createGain(),filter=this.context.createBiquadFilter();s.buffer=this.noise;filter.type='highpass';filter.frequency.value=2500;g.gain.setValueAtTime(volume,t);g.gain.exponentialRampToValueAtTime(.0001,t+.065);s.connect(filter);filter.connect(g);g.connect(this.bus||this.master);s.onended=()=>{s.disconnect();filter.disconnect();g.disconnect();};s.start(t);s.stop(t+.08);}
-    schedule(){if(!this.enabled)return;if(document.hidden){this.next=this.context.currentTime+.05;return;}if(this.next<this.context.currentTime-.25)this.next=this.context.currentTime+.04;while(this.next<this.context.currentTime+.12){for(const e of events(this.mode,this.step++)){if(e.noise)this.drum(this.next,e.volume);else this.tone(e.note,this.next,e.duration,e.type,e.volume);}this.next+=30/scenes[this.mode].bpm;}}
-    effect(kind='step'){if(!this.enabled||kind==='step'||this.mode==='silence')return;this.tone(kind==='choice'?69:kind==='win'?74:kind==='blocked'?38:50,this.context.currentTime,.08,'triangle',.10);}
-    phrase(){if(!this.enabled)return;[62,69,65,64,62].forEach((note,i)=>this.tone(note,this.context.currentTime+i*.18,.35,'triangle',.22));}
-  }
-  if(typeof module!=='undefined'&&module.exports)module.exports={scenes,events,sceneFor,roomScenes};else{root.CityAudio=CityAudio;root.CityScore={scenes,events,sceneFor,roomScenes};}
+ 'use strict';
+ const Opening=typeof module!=='undefined'&&module.exports?require('./opening.js'):root.CityOpening;
+ const rest=null,loopSteps=256;
+ const scenes={
+  street:{title:'Patision after sundown',bpm:116,roots:[40,40,43,38,40,45,43,38],style:'rock',duty:.25,
+   melody:[[7,rest,10,rest,12,10,7,rest,5,rest,3,5,7,rest,rest,rest],[7,10,12,rest,15,12,10,rest,7,5,3,rest,2,rest,0,rest]]},
+  venue:{title:'Under the pavement',bpm:152,roots:[40,40,43,45,40,38,43,38],style:'garage',duty:.125,
+   melody:[[0,rest,0,7,10,rest,7,rest,3,5,7,rest,10,7,3,rest],[12,rest,10,7,12,15,12,rest,10,7,5,3,2,rest,0,rest]]},
+  battle:{title:'What the rota says',bpm:128,roots:[38,38,39,36,38,41,39,36],style:'rock',duty:.5,
+   melody:[[0,rest,1,rest,7,rest,8,7,5,rest,3,rest,1,rest,0,rest],[12,rest,8,7,5,3,1,rest,0,rest,7,8,7,3,1,rest]]},
+  home:{title:'Paint still drying',bpm:76,roots:[45,41,48,43,45,41,40,45],style:'warm',duty:.125,
+   melody:[[7,rest,rest,rest,10,rest,12,rest,7,rest,rest,5,3,rest,rest,rest],[12,rest,rest,10,7,rest,5,rest,3,rest,2,rest,0,rest,rest,rest]]},
+  childhood:{title:'Ball against the low wall',bpm:108,roots:[48,43,45,41,48,43,41,43],style:'play',duty:.25,
+   melody:[[0,rest,4,7,rest,4,2,rest,0,rest,7,rest,9,7,4,rest],[7,rest,9,12,rest,9,7,rest,4,rest,2,0,2,rest,7,rest]]},
+  books:{title:'Maps between the pages',bpm:72,roots:[45,43,41,40,45,48,43,45],style:'dream',duty:.125,
+   melody:[[0,rest,rest,7,rest,rest,10,rest,12,rest,rest,10,7,rest,rest,rest],[12,rest,rest,14,15,rest,14,rest,12,rest,10,7,5,rest,rest,rest]]},
+  scouts:{title:'Deers patrol',bpm:104,roots:[43,43,48,41,43,45,41,43],style:'folk',duty:.25,
+   melody:[[0,rest,2,3,7,rest,5,3,2,rest,0,rest,7,5,3,2],[7,rest,10,7,5,3,2,rest,0,2,3,5,3,rest,2,0]]},
+  camp:{title:'Canvas and evening light',bpm:112,roots:[43,48,41,43,43,45,41,43],style:'folk',duty:.125,
+   melody:[[7,rest,10,12,10,7,5,rest,3,2,0,rest,2,3,5,rest],[12,rest,10,7,5,rest,3,2,0,rest,7,5,3,rest,2,0]]},
+  resolve:{title:'Another pair of hands',bpm:100,roots:[43,48,43,41,43,45,41,43],style:'play',duty:.25,
+   melody:[[0,rest,3,rest,5,7,5,rest,3,rest,2,rest,0,rest,7,rest],[7,rest,10,rest,12,10,7,rest,5,rest,3,2,0,rest,rest,rest]]},
+  school:{title:'Before the bell at Ipitou',bpm:96,roots:[45,41,43,40,45,48,43,40],style:'school',duty:.25,
+   melody:[[0,rest,3,rest,7,rest,rest,5,3,rest,2,rest,0,rest,rest,rest],[7,rest,10,12,10,rest,7,rest,5,rest,3,2,0,rest,rest,rest]]},
+  shop:{title:'Change at the counter',bpm:120,roots:[45,41,48,43,45,43,41,40],style:'play',duty:.125,
+   melody:[[0,rest,3,7,rest,10,7,rest,5,rest,3,rest,2,0,rest,rest],[7,rest,12,10,7,rest,5,3,2,rest,3,5,7,rest,0,rest]]},
+  work:{title:'Fluorescent weight',bpm:58,roots:[38,38,39,38,36,36,39,38],style:'doom',duty:.5,
+   melody:[[0,rest,rest,rest,1,rest,rest,rest,7,rest,rest,6,5,rest,rest,rest],[12,rest,rest,rest,8,rest,7,rest,6,rest,rest,3,1,rest,0,rest]]},
+  station:{title:'Under the green line',bpm:92,roots:[40,43,38,36,40,45,43,38],style:'rail',duty:.25,
+   melody:[[7,rest,rest,3,rest,rest,0,rest,2,rest,rest,5,rest,3,rest,rest],[12,rest,10,rest,7,rest,5,rest,3,rest,2,rest,0,rest,rest,rest]]},
+  train:{title:'Rail joints northbound',bpm:124,roots:[40,43,38,36,40,45,43,38],style:'rail',duty:.125,
+   melody:[[12,rest,rest,7,rest,rest,3,rest,5,rest,rest,10,rest,rest,7,rest],[15,rest,12,rest,10,7,rest,5,7,rest,5,3,2,rest,0,rest]]},
+  victoria:{title:'Victoria, people passing',bpm:110,roots:[45,43,41,40,45,48,43,40],style:'rock',duty:.25,
+   melody:[[7,rest,10,rest,12,rest,rest,10,7,rest,5,rest,3,rest,2,rest],[12,rest,15,12,10,rest,7,rest,5,rest,3,5,2,rest,0,rest]]},
+  omen:{title:'The sky changes',bpm:52,roots:[33,33,38,34,33,29,34,33],style:'dungeon',duty:.125,
+   melody:[[0,rest,rest,rest,7,rest,rest,rest,8,rest,rest,7,rest,rest,rest,rest],[12,rest,rest,rest,11,rest,8,rest,7,rest,rest,5,3,rest,1,rest]]},
+  silence:{title:'No score over the testimony',bpm:60,roots:[33],style:'silence',melody:[[rest]]}
+ };
+ const roomScenes={home:'home','memory-shared-home':'home','memory-courtyard':'childhood','memory-scouts':'scouts',shop:'shop',employer:'work',venue:'venue',metro:'station',platform:'station','victoria-platform':'station',train:'train',victoria:'victoria',
+  'memory-child-living':'childhood','memory-child-bedroom':'books','memory-child-kitchen':'home','memory-scout-store':'scouts','memory-adult-kitchen':'home','memory-adult-bedroom':'books',
+  'memory-camp':'camp','memory-other-camp':'camp','memory-school':'school','memory-classroom':'books','memory-university':'school','memory-lab':'work','memory-december':'omen','memory-march':'omen','memory-station':'silence','memory-aftercare':'home'};
+ function sceneFor(s){if(s.memory?.scene==='courtyard'&&Opening){const theme=Opening.music(s);if(theme&&Opening.current(s)?.id!=='explore-home')return theme;}if(s.mode==='memory-battle')return s.memory?.life?.active?.id==='hyper'?'resolve':'battle';if(s.mode==='battle'&&!s.battle?.result)return 'battle';if(s.mode==='ending')return s.ending?.where==='gig'?'venue':'home';return roomScenes[s.room]||(!s.room&&Math.hypot(s.x-27,s.y-43)<6?'venue':'street');}
+ const stepSeconds=mode=>15/(scenes[mode]||scenes.street).bpm;
+ function events(mode,index){const s=scenes[mode]||scenes.street,out=[];if(s.style==='silence')return out;const i=((index%loopSteps)+loopSteps)%loopSteps,bar=Math.floor(i/16),beat=i%16,rootNote=s.roots[bar%s.roots.length],step=stepSeconds(mode),heavy=['rock','garage','doom'].includes(s.style),sparse=['dream','dungeon'].includes(s.style);
+  const add=(channel,note,volume,gate=1,extra={})=>{if(note!==null)out.push({channel,note,volume,duration:step*Math.min(8,gate),type:channel.startsWith('pulse')?'square':channel,...extra});};
+  // Two four-bar phrases, with register changes and a final-bar turnaround.
+  const motif=s.melody[Math.floor(bar/4)%s.melody.length],lead=bar>=8&&bar<12&&heavy&&beat%2?null:motif[beat%motif.length],lift=(bar===6&&['play','folk','garage'].includes(s.style)||bar>=8&&bar%4===2)?12:0;
+  let sustain=1;if(sparse||s.style==='doom'){while(sustain<4&&beat+sustain<16&&motif[(beat+sustain)%motif.length]===null)sustain++;}
+  add('pulse1',lead===null?null:rootNote+24+lead+lift,s.style==='garage'?.32:heavy?.25:.18,sustain*.85,{duty:s.duty});
+  const arp=heavy?[0,7,12,7,0,7,3,7]:s.style==='dungeon'?[0,7,12,19,12,7,8,7]:[0,7,12,15,12,7,10,7];
+  if(s.style==='doom'){if(beat%4===0)add('pulse2',rootNote+12+arp[Math.floor(beat/4)],.24,3.85,{duty:.5});}
+  else if(!sparse||beat%2===0)add('pulse2',rootNote+12+arp[Math.floor(beat/(sparse?2:1))%8],heavy?.17:sparse?.09:.10,heavy?.38:sparse?1.8:.72,{duty:heavy?.25:.125});
+  const kick=heavy&&(beat===0||beat===8||s.style==='garage'&&beat===10);
+  if(kick)add('triangle',48,.42,.9,{kind:'kick',bend:-27});
+  else if(sparse){if(beat%8===0)add('triangle',rootNote,.24,7.8);}
+  else if(s.style==='doom'){if(beat%4===0)add('triangle',rootNote,.34,3.85);}
+  else add('triangle',rootNote+(beat===14&&bar===15?7:0),heavy?.31:.24,.92);
+  if(!sparse&&s.style!=='warm'){
+   const snare=heavy?(beat===4||beat===12):s.style==='rail'?beat===6||beat===14:beat===4||beat===12;
+   const fill=bar===15&&beat>=13&&heavy;
+   out.push({channel:'noise',noise:true,kind:snare||fill?'snare':'hat',duration:Math.min(step*.65,snare?.10:.035),volume:snare?.30:fill?.22:.08,period:snare?8:s.style==='rail'?2:1,seed:31+i*97});
+  }else if(s.style==='doom'&&beat===12)out.push({channel:'noise',noise:true,kind:'snare',duration:step*.6,volume:.20,period:12,seed:31+i*97});
+  return out;
+ }
+ function voice(event,rate=22050){const length=Math.max(1,Math.ceil(event.duration*rate)),pcm=new Float32Array(length),base=440*Math.pow(2,((event.note??40)-69)/12),increment=base/rate;let phase=0,lfsr=(event.seed||1)&32767||1,noise=0;
+  for(let j=0;j<length;j++){const t=j/rate,p=j/length;let wave;
+   if(event.noise){if(j%(event.period||1)===0){const bit=(lfsr^(lfsr>>1))&1;lfsr=(lfsr>>1)|(bit<<14);noise=(lfsr&1)?1:-1;}wave=noise;}
+   else {phase+=event.bend?increment*Math.pow(2,event.bend*Math.min(1,t/.10)/12):increment;if(phase>=1)phase-=1;const duty=event.duty||.25;wave=event.channel==='triangle'||event.type==='triangle'?1-4*Math.abs(Math.floor(phase*32)/32-.5):phase<duty?1:-duty/(1-duty);}
+   const attack=Math.min(1,t/.0015),release=Math.min(1,(length-j)/(rate*.004));
+   const envelope=event.noise?Math.pow(1-p,event.kind==='snare'?1.5:3):event.kind==='kick'?Math.pow(1-p,2):1-p*.35;
+   pcm[j]=Math.round(wave*attack*release*envelope*127)/127;
+  }return pcm;
+ }
+ function render(mode,rate=22050){const step=stepSeconds(mode),pcm=new Float32Array(Math.ceil(loopSteps*step*rate));for(let i=0;i<loopSteps;i++)for(const event of events(mode,i)){const sound=voice(event,rate),start=Math.round(i*step*rate);for(let j=0;j<sound.length&&start+j<pcm.length;j++)pcm[start+j]+=sound[j]*event.volume*.55;}
+  const bytes=new Uint8Array(pcm.length);for(let i=0;i<pcm.length;i++)bytes[i]=Math.round((Math.max(-1,Math.min(1,pcm[i]))+1)*127.5);return bytes;
+ }
+ class CityAudio{
+  constructor(){this.context=null;this.enabled=false;this.mode='street';this.loop=null;this.cache=new Map();}
+  buffer(mode){if(this.cache.has(mode))return this.cache.get(mode);const pcm=render(mode),buffer=this.context.createBuffer(1,pcm.length,22050),data=buffer.getChannelData(0);for(let i=0;i<pcm.length;i++)data[i]=(pcm[i]-128)/128;this.cache.set(mode,buffer);if(this.cache.size>4)this.cache.delete(this.cache.keys().next().value);return buffer;}
+  startLoop(){if(!this.context)return;const now=this.context.currentTime,old=this.loop;if(old){old.gain.gain.cancelScheduledValues(now);old.gain.gain.setValueAtTime(old.gain.gain.value,now);old.gain.gain.linearRampToValueAtTime(0,now+.35);old.source.stop(now+.36);}
+   const source=this.context.createBufferSource(),gain=this.context.createGain();source.buffer=this.buffer(this.mode);source.loop=true;gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(1,now+.4);source.connect(gain);gain.connect(this.master);source.onended=()=>{source.disconnect();gain.disconnect();};source.start(now);this.loop={source,gain,mode:this.mode};}
+  setScene(mode){if(!scenes[mode])mode='street';if(this.mode===mode)return;this.mode=mode;if(this.context&&this.enabled)this.startLoop();}
+  async toggle(){if(!this.context){const AC=root.AudioContext||root.webkitAudioContext;if(!AC)return false;this.context=new AC();this.master=this.context.createGain();this.master.gain.value=0;this.master.connect(this.context.destination);this.startLoop();}if(this.enabled){this.enabled=false;this.master.gain.setTargetAtTime(0,this.context.currentTime,.04);return false;}await this.context.resume();if(this.loop?.mode!==this.mode)this.startLoop();this.enabled=true;this.master.gain.setTargetAtTime(.45,this.context.currentTime,.08);return true;}
+  effect(kind='choice'){if(!this.enabled||kind==='step'||this.mode==='silence')return;const pcm=voice({channel:'pulse1',note:kind==='win'?76:kind==='blocked'?38:69,duration:.065,duty:.125},this.context.sampleRate),buffer=this.context.createBuffer(1,pcm.length,this.context.sampleRate);buffer.getChannelData(0).set(pcm);const source=this.context.createBufferSource(),gain=this.context.createGain();source.buffer=buffer;gain.gain.value=.04;source.connect(gain);gain.connect(this.context.destination);source.onended=()=>{source.disconnect();gain.disconnect();};source.start();}
+  phrase(){this.effect('win');}
+ }
+ const api={scenes,events,sceneFor,roomScenes,stepSeconds,loopSteps,voice,render};if(typeof module!=='undefined'&&module.exports)module.exports=api;else{root.CityAudio=CityAudio;root.CityScore=api;}
 })(typeof globalThis!=='undefined'?globalThis:this);
